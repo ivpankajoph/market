@@ -15,15 +15,24 @@ export function FlipWords({
   className?: string;
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     if (words.length < 2) return;
 
+    let revealTimeout: number | undefined;
     const interval = window.setInterval(() => {
-      setCurrentIndex((index) => (index + 1) % words.length);
+      setIsVisible(false);
+      revealTimeout = window.setTimeout(() => {
+        setCurrentIndex((index) => (index + 1) % words.length);
+        setIsVisible(true);
+      }, 220);
     }, duration);
 
-    return () => window.clearInterval(interval);
+    return () => {
+      window.clearInterval(interval);
+      if (revealTimeout) window.clearTimeout(revealTimeout);
+    };
   }, [duration, words.length]);
 
   const currentWord = words[currentIndex] ?? "";
@@ -36,10 +45,13 @@ export function FlipWords({
       )}
     >
       <motion.span
-        key={currentWord}
-        initial={{ opacity: 0, y: 16, filter: "blur(8px)" }}
-        animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-        transition={{ type: "spring", stiffness: 110, damping: 14 }}
+        initial={false}
+        animate={{
+          opacity: isVisible ? 1 : 0,
+          y: isVisible ? 0 : -10,
+          filter: isVisible ? "blur(0px)" : "blur(6px)",
+        }}
+        transition={{ duration: 0.22, ease: "easeOut" }}
         className="inline-block whitespace-nowrap"
       >
         {currentWord}
