@@ -5,6 +5,7 @@ import {
   Building2,
   CalendarClock,
   Eye,
+  Globe2,
   Mail,
   PackageSearch,
   Phone,
@@ -73,10 +74,25 @@ function maskPhone(value: string) {
 function countryBadge(value: string) {
   const normalized = value.trim().toLowerCase();
 
-  if (normalized === "china") return { flag: "🇨🇳", label: "China" };
-  if (normalized === "india") return { flag: "🇮🇳", label: "India" };
-  if (normalized.includes("any")) return { flag: "🌏", label: "Any country" };
-  return { flag: "🌐", label: value.trim() || "Buyer request" };
+  if (normalized === "china") return { flagSrc: "/flags/china.png", label: "China" };
+  if (normalized === "india") return { flagSrc: "/flags/india.png", label: "India" };
+  if (normalized.includes("any")) return { flagSrc: null, label: "Any country" };
+  return { flagSrc: null, label: value.trim() || "Buyer request" };
+}
+
+function FlagMark({ flagSrc }: { flagSrc: string | null }) {
+  if (!flagSrc) return <Globe2 className="size-4" aria-hidden="true" />;
+
+  return (
+    <img
+      src={flagSrc}
+      alt=""
+      width={24}
+      height={16}
+      className="h-4 w-6 rounded-[2px] border border-black/10 object-cover shadow-xs"
+      aria-hidden="true"
+    />
+  );
 }
 
 function Field({ label, value }: { label: string; value: string }) {
@@ -137,9 +153,7 @@ export function InquiryCarousel({ inquiries }: { inquiries: Inquiry[] }) {
         aria-label="Buyer requirements"
       >
         <div className="mb-5 flex items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground">
-            Swipe, scroll sideways on a trackpad, or use the buttons to browse all {inquiries.length} requests.
-          </p>
+        
           <div className="flex shrink-0 gap-2">
             <CarouselPrevious className="static size-10 translate-y-0 bg-background/90 shadow-sm" />
             <CarouselNext className="static size-10 translate-y-0 bg-background/90 shadow-sm" />
@@ -161,7 +175,7 @@ export function InquiryCarousel({ inquiries }: { inquiries: Inquiry[] }) {
                 <CardContent className="flex h-full flex-col px-5">
                   <div className="mb-5 flex items-center justify-between gap-3">
                     <Badge className="bg-white/75 text-foreground shadow-none hover:bg-white/75 dark:bg-black/20">
-                      <span aria-hidden="true">{country.flag}</span>
+                      <FlagMark flagSrc={country.flagSrc} />
                       {country.label}
                     </Badge>
                     <span className="text-sm font-medium text-muted-foreground">
@@ -218,7 +232,9 @@ export function InquiryCarousel({ inquiries }: { inquiries: Inquiry[] }) {
             <DialogHeader className="border-b border-border/60 bg-blue-100/70 p-6 pr-14 dark:bg-blue-950/40">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge>
-                  <span aria-hidden="true">{countryBadge(selected.importFrom).flag}</span>
+                  <FlagMark
+                    flagSrc={countryBadge(selected.importFrom).flagSrc}
+                  />
                   {countryBadge(selected.importFrom).label}
                 </Badge>
                 <Badge variant="outline" className="bg-background/60">
