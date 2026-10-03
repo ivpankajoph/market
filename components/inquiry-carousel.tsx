@@ -26,7 +26,6 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -113,7 +112,7 @@ export function InquiryCarousel({ inquiries }: { inquiries: Inquiry[] }) {
   const wheelLocked = React.useRef(false);
 
   React.useEffect(() => {
-    const viewport = carouselRoot.current?.querySelector(
+    const viewport = carouselRoot.current?.querySelector<HTMLElement>(
       '[data-slot="carousel-content"]',
     );
     if (!viewport || !carouselApi) return;
