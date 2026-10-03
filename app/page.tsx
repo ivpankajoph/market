@@ -137,7 +137,7 @@ export default function Home() {
         </div>
       </header>
 
-      <section id="top" className="mt-10 overflow-hidden scroll-mt-24 bg-blue-50/20 dark:bg-blue-950/5">
+      <section id="top" className="mt-6 overflow-hidden scroll-mt-24 bg-blue-50/20 dark:bg-blue-950/5">
         <div className="mx-auto flex max-w-4xl flex-col items-center px-4 text-center sm:px-6">
 
           <h1 className="mt-5 flex max-w-4xl flex-col items-center text-balance text-4xl font-semibold tracking-tight sm:block sm:text-6xl lg:text-7xl">
@@ -145,20 +145,20 @@ export default function Home() {
             <CountryTypewriter items={countries} className="min-w-[7ch] justify-center px-0 text-foreground sm:justify-start" typingSpeed={40} deletingSpeed={22} pauseDuration={480} />
           </h1>
          
-          <div className="mt-8 flex w-full flex-col justify-center gap-3 sm:w-auto sm:flex-row">
+          <div className="mt-6 flex w-full flex-col justify-center gap-3 sm:w-auto sm:flex-row">
             <Button size="lg" asChild><a href="#start">I&apos;m a buyer<Search aria-hidden="true" /></a></Button>
             <Button size="lg" variant="outline" asChild><a href="#start">I&apos;m a seller<Store aria-hidden="true" /></a></Button>
           </div>
           
         </div>
 
-        <div className="relative mx-auto mt-10 h-72 max-w-7xl overflow-hidden sm:mt-14 sm:h-80" aria-label="Interactive rotating globe showing worldwide trade">
+        <div className="relative mx-auto mt-6 h-72 max-w-7xl overflow-hidden sm:mt-8 sm:h-80" aria-label="Interactive rotating globe showing worldwide trade">
           <World className="absolute left-1/2 top-0 h-[40rem] w-[40rem] -translate-x-1/2 sm:h-[44rem] sm:w-[44rem]" data={globeData} globeConfig={{ globeColor: "#1d4ed8", polygonColor: "rgba(219,234,254,0.88)", atmosphereColor: "#60a5fa", atmosphereAltitude: 0.08, emissive: "#172554", emissiveIntensity: 0.18, showAtmosphere: true, autoRotate: true, autoRotateSpeed: 0.65, initialPosition: { lat: 20, lng: 78 } }} />
         </div>
         <Separator />
       </section>
 
-      <section className="bg-sky-50/25 py-10 dark:bg-sky-950/5 sm:py-14" aria-label="Platform assurances">
+      <section className="bg-sky-50/25 py-6 dark:bg-sky-950/5 sm:py-8" aria-label="Platform assurances">
         <div className="mx-auto grid max-w-7xl gap-4 px-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-4 lg:px-8">
           {trustPoints.map((point) => (
             <Card key={point.title} className={`gap-4 border-border/40 py-5 shadow-none ${point.tone}`}>
@@ -171,10 +171,10 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="how" className="scroll-mt-20 border-y border-border/50 bg-blue-50/35 py-20 dark:bg-blue-950/10 sm:py-28">
+      <section id="how" className="scroll-mt-20 border-y border-border/50 bg-blue-50/35 py-10 dark:bg-blue-950/10 sm:py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl"><Badge variant="outline">How it works</Badge><h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">From requirement to sourcing partner</h2><p className="mt-4 text-base leading-7 text-muted-foreground">A focused four-step path keeps each sourcing decision clear.</p></div>
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {steps.map((step) => (
               <Card key={step.number} className={`h-full border-border/40 shadow-none ${step.tone}`}><CardHeader><div className="flex items-center justify-between"><span className="flex size-10 items-center justify-center rounded-md bg-white/60 dark:bg-black/10"><step.icon className="size-5" aria-hidden="true" /></span><Badge variant="secondary">{step.number}</Badge></div><CardTitle className="mt-3">{step.title}</CardTitle><CardDescription className="leading-6">{step.description}</CardDescription></CardHeader></Card>
             ))}
@@ -182,10 +182,10 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="categories" className="scroll-mt-20 bg-indigo-50/20 py-20 dark:bg-indigo-950/5 sm:py-28">
+      <section id="categories" className="scroll-mt-20 bg-indigo-50/20 py-10 dark:bg-indigo-950/5 sm:py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl"><Badge variant="secondary">Popular categories</Badge><h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">Source across key product categories</h2><p className="mt-4 text-base leading-7 text-muted-foreground">Choose a category and share the exact product details you need.</p></div>
-          <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {categories.map((category) => (
               <Card key={category.name} className={`group overflow-hidden border-border/30 py-0 shadow-none ${category.tone}`}>
                 <CardContent className="p-0">
@@ -200,8 +200,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="border-y border-border/50 bg-sky-50/35 py-20 dark:bg-sky-950/10 sm:py-28">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-start lg:px-8">
+      <section className="border-y border-border/50 bg-sky-50/35 py-10 dark:bg-sky-950/10 sm:py-12">
+        <div className="mx-auto grid max-w-7xl gap-6 px-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-start lg:px-8">
           <div><Badge variant="outline">On-the-ground support</Badge><h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">What a China import agent can handle</h2><p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground">A local sourcing partner helps manage work that is difficult to coordinate from another country.</p></div>
           <div className="grid gap-3 sm:grid-cols-2">
             {agentServices.map((service) => (
@@ -211,10 +211,10 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="premium" className="scroll-mt-20 bg-blue-50/20 py-20 dark:bg-blue-950/5 sm:py-28">
+      <section id="premium" className="scroll-mt-20 bg-blue-50/20 py-10 dark:bg-blue-950/5 sm:py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"><div className="max-w-2xl"><Badge>Premium buyer package</Badge><h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">Three months of guided sourcing support</h2><p className="mt-4 text-base leading-7 text-muted-foreground">Designed for active importers who want ongoing matching, updates, and assistance.</p></div><Badge variant="outline" className="h-8 px-3 text-sm">3 months</Badge></div>
-          <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-7 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {premiumFeatures.map((feature) => (
               <Card key={feature.title} className={`h-full border-border/40 shadow-none ${feature.tone}`}><CardHeader><feature.icon className="size-5" aria-hidden="true" /><CardTitle className="mt-3">{feature.title}</CardTitle><CardDescription className="leading-6">{feature.description}</CardDescription></CardHeader></Card>
             ))}
@@ -222,26 +222,26 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="border-y border-border/50 bg-indigo-50/30 py-20 dark:bg-indigo-950/10 sm:py-28">
+      <section className="border-y border-border/50 bg-indigo-50/30 py-10 dark:bg-indigo-950/10 sm:py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Card className="overflow-hidden border-border/40 bg-indigo-100/55 shadow-none dark:bg-indigo-950/25"><CardContent className="grid gap-10 py-2 sm:p-10 lg:grid-cols-2 lg:items-center"><div><Badge variant="secondary"><Users aria-hidden="true" />India coordination</Badge><h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">Local support in India as well</h2><p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground">Alongside China-based sourcing professionals, India-based service providers can help bridge communication, freight, and documentation.</p></div><div className="grid gap-3">{indiaSupport.map((item) => (<div key={item} className="flex items-center gap-3 rounded-lg bg-white/65 p-4 dark:bg-black/10"><Check className="size-4 shrink-0" aria-hidden="true" /><span className="text-sm font-medium">{item}</span></div>))}</div></CardContent></Card>
+          <Card className="overflow-hidden border-border/40 bg-indigo-100/55 shadow-none dark:bg-indigo-950/25"><CardContent className="grid gap-6 py-2 sm:p-8 lg:grid-cols-2 lg:items-center"><div><Badge variant="secondary"><Users aria-hidden="true" />India coordination</Badge><h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">Local support in India as well</h2><p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground">Alongside China-based sourcing professionals, India-based service providers can help bridge communication, freight, and documentation.</p></div><div className="grid gap-3">{indiaSupport.map((item) => (<div key={item} className="flex items-center gap-3 rounded-lg bg-white/65 p-4 dark:bg-black/10"><Check className="size-4 shrink-0" aria-hidden="true" /><span className="text-sm font-medium">{item}</span></div>))}</div></CardContent></Card>
         </div>
       </section>
 
-      <section className="bg-sky-50/20 py-20 dark:bg-sky-950/5 sm:py-28">
+      <section className="bg-sky-50/20 py-10 dark:bg-sky-950/5 sm:py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl"><Badge variant="outline">Why SellersLogin Market</Badge><h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">A simpler way to coordinate international sourcing</h2></div>
-          <div className="mt-10 grid gap-x-8 gap-y-7 sm:grid-cols-2 lg:grid-cols-3">{platformBenefits.map((benefit) => (<div key={benefit.title} className="border-l pl-5"><h3 className="font-semibold">{benefit.title}</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">{benefit.description}</p></div>))}</div>
+          <div className="mt-7 grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">{platformBenefits.map((benefit) => (<div key={benefit.title} className="border-l pl-5"><h3 className="font-semibold">{benefit.title}</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">{benefit.description}</p></div>))}</div>
         </div>
       </section>
 
-      <section className="pb-20 sm:pb-28">
+      <section className="pb-10 sm:pb-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <Alert className="border-amber-200/60 bg-amber-100/60 dark:border-amber-900/40 dark:bg-amber-950/25"><ShieldCheck aria-hidden="true" /><AlertTitle>Payment protection applies only on the platform</AlertTitle><AlertDescription><p>SellersLogin Market introduces buyers and sourcing agents. Payment safeguards, price commitments, and package refunds apply only when the transaction is completed through the platform. Payments made directly to an agent remain the buyer&apos;s responsibility.</p></AlertDescription></Alert>
         </div>
       </section>
 
-      <section id="support" className="scroll-mt-20 border-t border-border/50 bg-blue-50/35 py-20 dark:bg-blue-950/10 sm:py-28">
+      <section id="support" className="scroll-mt-20 border-t border-border/50 bg-blue-50/35 py-10 dark:bg-blue-950/10 sm:py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <Card id="start" className="scroll-mt-24 overflow-hidden border-border/40 bg-blue-100/60 shadow-none dark:bg-blue-950/25"><CardContent className="grid gap-8 py-2 sm:p-10 lg:grid-cols-[1fr_auto] lg:items-center"><div><Badge variant="secondary"><Sparkles aria-hidden="true" />Buyers and sourcing agents welcome</Badge><h2 className="mt-4 max-w-2xl text-3xl font-semibold tracking-tight sm:text-4xl">Ready to begin your next sourcing request?</h2><p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">Post your requirement as a buyer, or join the network as a sourcing agent.</p></div><div className="flex flex-col gap-3 sm:flex-row lg:flex-col"><Button size="lg" asChild><a href="#top"><Search aria-hidden="true" />Post a requirement</a></Button><Button size="lg" variant="outline" asChild><a href="#top"><Store aria-hidden="true" />Join as an agent</a></Button><Button size="lg" variant="ghost" asChild><a href="mailto:support@sellerslogin.market"><Headphones aria-hidden="true" />Contact support</a></Button></div></CardContent></Card>
         </div>
