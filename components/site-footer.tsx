@@ -28,7 +28,7 @@ function ServiceList({
 
 export function SiteFooter({
   marketName = "the United States",
-  marketSlug = "us",
+  marketSlug = "usa",
 }: {
   marketName?: string;
   marketSlug?: string;
