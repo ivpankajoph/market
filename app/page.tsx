@@ -105,44 +105,59 @@ const platformBenefits = [
 const countries = [
   { text: "China", className: "text-[#DE2910]" },
   { text: "India", className: "text-[#FF9933]" },
-  { text: "US", className: "text-[#3C3B6E] dark:text-[#B22234]" },
-  { text: "UK", className: "text-[#C8102E]" },
+  { text: "Vietnam", className: "text-[#DA251D]" },
+  { text: "Taiwan", className: "text-[#0055B9] dark:text-[#38BDF8]" },
+  { text: "Africa", className: "text-[#059669] dark:text-[#34D399]" },
   { text: "Global", className: "text-foreground" },
 ];
 
 const globeData: GlobePosition[] = [
   { order: 1, startLat: 28.6139, startLng: 77.209, endLat: 31.2304, endLng: 121.4737, arcAlt: 0.18, color: "#bfdbfe" },
-  { order: 2, startLat: 28.6139, startLng: 77.209, endLat: 51.5072, endLng: -0.1276, arcAlt: 0.22, color: "#dbeafe" },
-  { order: 3, startLat: 40.7128, startLng: -74.006, endLat: 51.5072, endLng: -0.1276, arcAlt: 0.16, color: "#bfdbfe" },
-  { order: 4, startLat: 39.9042, startLng: 116.4074, endLat: 34.0522, endLng: -118.2437, arcAlt: 0.28, color: "#dbeafe" },
-  { order: 5, startLat: 19.076, startLng: 72.8777, endLat: 40.7128, endLng: -74.006, arcAlt: 0.3, color: "#bfdbfe" },
+  { order: 2, startLat: 21.0285, startLng: 105.8542, endLat: 28.6139, endLng: 77.209, arcAlt: 0.16, color: "#dbeafe" },
+  { order: 3, startLat: 25.033, startLng: 121.5654, endLat: 19.076, endLng: 72.8777, arcAlt: 0.2, color: "#bfdbfe" },
+  { order: 4, startLat: -1.2921, startLng: 36.8219, endLat: 28.6139, endLng: 77.209, arcAlt: 0.25, color: "#dbeafe" },
+  { order: 5, startLat: 31.2304, startLng: 121.4737, endLat: 51.5072, endLng: -0.1276, arcAlt: 0.28, color: "#bfdbfe" },
+  { order: 6, startLat: 19.076, startLng: 72.8777, endLat: 40.7128, endLng: -74.006, arcAlt: 0.3, color: "#dbeafe" },
 ];
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <header className="sticky top-0 z-50 overflow-hidden border-b border-border/40 hero-ambient-flow backdrop-blur-md">
+        {/* Soft moving light ambient orbs in navbar */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+          <div className="animate-float-slow absolute -left-10 -top-12 h-36 w-36 rounded-full bg-blue-300/25 blur-2xl dark:bg-blue-600/15" />
+          <div className="animate-float-reverse absolute right-12 -top-10 h-36 w-36 rounded-full bg-indigo-200/35 blur-2xl dark:bg-indigo-600/15" />
+        </div>
+        <div className="relative z-10 mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <a href="#top" className="flex items-center gap-2 font-semibold tracking-tight" aria-label="SellersLogin Market home">
-            <span className="flex size-8 items-center justify-center rounded-md border bg-card shadow-xs">
+            <span className="flex size-8 items-center justify-center rounded-md border border-border/50 bg-white/70 shadow-xs dark:bg-black/20">
               <Globe2 className="size-4" aria-hidden="true" />
             </span>
             <span>SellersLogin Market</span>
           </a>
           <nav className="flex items-center gap-1" aria-label="Main navigation">
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><a href="#how">How it works</a></Button>
-            <Button variant="ghost" size="sm" className="hidden md:inline-flex" asChild><a href="#categories">Categories</a></Button>
-            <Button variant="ghost" size="sm" asChild><a href="#support">Support</a></Button>
+            <Button variant="ghost" size="sm" className="hidden sm:inline-flex hover:bg-white/50 dark:hover:bg-white/10" asChild><a href="#how">How it works</a></Button>
+            <Button variant="ghost" size="sm" className="hidden md:inline-flex hover:bg-white/50 dark:hover:bg-white/10" asChild><a href="#categories">Categories</a></Button>
+            <Button variant="ghost" size="sm" className="hover:bg-white/50 dark:hover:bg-white/10" asChild><a href="#support">Support</a></Button>
           </nav>
         </div>
       </header>
 
-      <section id="top" className="mt-6 overflow-hidden scroll-mt-24 bg-blue-50/20 dark:bg-blue-950/5">
-        <div className="mx-auto flex max-w-4xl flex-col items-center px-4 text-center sm:px-6">
+      <section id="top" className="relative overflow-hidden scroll-mt-24 hero-ambient-flow">
+        {/* Soft moving light ambient orbs */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+          <div className="animate-float-slow absolute -left-20 -top-20 h-80 w-80 rounded-full bg-blue-300/30 blur-3xl dark:bg-blue-600/15 sm:h-96 sm:w-96" />
+          <div className="animate-float-reverse absolute -right-20 top-10 h-80 w-80 rounded-full bg-indigo-200/40 blur-3xl dark:bg-indigo-600/15 sm:h-96 sm:w-96" />
+          <div className="animate-float-drift absolute left-1/4 top-1/3 h-72 w-72 rounded-full bg-teal-200/30 blur-3xl dark:bg-teal-600/15 sm:h-80 sm:w-80" />
+          <div className="animate-float-slow absolute right-1/4 bottom-16 h-64 w-64 rounded-full bg-rose-200/25 blur-3xl dark:bg-rose-600/10 sm:h-72 sm:w-72" />
+        </div>
+
+        <div className="relative z-10 mx-auto flex max-w-4xl flex-col items-center px-4 pt-4 text-center sm:px-6">
 
           <h1 className="mt-5 flex max-w-4xl flex-col items-center text-balance text-4xl font-semibold tracking-tight sm:block sm:text-6xl lg:text-7xl">
-            <span>Import from</span>{" "}
-            <CountryTypewriter items={countries} className="min-w-[7ch] justify-center px-0 text-foreground sm:justify-start" typingSpeed={40} deletingSpeed={22} pauseDuration={480} />
+            <span>Source From</span>{" "}
+            <CountryTypewriter items={countries} className="min-w-[8ch] justify-center px-0 text-foreground sm:justify-start" typingSpeed={40} deletingSpeed={22} pauseDuration={480} />
           </h1>
          
           <div className="mt-6 flex w-full flex-col justify-center gap-3 sm:w-auto sm:flex-row">
@@ -152,7 +167,7 @@ export default function Home() {
           
         </div>
 
-        <div className="relative mx-auto mt-6 h-72 max-w-7xl overflow-hidden sm:mt-8 sm:h-80" aria-label="Interactive rotating globe showing worldwide trade">
+        <div className="relative z-10 mx-auto mt-6 h-72 max-w-7xl overflow-hidden sm:mt-8 sm:h-80" aria-label="Interactive rotating globe showing worldwide trade">
           <World className="absolute left-1/2 top-0 h-[40rem] w-[40rem] -translate-x-1/2 sm:h-[44rem] sm:w-[44rem]" data={globeData} globeConfig={{ globeColor: "#1d4ed8", polygonColor: "rgba(219,234,254,0.88)", atmosphereColor: "#60a5fa", atmosphereAltitude: 0.08, emissive: "#172554", emissiveIntensity: 0.18, showAtmosphere: true, autoRotate: true, autoRotateSpeed: 0.65, initialPosition: { lat: 20, lng: 78 } }} />
         </div>
         <Separator />
