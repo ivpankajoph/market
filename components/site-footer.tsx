@@ -20,7 +20,7 @@ function ServiceList({ services }: { services: readonly string[] }) {
   );
 }
 
-export function SiteFooter() {
+export function SiteFooter({ marketName = "the United States" }: { marketName?: string }) {
   return (
     <footer id="services" className="services-footer-bg relative overflow-hidden text-white">
       <div className="pointer-events-none absolute inset-0 opacity-40" aria-hidden="true">
@@ -38,10 +38,10 @@ export function SiteFooter() {
               SellersLogin Market
             </a>
             <p className="mt-4 max-w-md text-base leading-7 text-slate-300">
-              Practical sourcing, verification, procurement, and logistics coordination for US buyers working with China and India.
+              Practical sourcing, verification, procurement, and logistics coordination for buyers in {marketName} working with China and India.
             </p>
             <div className="mt-5 space-y-3 text-sm text-slate-300">
-              <div className="flex items-center gap-3"><MapPinned className="size-4 text-cyan-300" aria-hidden="true" /><span>Serving buyers across the United States</span></div>
+              <div className="flex items-center gap-3"><MapPinned className="size-4 text-cyan-300" aria-hidden="true" /><span>Serving buyers across {marketName}</span></div>
               <a href="mailto:support@sellerslogin.market" className="flex items-center gap-3 hover:text-white"><Mail className="size-4 text-cyan-300" aria-hidden="true" /><span>support@sellerslogin.market</span></a>
             </div>
           </div>
