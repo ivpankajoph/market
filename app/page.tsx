@@ -1,6 +1,5 @@
 import {
   ArrowRight,
-  BadgeCheck,
   Globe2,
   Headphones,
   PackageCheck,
@@ -12,6 +11,8 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Globe3D } from "@/components/ui/3d-globe";
+import { FlipWords } from "@/components/ui/flip-words";
 import {
   Card,
   CardContent,
@@ -69,7 +70,7 @@ const steps = [
 export default function Home() {
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      <header className="sticky top-0 z-50 border-b bg-background/40 backdrop-blur supports-[backdrop-filter]:bg-background/80">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <a
             href="#top"
@@ -93,15 +94,17 @@ export default function Home() {
         </div>
       </header>
 
-      <section id="top" className="overflow-hidden pt-20 sm:pt-28">
+      <section id="top" className="overflow-hidden mt-10">
         <div className="mx-auto flex max-w-4xl flex-col items-center px-4 text-center sm:px-6">
-          <Badge variant="outline" className="mb-6">
-            <BadgeCheck aria-hidden="true" />
-            A marketplace built for business
-          </Badge>
 
-          <h1 className="max-w-3xl text-balance text-4xl font-semibold tracking-tight sm:text-6xl lg:text-7xl">
-            The market where buyers and sellers meet
+
+          <h1 className="flex max-w-4xl flex-col items-center text-balance text-4xl font-semibold tracking-tight sm:block sm:text-6xl lg:text-7xl">
+            <span>Import from</span>{" "}
+            <FlipWords
+              words={["China", "India", "the US", "the UK", "Global"]}
+              duration={2200}
+              className="min-w-[7ch] justify-center px-0 text-foreground sm:justify-start"
+            />
           </h1>
           <p className="mt-6 max-w-2xl text-pretty text-base leading-7 text-muted-foreground sm:text-lg">
             Discover dependable businesses, open new markets, and make every
@@ -124,14 +127,24 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="mx-auto mt-14 h-40 max-w-7xl overflow-hidden px-4 sm:mt-20 sm:h-56 sm:px-6 lg:px-8">
-          <div className="mx-auto flex size-80 items-center justify-center rounded-full border bg-muted/30 sm:size-[28rem]">
-            <Globe2
-              className="size-72 text-muted-foreground motion-safe:animate-[spin_24s_linear_infinite] sm:size-[25rem]"
-              strokeWidth={0.65}
-              aria-label="A slowly rotating globe"
-            />
-          </div>
+        <div
+          className="relative mx-auto mt-10 h-72 max-w-7xl overflow-hidden sm:mt-14 sm:h-80"
+          aria-label="Interactive rotating globe showing worldwide trade"
+        >
+          <Globe3D
+            className="absolute left-1/2 top-0 h-[36rem] w-[36rem] -translate-x-1/2 sm:h-[40rem] sm:w-[40rem]"
+            config={{
+              autoRotateSpeed: 0.7,
+              enableZoom: false,
+              enablePan: false,
+              showAtmosphere: true,
+              atmosphereIntensity: 0.35,
+              atmosphereBlur: 3,
+              bumpScale: 0.8,
+              ambientIntensity: 0.8,
+              pointLightIntensity: 1.35,
+            }}
+          />
         </div>
         <Separator />
       </section>
