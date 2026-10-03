@@ -2,13 +2,19 @@ import { Globe2, Mail, MapPinned, PackageCheck } from "lucide-react";
 
 import { chinaServiceNames, indiaServiceNames, serviceSlug } from "@/lib/services";
 
-function ServiceList({ services }: { services: readonly string[] }) {
+function ServiceList({
+  services,
+  marketSlug,
+}: {
+  services: readonly string[];
+  marketSlug: string;
+}) {
   return (
     <ul className="mt-4 grid gap-x-6 gap-y-2 sm:grid-cols-2">
       {services.map((service) => (
         <li key={service}>
           <a
-            href={`/us/${serviceSlug(service)}`}
+            href={`/${marketSlug}/${serviceSlug(service)}`}
             className="group inline-flex items-start gap-2 text-sm leading-5 text-slate-300 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
           >
             <span className="mt-2 size-1 shrink-0 rounded-full bg-cyan-300/70 transition-transform group-hover:scale-150" aria-hidden="true" />
@@ -20,7 +26,13 @@ function ServiceList({ services }: { services: readonly string[] }) {
   );
 }
 
-export function SiteFooter({ marketName = "the United States" }: { marketName?: string }) {
+export function SiteFooter({
+  marketName = "the United States",
+  marketSlug = "us",
+}: {
+  marketName?: string;
+  marketSlug?: string;
+}) {
   return (
     <footer id="services" className="services-footer-bg relative overflow-hidden text-white">
       <div className="pointer-events-none absolute inset-0 opacity-40" aria-hidden="true">
@@ -52,7 +64,7 @@ export function SiteFooter({ marketName = "the United States" }: { marketName?: 
                 <img src="/flags/china.png" alt="" width={30} height={20} className="h-5 w-7 rounded-[2px] object-cover" />
                 <h2 id="china-services-heading" className="font-semibold">China sourcing services</h2>
               </div>
-              <ServiceList services={chinaServiceNames} />
+              <ServiceList services={chinaServiceNames} marketSlug={marketSlug} />
             </section>
 
             <section aria-labelledby="india-services-heading">
@@ -60,7 +72,7 @@ export function SiteFooter({ marketName = "the United States" }: { marketName?: 
                 <img src="/flags/india.png" alt="" width={30} height={20} className="h-5 w-7 rounded-[2px] object-cover" />
                 <h2 id="india-services-heading" className="font-semibold">India sourcing services</h2>
               </div>
-              <ServiceList services={indiaServiceNames} />
+              <ServiceList services={indiaServiceNames} marketSlug={marketSlug} />
             </section>
           </div>
         </div>

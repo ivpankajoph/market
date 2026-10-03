@@ -178,7 +178,7 @@ export function ServiceDetailPage({ market, service }: ServiceDetailPageProps) {
         </div>
       </section>
 
-      <SiteFooter marketName={market.locationName} />
+      <SiteFooter marketName={market.locationName} marketSlug={market.slug} />
     </main>
   );
 }
