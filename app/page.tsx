@@ -38,6 +38,9 @@ import {
 import { CountryTypewriter } from "@/components/ui/country-typewriter";
 import { World, type GlobePosition } from "@/components/ui/globe-client";
 import { Separator } from "@/components/ui/separator";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { InquiryCarousel, type Inquiry } from "@/components/inquiry-carousel";
+import inquiryData from "@/data/inquiries.json";
 
 const trustPoints = [
   { icon: BadgeCheck, title: "Relevant agent matching", description: "Meet agents experienced in your product category.", tone: "bg-blue-100/70 dark:bg-blue-950/30" },
@@ -136,11 +139,14 @@ export default function Home() {
             </span>
             <span>SellersLogin Market</span>
           </a>
-          <nav className="flex items-center gap-1" aria-label="Main navigation">
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex hover:bg-white/50 dark:hover:bg-white/10" asChild><a href="#how">How it works</a></Button>
-            <Button variant="ghost" size="sm" className="hidden md:inline-flex hover:bg-white/50 dark:hover:bg-white/10" asChild><a href="#categories">Categories</a></Button>
-            <Button variant="ghost" size="sm" className="hover:bg-white/50 dark:hover:bg-white/10" asChild><a href="#support">Support</a></Button>
-          </nav>
+          <div className="flex items-center gap-2">
+            <nav className="flex items-center gap-1" aria-label="Main navigation">
+              <Button variant="ghost" size="sm" className="hidden sm:inline-flex hover:bg-white/50 dark:hover:bg-white/10" asChild><a href="#how">How it works</a></Button>
+              <Button variant="ghost" size="sm" className="hidden md:inline-flex hover:bg-white/50 dark:hover:bg-white/10" asChild><a href="#categories">Categories</a></Button>
+              <Button variant="ghost" size="sm" className="hover:bg-white/50 dark:hover:bg-white/10" asChild><a href="#support">Support</a></Button>
+            </nav>
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
@@ -167,8 +173,8 @@ export default function Home() {
           
         </div>
 
-        <div className="relative z-10 mx-auto mt-6 h-72 max-w-7xl overflow-hidden sm:mt-8 sm:h-80" aria-label="Interactive rotating globe showing worldwide trade">
-          <World className="absolute left-1/2 top-0 h-[40rem] w-[40rem] -translate-x-1/2 sm:h-[44rem] sm:w-[44rem]" data={globeData} globeConfig={{ globeColor: "#1d4ed8", polygonColor: "rgba(219,234,254,0.88)", atmosphereColor: "#60a5fa", atmosphereAltitude: 0.08, emissive: "#172554", emissiveIntensity: 0.18, showAtmosphere: true, autoRotate: true, autoRotateSpeed: 0.65, initialPosition: { lat: 20, lng: 78 } }} />
+        <div className="relative z-10 mx-auto mt-2 h-72 max-w-7xl overflow-hidden sm:mt-3 sm:h-80" aria-label="Interactive rotating globe showing worldwide trade">
+          <World className="absolute left-1/2 -top-16 h-[40rem] w-[40rem] -translate-x-1/2 sm:-top-20 sm:h-[44rem] sm:w-[44rem]" data={globeData} globeConfig={{ globeColor: "#1d4ed8", polygonColor: "rgba(219,234,254,0.88)", atmosphereColor: "#60a5fa", atmosphereAltitude: 0.08, emissive: "#172554", emissiveIntensity: 0.18, showAtmosphere: true, autoRotate: true, autoRotateSpeed: 0.65, initialPosition: { lat: 20, lng: 78 } }} />
         </div>
         <Separator />
       </section>
@@ -194,6 +200,20 @@ export default function Home() {
               <Card key={step.number} className={`h-full border-border/40 shadow-none ${step.tone}`}><CardHeader><div className="flex items-center justify-between"><span className="flex size-10 items-center justify-center rounded-md bg-white/60 dark:bg-black/10"><step.icon className="size-5" aria-hidden="true" /></span><Badge variant="secondary">{step.number}</Badge></div><CardTitle className="mt-3">{step.title}</CardTitle><CardDescription className="leading-6">{step.description}</CardDescription></CardHeader></Card>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section id="requests" className="scroll-mt-20 border-b border-border/50 bg-background py-10 sm:py-12">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div className="max-w-2xl">
+              <Badge variant="outline">Live buyer requirements</Badge>
+              <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">Explore active sourcing enquiries</h2>
+              <p className="mt-4 text-base leading-7 text-muted-foreground">Browse recent buyer requests and open a card to review the complete sourcing requirement.</p>
+            </div>
+            <Badge variant="secondary" className="w-fit px-3 py-1.5 text-sm">{inquiryData.length} requests</Badge>
+          </div>
+          <InquiryCarousel inquiries={inquiryData as Inquiry[]} />
         </div>
       </section>
 
