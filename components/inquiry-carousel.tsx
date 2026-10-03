@@ -240,14 +240,10 @@ export function InquiryCarousel({ inquiries }: { inquiries: Inquiry[] }) {
                 <Badge variant="outline" className="bg-background/60">
                   Request #{String(selected.id).padStart(3, "0")}
                 </Badge>
-                <Badge variant="secondary" className="bg-white/70 dark:bg-black/20">
-                  13/13 sheet fields
-                </Badge>
+             
               </div>
               <DialogTitle className="mt-2 text-2xl leading-tight">{selected.name}</DialogTitle>
-              <DialogDescription>
-                Every column from the source sheet is included below. Scroll inside this popup to see all details.
-              </DialogDescription>
+          
             </DialogHeader>
 
             <div className="scrollbar-thin min-h-0 overscroll-contain overflow-y-scroll p-6">

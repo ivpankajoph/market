@@ -40,6 +40,7 @@ import { World, type GlobePosition } from "@/components/ui/globe-client";
 import { Separator } from "@/components/ui/separator";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { InquiryCarousel, type Inquiry } from "@/components/inquiry-carousel";
+import { SiteFooter } from "@/components/site-footer";
 import inquiryData from "@/data/inquiries.json";
 
 const trustPoints = [
@@ -282,9 +283,7 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="border-t border-border/50 bg-background">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8"><div className="flex items-center gap-2 text-foreground"><PackageCheck className="size-4" aria-hidden="true" /><span className="font-medium">SellersLogin Market</span></div><p>A platform connecting buyers and sourcing professionals.</p></div>
-      </footer>
+      <SiteFooter />
     </main>
   );
 }
