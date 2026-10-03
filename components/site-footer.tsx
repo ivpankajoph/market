@@ -4,7 +4,7 @@ import { chinaServiceNames, indiaServiceNames, serviceSlug } from "@/lib/service
 
 function ServiceList({ services }: { services: readonly string[] }) {
   return (
-    <ul className="mt-5 grid gap-x-6 gap-y-3 sm:grid-cols-2">
+    <ul className="mt-4 grid gap-x-6 gap-y-2 sm:grid-cols-2">
       {services.map((service) => (
         <li key={service}>
           <a
@@ -28,8 +28,8 @@ export function SiteFooter() {
         <div className="absolute -right-20 bottom-0 size-80 rounded-full bg-cyan-400/15 blur-3xl" />
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
-        <div className="grid gap-10 border-b border-white/10 pb-12 lg:grid-cols-[0.7fr_1.3fr]">
+      <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
+        <div className="grid gap-8 border-b border-white/10 pb-9 lg:grid-cols-[0.7fr_1.3fr]">
           <div>
             <a href="/" className="inline-flex items-center gap-3 text-xl font-semibold tracking-tight">
               <span className="flex size-10 items-center justify-center rounded-xl border border-white/15 bg-white/10">
@@ -37,16 +37,16 @@ export function SiteFooter() {
               </span>
               SellersLogin Market
             </a>
-            <p className="mt-5 max-w-md text-base leading-7 text-slate-300">
+            <p className="mt-4 max-w-md text-base leading-7 text-slate-300">
               Practical sourcing, verification, procurement, and logistics coordination for US buyers working with China and India.
             </p>
-            <div className="mt-7 space-y-3 text-sm text-slate-300">
+            <div className="mt-5 space-y-3 text-sm text-slate-300">
               <div className="flex items-center gap-3"><MapPinned className="size-4 text-cyan-300" aria-hidden="true" /><span>Serving buyers across the United States</span></div>
               <a href="mailto:support@sellerslogin.market" className="flex items-center gap-3 hover:text-white"><Mail className="size-4 text-cyan-300" aria-hidden="true" /><span>support@sellerslogin.market</span></a>
             </div>
           </div>
 
-          <div className="grid gap-10 md:grid-cols-2">
+          <div className="grid gap-8 md:grid-cols-2">
             <section aria-labelledby="china-services-heading">
               <div className="flex items-center gap-3">
                 <img src="/flags/china.png" alt="" width={30} height={20} className="h-5 w-7 rounded-[2px] object-cover" />
@@ -65,7 +65,7 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 pt-7 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 pt-5 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2"><PackageCheck className="size-4" aria-hidden="true" /><span>Buy, verify, and ship with one coordinated network.</span></div>
           <p>© {new Date().getFullYear()} SellersLogin Market</p>
         </div>
