@@ -6,13 +6,18 @@ import { ServiceDetailPage } from "@/components/service-detail-page";
 import { cityRouteParams, getLocationCity, getLocationState } from "@/data";
 import { getBuyerMarket } from "@/lib/markets";
 import { getService } from "@/lib/services";
+import { regionalServiceRouteParams } from "@/url";
 
 type CityPageProps = {
   params: Promise<{ country: string; slug: string; city: string }>;
 };
 
 export function generateStaticParams() {
-  return cityRouteParams.map(({ country, state, city }) => ({ country, slug: state, city }));
+  const locationCityRouteParams = cityRouteParams.map(
+    ({ country, state, city }) => ({ country, slug: state, city }),
+  );
+
+  return [...locationCityRouteParams, ...regionalServiceRouteParams];
 }
 
 export async function generateMetadata({ params }: CityPageProps): Promise<Metadata> {

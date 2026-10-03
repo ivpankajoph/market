@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   Check,
   ClipboardCheck,
@@ -19,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { BuyerMarket } from "@/lib/markets";
 import type { SourcingService } from "@/lib/services";
+import { routePath } from "@/url";
 
 type ServiceDetailPageProps = {
   market: BuyerMarket;
@@ -73,12 +75,12 @@ export function ServiceDetailPage({ market, service, regionName }: ServiceDetail
     <main className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-50 border-b border-border/50 bg-background/85 backdrop-blur-xl">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <a href="/" className="flex items-center gap-2 font-semibold tracking-tight" aria-label="SellersLogin Market home">
+          <Link href={routePath.home} className="flex items-center gap-2 font-semibold tracking-tight" aria-label="SellersLogin Market home">
             <span className="flex size-8 items-center justify-center rounded-md border bg-card"><Globe2 className="size-4" aria-hidden="true" /></span>
             <span>SellersLogin Market</span>
-          </a>
+          </Link>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" asChild><a href="/#services">All services</a></Button>
+            <Button variant="ghost" size="sm" asChild><Link href={routePath.section("services")}>All services</Link></Button>
             <ThemeToggle />
           </div>
         </div>
@@ -102,7 +104,7 @@ export function ServiceDetailPage({ market, service, regionName }: ServiceDetail
             <p className="mt-4 max-w-2xl text-lg leading-8 text-muted-foreground">{service.name} support for buyers in {displayMarket.locationName} who need a clearer, more coordinated way to source internationally.</p>
             <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">{overview}</p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Button size="lg" asChild><a href="/#support"><Search aria-hidden="true" />Post a requirement</a></Button>
+              <Button size="lg" asChild><Link href={routePath.section("support")}><Search aria-hidden="true" />Post a requirement</Link></Button>
               <Button size="lg" variant="outline" asChild><a href="#process"><ClipboardCheck aria-hidden="true" />See the process</a></Button>
             </div>
           </div>
@@ -182,7 +184,7 @@ export function ServiceDetailPage({ market, service, regionName }: ServiceDetail
 
       <section className="pb-10 sm:pb-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Card className="overflow-hidden border-border/50 bg-blue-100/70 shadow-none dark:bg-blue-950/30"><CardContent className="flex flex-col gap-5 px-6 sm:p-7 lg:flex-row lg:items-center lg:justify-between"><div><Badge variant="secondary"><Sparkles aria-hidden="true" />Start with your requirement</Badge><h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Need help with {service.name.toLowerCase()}?</h2><p className="mt-2 max-w-2xl text-muted-foreground">Share the product, order size, budget, and destination in {displayMarket.locationName} to begin.</p></div><Button size="lg" asChild><a href="/#support">Post a requirement</a></Button></CardContent></Card>
+          <Card className="overflow-hidden border-border/50 bg-blue-100/70 shadow-none dark:bg-blue-950/30"><CardContent className="flex flex-col gap-5 px-6 sm:p-7 lg:flex-row lg:items-center lg:justify-between"><div><Badge variant="secondary"><Sparkles aria-hidden="true" />Start with your requirement</Badge><h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Need help with {service.name.toLowerCase()}?</h2><p className="mt-2 max-w-2xl text-muted-foreground">Share the product, order size, budget, and destination in {displayMarket.locationName} to begin.</p></div><Button size="lg" asChild><Link href={routePath.section("support")}>Post a requirement</Link></Button></CardContent></Card>
         </div>
       </section>
 

@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { Globe2, Mail, MapPinned, PackageCheck } from "lucide-react";
 
 import { chinaServiceNames, indiaServiceNames, serviceSlug } from "@/lib/services";
+import { routePath } from "@/url";
 
 function ServiceList({
   services,
@@ -13,13 +15,13 @@ function ServiceList({
     <ul className="mt-4 grid gap-x-6 gap-y-2 sm:grid-cols-2">
       {services.map((service) => (
         <li key={service}>
-          <a
-            href={`/${marketSlug}/${serviceSlug(service)}`}
+          <Link
+            href={routePath.marketService(marketSlug, serviceSlug(service))}
             className="group inline-flex items-start gap-2 text-sm leading-5 text-slate-300 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
           >
             <span className="mt-2 size-1 shrink-0 rounded-full bg-cyan-300/70 transition-transform group-hover:scale-150" aria-hidden="true" />
             {service}
-          </a>
+          </Link>
         </li>
       ))}
     </ul>
@@ -50,12 +52,12 @@ export function SiteFooter({
       <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
         <div className="grid gap-8 border-b border-white/10 pb-9 lg:grid-cols-[0.7fr_1.3fr]">
           <div>
-            <a href="/" className="inline-flex items-center gap-3 text-xl font-semibold tracking-tight">
+            <Link href={routePath.home} className="inline-flex items-center gap-3 text-xl font-semibold tracking-tight">
               <span className="flex size-10 items-center justify-center rounded-xl border border-white/15 bg-white/10">
                 <Globe2 className="size-5" aria-hidden="true" />
               </span>
               SellersLogin Market
-            </a>
+            </Link>
             <p className="mt-4 max-w-md text-base leading-7 text-slate-300">
               Practical sourcing, verification, procurement, and logistics coordination for buyers in {marketName} working with China and India.
             </p>

@@ -18,6 +18,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import type { LocationCity, LocationState } from "@/data";
 import type { BuyerMarket } from "@/lib/markets";
 import { services } from "@/lib/services";
+import { routePath } from "@/url";
 
 type LocationPageProps = {
   market: BuyerMarket;
@@ -68,7 +69,7 @@ export function LocationPage({ market, state, city }: LocationPageProps) {
               <ChevronRight className="size-4" aria-hidden="true" />
               {city ? (
                 <>
-                  <Link href={`/${market.slug}/${state.slug}`} className="transition-colors hover:text-foreground">{state.name}</Link>
+                  <Link href={routePath.state(market.slug, state.slug)} className="transition-colors hover:text-foreground">{state.name}</Link>
                   <ChevronRight className="size-4" aria-hidden="true" />
                   <span aria-current="page">{city.name}</span>
                 </>
@@ -165,7 +166,7 @@ export function LocationPage({ market, state, city }: LocationPageProps) {
               {state.cities.map((item) => (
                 <Link
                   key={item.slug}
-                  href={`/${market.slug}/${state.slug}/${item.slug}`}
+                  href={routePath.city(market.slug, state.slug, item.slug)}
                   className="group flex items-center justify-between rounded-xl border border-border/60 bg-background px-5 py-4 transition-colors hover:border-blue-300 hover:bg-blue-50/60 dark:hover:border-blue-800 dark:hover:bg-blue-950/20"
                 >
                   <span className="flex items-center gap-3 font-medium"><Building2 className="size-4 text-blue-700 dark:text-blue-300" aria-hidden="true" />{item.name}</span>
@@ -185,7 +186,7 @@ export function LocationPage({ market, state, city }: LocationPageProps) {
             <div className="mt-6 flex flex-wrap gap-3">
               {state.cities.filter((item) => item.slug !== city.slug).map((item) => (
                 <Button key={item.slug} variant="outline" asChild>
-                  <Link href={`/${market.slug}/${state.slug}/${item.slug}`}>{item.name}</Link>
+                  <Link href={routePath.city(market.slug, state.slug, item.slug)}>{item.name}</Link>
                 </Button>
               ))}
             </div>
@@ -201,7 +202,7 @@ export function LocationPage({ market, state, city }: LocationPageProps) {
             {services.map((service) => (
               <Link
                 key={service.slug}
-                href={`/${market.slug}/${service.slug}`}
+                href={routePath.regionalService(market.slug, state.slug, service.slug)}
                 className="group flex items-center justify-between rounded-xl border border-border/60 px-5 py-4 transition-colors hover:border-cyan-300 hover:bg-cyan-50/50 dark:hover:border-cyan-800 dark:hover:bg-cyan-950/20"
               >
                 <span className="font-medium">{service.name}</span>
