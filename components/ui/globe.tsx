@@ -42,7 +42,7 @@ export type GlobeConfig = {
   autoRotateSpeed?: number;
 };
 
-interface WorldProps {
+export interface WorldProps {
   globeConfig?: GlobeConfig;
   data: GlobePosition[];
   className?: string;
@@ -135,7 +135,7 @@ export function World({ globeConfig = {}, data, className }: WorldProps) {
       .arcStartLng((item) => (item as GlobePosition).startLng)
       .arcEndLat((item) => (item as GlobePosition).endLat)
       .arcEndLng((item) => (item as GlobePosition).endLng)
-      .arcColor((item) => (item as GlobePosition).color)
+      .arcColor((item: object) => (item as GlobePosition).color)
       .arcAltitude((item) => (item as GlobePosition).arcAlt)
       .arcStroke(0.3)
       .arcDashLength(config.arcLength)
@@ -154,14 +154,16 @@ export function World({ globeConfig = {}, data, className }: WorldProps) {
           color: point.color,
         })),
       )
-      .ringColor((item) => (item as { color: string }).color)
+      .ringColor((item: object) => (item as { color: string }).color)
       .ringMaxRadius(config.maxRings)
       .ringPropagationSpeed(3)
       .ringRepeatPeriod((config.arcTime * config.arcLength) / config.rings);
 
     const abortController = new AbortController();
     void fetch(COUNTRY_DATA_URL, { signal: abortController.signal })
-      .then((response) => response.json())
+      .then(
+        (response) => response.json() as Promise<{ features: object[] }>,
+      )
       .then((countries: { features: object[] }) => {
         if (abortController.signal.aborted) return;
         world

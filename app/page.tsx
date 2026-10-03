@@ -36,7 +36,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CountryTypewriter } from "@/components/ui/country-typewriter";
-import { World, type GlobePosition } from "@/components/ui/globe";
+import { World, type GlobePosition } from "@/components/ui/globe-client";
 import { Separator } from "@/components/ui/separator";
 
 const trustPoints = [
