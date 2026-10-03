@@ -143,7 +143,7 @@ export default function Home() {
           <div className="flex items-center gap-2">
             <nav className="flex items-center gap-1" aria-label="Main navigation">
               <Button variant="ghost" size="sm" className="hidden sm:inline-flex hover:bg-white/50 dark:hover:bg-white/10" asChild><a href="#how">How it works</a></Button>
-              <Button variant="ghost" size="sm" className="hidden md:inline-flex hover:bg-white/50 dark:hover:bg-white/10" asChild><a href="#categories">Categories</a></Button>
+              <Button variant="ghost" size="sm" className="hidden md:inline-flex hover:bg-white/50 dark:hover:bg-white/10" asChild><a href="#services">Services</a></Button>
               <Button variant="ghost" size="sm" className="hover:bg-white/50 dark:hover:bg-white/10" asChild><a href="#support">Support</a></Button>
             </nav>
             <ThemeToggle />

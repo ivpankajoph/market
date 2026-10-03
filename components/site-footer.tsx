@@ -34,7 +34,14 @@ export function SiteFooter({
   marketSlug?: string;
 }) {
   return (
-    <footer id="services" className="services-footer-bg relative overflow-hidden text-white">
+    <footer
+      id="services"
+      className="relative scroll-mt-16 overflow-hidden text-white"
+      style={{
+        background:
+          "radial-gradient(circle at 12% 18%, rgba(37, 99, 235, 0.26), transparent 32%), radial-gradient(circle at 88% 78%, rgba(6, 182, 212, 0.18), transparent 30%), linear-gradient(135deg, #06142d 0%, #0b2040 48%, #07182f 100%)",
+      }}
+    >
       <div className="pointer-events-none absolute inset-0 opacity-40" aria-hidden="true">
         <div className="absolute -left-20 top-10 size-72 rounded-full bg-blue-500/20 blur-3xl" />
         <div className="absolute -right-20 bottom-0 size-80 rounded-full bg-cyan-400/15 blur-3xl" />
