@@ -3,12 +3,15 @@ import { notFound } from "next/navigation";
 import {
   Check,
   ClipboardCheck,
+  FileCheck2,
   Globe2,
   MapPinned,
   PackageSearch,
+  Route,
   Search,
   ShieldCheck,
   Sparkles,
+  Tags,
 } from "lucide-react";
 
 import { SiteFooter } from "@/components/site-footer";
@@ -45,6 +48,28 @@ export default async function ServicePage({ params }: ServicePageProps) {
   if (!service) notFound();
 
   const isChina = service.origin === "China";
+  const briefDetails = [
+    {
+      icon: FileCheck2,
+      title: "Product specification",
+      description: "Materials, dimensions, packaging, certifications, and reference files.",
+    },
+    {
+      icon: PackageSearch,
+      title: "Order target",
+      description: "Expected quantity, preferred MOQ, sample needs, and reorder plans.",
+    },
+    {
+      icon: Tags,
+      title: "Commercial range",
+      description: "Target unit cost, total budget, payment expectations, and key terms.",
+    },
+    {
+      icon: Route,
+      title: "Delivery plan",
+      description: "Required date, US destination, shipping preference, and final-mile needs.",
+    },
+  ];
 
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -84,20 +109,41 @@ export default async function ServicePage({ params }: ServicePageProps) {
             </div>
           </div>
 
-          <Card className="overflow-hidden border-blue-200/60 bg-[#0b1f3a] py-0 text-white shadow-xl shadow-blue-950/10 dark:border-blue-800/40">
-            <CardContent className="relative p-6 sm:p-8">
-              <div className="mb-3 flex items-center justify-between gap-4">
-                <div><p className="text-sm font-medium text-cyan-300">Built for US buyers</p><h2 className="mt-1 text-xl font-semibold">Nationwide sourcing coordination</h2></div>
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white/10"><MapPinned className="size-5" aria-hidden="true" /></span>
+          <div className="relative py-2 lg:pl-5">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.16em] text-cyan-700 dark:text-cyan-300">Built for US buyers</p>
+                <h2 className="mt-2 text-2xl font-semibold tracking-tight">Nationwide sourcing coordination</h2>
               </div>
-              <img src="/usa-map.png" alt="Map of the United States" width={960} height={594} className="mt-5 h-auto w-full opacity-95" />
-              <div className="mt-4 grid grid-cols-3 gap-2 text-center text-sm">
-                <div className="rounded-lg bg-white/8 p-3"><strong className="block text-lg">50</strong><span className="text-slate-300">States</span></div>
-                <div className="rounded-lg bg-white/8 p-3"><strong className="block text-lg">1</strong><span className="text-slate-300">Workflow</span></div>
-                <div className="rounded-lg bg-white/8 p-3"><strong className="block text-lg">2</strong><span className="text-slate-300">Markets</span></div>
-              </div>
-            </CardContent>
-          </Card>
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-full border border-blue-200/80 bg-background/50 text-blue-700 backdrop-blur-sm dark:border-blue-800/60 dark:text-blue-300"><MapPinned className="size-5" aria-hidden="true" /></span>
+            </div>
+            <img src="/usa-map.png" alt="Map of the United States" width={960} height={594} className="mt-6 h-auto w-full opacity-90 drop-shadow-[0_18px_24px_rgba(15,23,42,0.12)] dark:brightness-110" />
+            <div className="mt-5 grid grid-cols-3 border-y border-blue-200/70 py-4 text-center text-sm dark:border-blue-800/50">
+              <div><strong className="block text-xl text-foreground">50</strong><span className="text-muted-foreground">US states</span></div>
+              <div className="border-x border-blue-200/70 dark:border-blue-800/50"><strong className="block text-xl text-foreground">1</strong><span className="text-muted-foreground">Clear workflow</span></div>
+              <div><strong className="block text-xl text-foreground">2</strong><span className="text-muted-foreground">Markets linked</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-border/50 bg-background py-12 sm:py-14">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-8 lg:grid-cols-[0.72fr_1.28fr] lg:items-start">
+            <div>
+              <Badge variant="outline">A stronger starting brief</Badge>
+              <h2 className="mt-4 text-3xl font-semibold tracking-tight">Share the details that shape the right sourcing plan</h2>
+              <p className="mt-4 max-w-xl leading-7 text-muted-foreground">You do not need a finished technical pack to begin. A clear starting brief helps us focus supplier conversations, compare realistic options, and identify open questions early.</p>
+            </div>
+            <div className="grid gap-x-8 gap-y-7 sm:grid-cols-2">
+              {briefDetails.map(({ icon: Icon, title, description }) => (
+                <div key={title} className="flex gap-4 border-t border-border/70 pt-5">
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300"><Icon className="size-5" aria-hidden="true" /></span>
+                  <div><h3 className="font-semibold">{title}</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">{description}</p></div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
