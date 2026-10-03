@@ -1,10 +1,17 @@
 import type { Metadata } from "next";
+import { countryAlternates } from "@/lib/seo";
+import { routePath, siteOrigin } from "@/url";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteOrigin),
   title: "SellersLogin Market",
   description:
     "A simple global marketplace where buyers and sellers discover trusted business opportunities.",
+  alternates: countryAlternates(
+    routePath.home,
+    (market) => routePath.market(market.slug),
+  ),
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",

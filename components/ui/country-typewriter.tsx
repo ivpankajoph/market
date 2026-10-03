@@ -23,7 +23,7 @@ export function CountryTypewriter({
   pauseDuration?: number;
 }) {
   const [itemIndex, setItemIndex] = useState(0);
-  const [characterCount, setCharacterCount] = useState(0);
+  const [characterCount, setCharacterCount] = useState(items[0]?.text.length ?? 0);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const item = items[itemIndex] ?? { text: "" };

@@ -6,6 +6,7 @@ export const siteOrigin = "https://market.sellerslogin.com";
 
 export const routePath = {
   home: "/",
+  market: (marketSlug: string) => `/${marketSlug}`,
   section: (section: "top" | "how" | "categories" | "support" | "services") =>
     `/#${section}`,
   marketService: (marketSlug: string, serviceSlug: string) =>
@@ -28,6 +29,10 @@ export const sectionPaths = [
   routePath.section("support"),
   routePath.section("services"),
 ] as const;
+
+export const marketPaths = buyerMarkets.map((market) =>
+  routePath.market(market.slug),
+);
 
 export const marketServicePaths = buyerMarkets.flatMap((market) =>
   services.map((service) => routePath.marketService(market.slug, service.slug)),
@@ -64,6 +69,7 @@ const canonicalWebsitePaths = Array.from(
   new Set([
     routePath.home,
     ...sectionPaths,
+    ...marketPaths,
     ...marketServicePaths,
     ...statePaths,
     ...cityPaths,
@@ -72,8 +78,8 @@ const canonicalWebsitePaths = Array.from(
 );
 
 export const legacyRedirectPaths = canonicalWebsitePaths
-  .filter((path) => path.startsWith("/usa/"))
-  .map((path) => path.replace(/^\/usa\//, "/us/"));
+  .filter((path) => path.startsWith("/us/"))
+  .map((path) => path.replace(/^\/us\//, "/usa/"));
 
 export const websitePaths = Array.from(
   new Set([...canonicalWebsitePaths, ...legacyRedirectPaths]),

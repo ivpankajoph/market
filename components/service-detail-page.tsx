@@ -3,7 +3,6 @@ import {
   Check,
   ClipboardCheck,
   FileCheck2,
-  Globe2,
   MapPinned,
   PackageSearch,
   Route,
@@ -14,7 +13,7 @@ import {
 } from "lucide-react";
 
 import { SiteFooter } from "@/components/site-footer";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { SourcePageIntro } from "@/components/source-page-intro";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -73,18 +72,7 @@ export function ServiceDetailPage({ market, service, regionName }: ServiceDetail
 
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-50 border-b border-border/50 bg-background/85 backdrop-blur-xl">
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link href={routePath.home} className="flex items-center gap-2 font-semibold tracking-tight" aria-label="SellersLogin Market home">
-            <span className="flex size-8 items-center justify-center rounded-md border bg-card"><Globe2 className="size-4" aria-hidden="true" /></span>
-            <span>SellersLogin Market</span>
-          </Link>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" asChild><Link href={routePath.section("services")}>All services</Link></Button>
-            <ThemeToggle />
-          </div>
-        </div>
-      </header>
+      <SourcePageIntro title={regionName ? `${service.name} in ${regionName}` : service.name} />
 
       <section className="relative overflow-hidden border-b border-border/50 bg-blue-50/50 dark:bg-blue-950/10">
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
@@ -100,11 +88,11 @@ export function ServiceDetailPage({ market, service, regionName }: ServiceDetail
                 {service.origin}
               </Badge>
             </div>
-            <h1 className="mt-4 max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">{service.name}</h1>
+            <h2 className="mt-4 max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">{service.name}</h2>
             <p className="mt-4 max-w-2xl text-lg leading-8 text-muted-foreground">{service.name} support for buyers in {displayMarket.locationName} who need a clearer, more coordinated way to source internationally.</p>
             <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">{overview}</p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Button size="lg" asChild><Link href={routePath.section("support")}><Search aria-hidden="true" />Post a requirement</Link></Button>
+              <Button size="lg" asChild><a href="https://web.sellerslogin.com/buyers" target="_blank" rel="noopener noreferrer"><Search aria-hidden="true" />Post a requirement</a></Button>
               <Button size="lg" variant="outline" asChild><a href="#process"><ClipboardCheck aria-hidden="true" />See the process</a></Button>
             </div>
           </div>
@@ -184,7 +172,7 @@ export function ServiceDetailPage({ market, service, regionName }: ServiceDetail
 
       <section className="pb-10 sm:pb-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Card className="overflow-hidden border-border/50 bg-blue-100/70 shadow-none dark:bg-blue-950/30"><CardContent className="flex flex-col gap-5 px-6 sm:p-7 lg:flex-row lg:items-center lg:justify-between"><div><Badge variant="secondary"><Sparkles aria-hidden="true" />Start with your requirement</Badge><h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Need help with {service.name.toLowerCase()}?</h2><p className="mt-2 max-w-2xl text-muted-foreground">Share the product, order size, budget, and destination in {displayMarket.locationName} to begin.</p></div><Button size="lg" asChild><Link href={routePath.section("support")}>Post a requirement</Link></Button></CardContent></Card>
+          <Card className="overflow-hidden border-border/50 bg-blue-100/70 shadow-none dark:bg-blue-950/30"><CardContent className="flex flex-col gap-5 px-6 sm:p-7 lg:flex-row lg:items-center lg:justify-between"><div><Badge variant="secondary"><Sparkles aria-hidden="true" />Start with your requirement</Badge><h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Need help with {service.name.toLowerCase()}?</h2><p className="mt-2 max-w-2xl text-muted-foreground">Share the product, order size, budget, and destination in {displayMarket.locationName} to begin.</p></div><Button size="lg" asChild><a href="https://web.sellerslogin.com/buyers" target="_blank" rel="noopener noreferrer">Post a requirement</a></Button></CardContent></Card>
         </div>
       </section>
 

@@ -1,0 +1,194 @@
+"use client";
+
+import { Suspense } from "react";
+import {
+  BadgeCheck,
+  ClipboardList,
+  CreditCard,
+  Globe2,
+  HandCoins,
+  MessageSquareText,
+  PackageSearch,
+  Search,
+  ShieldCheck,
+  Store,
+  Undo2,
+} from "lucide-react";
+import Link from "next/link";
+
+import { InquiryCarousel } from "@/components/inquiry-carousel";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { CountryTypewriter } from "@/components/ui/country-typewriter";
+import { World, type GlobePosition } from "@/components/ui/globe-client";
+import { Separator } from "@/components/ui/separator";
+import inquiryData from "@/data/inquiries.json";
+
+const buyerPortalUrl = "https://web.sellerslogin.com/buyers";
+const sellerPortalUrl = "https://web.sellerslogin.com/sellers";
+
+const trustPoints = [
+  { icon: BadgeCheck, title: "Relevant agent matching", description: "Meet agents experienced in your product category.", tone: "bg-blue-100/70 dark:bg-blue-950/30" },
+  { icon: ShieldCheck, title: "Protected platform payments", description: "Payment safeguards apply to transactions made here.", tone: "bg-cyan-100/70 dark:bg-cyan-950/30" },
+  { icon: HandCoins, title: "Competitive quotations", description: "Compare offers before choosing your sourcing partner.", tone: "bg-indigo-100/70 dark:bg-indigo-950/30" },
+  { icon: Undo2, title: "Refund support", description: "Buyer-package terms include a refund commitment.", tone: "bg-sky-100/70 dark:bg-sky-950/30" },
+];
+
+const steps = [
+  { number: "01", icon: ClipboardList, title: "Post your requirement", description: "Add the product, quantity, specifications, target price, and delivery destination.", tone: "bg-blue-100/60 dark:bg-blue-950/30" },
+  { number: "02", icon: PackageSearch, title: "Receive relevant matches", description: "Your request reaches sourcing agents who already work in that category.", tone: "bg-sky-100/60 dark:bg-sky-950/30" },
+  { number: "03", icon: MessageSquareText, title: "Compare agents and offers", description: "Discuss samples, quotations, production terms, and timelines with interested agents.", tone: "bg-cyan-100/60 dark:bg-cyan-950/30" },
+  { number: "04", icon: CreditCard, title: "Choose and pay securely", description: "Select the right partner and use the platform payment flow for protection.", tone: "bg-indigo-100/60 dark:bg-indigo-950/30" },
+];
+
+const countries = [
+  { text: "China", className: "text-[#DE2910]" },
+  { text: "India", className: "text-[#FF9933]" },
+  { text: "Vietnam", className: "text-[#DA251D]" },
+  { text: "Taiwan", className: "text-[#0055B9] dark:text-[#38BDF8]" },
+  { text: "Africa", className: "text-[#059669] dark:text-[#34D399]" },
+  { text: "Global", className: "text-foreground" },
+];
+
+const globeData: GlobePosition[] = [
+  { order: 1, startLat: 28.6139, startLng: 77.209, endLat: 31.2304, endLng: 121.4737, arcAlt: 0.18, color: "#bfdbfe" },
+  { order: 2, startLat: 21.0285, startLng: 105.8542, endLat: 28.6139, endLng: 77.209, arcAlt: 0.16, color: "#dbeafe" },
+  { order: 3, startLat: 25.033, startLng: 121.5654, endLat: 19.076, endLng: 72.8777, arcAlt: 0.2, color: "#bfdbfe" },
+  { order: 4, startLat: -1.2921, startLng: 36.8219, endLat: 28.6139, endLng: 77.209, arcAlt: 0.25, color: "#dbeafe" },
+  { order: 5, startLat: 31.2304, startLng: 121.4737, endLat: 51.5072, endLng: -0.1276, arcAlt: 0.28, color: "#bfdbfe" },
+  { order: 6, startLat: 19.076, startLng: 72.8777, endLat: 40.7128, endLng: -74.006, arcAlt: 0.3, color: "#dbeafe" },
+];
+
+const globeConfig = {
+  globeColor: "#1d4ed8",
+  polygonColor: "rgba(219,234,254,0.88)",
+  atmosphereColor: "#60a5fa",
+  atmosphereAltitude: 0.08,
+  emissive: "#172554",
+  emissiveIntensity: 0.18,
+  showAtmosphere: true,
+  autoRotate: true,
+  autoRotateSpeed: 0.65,
+  initialPosition: { lat: 20, lng: 78 },
+};
+
+type SourcePageIntroProps = {
+  title?: string;
+};
+
+export function SourcePageIntro({ title }: SourcePageIntroProps) {
+  return (
+    <>
+      <header className="sticky top-0 z-50 overflow-hidden border-b border-border/40 hero-ambient-flow backdrop-blur-md">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+          <div className="animate-float-slow absolute -left-10 -top-12 h-36 w-36 rounded-full bg-blue-300/25 blur-2xl dark:bg-blue-600/15" />
+          <div className="animate-float-reverse absolute right-12 -top-10 h-36 w-36 rounded-full bg-indigo-200/35 blur-2xl dark:bg-indigo-600/15" />
+        </div>
+        <div className="relative z-10 mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight" aria-label="SellersLogin Market home">
+            <span className="flex size-8 items-center justify-center rounded-md border border-border/50 bg-white/70 shadow-xs dark:bg-black/20">
+              <Globe2 className="size-4" aria-hidden="true" />
+            </span>
+            <span>SellersLogin Market</span>
+          </Link>
+          <div className="flex items-center gap-2">
+            <nav className="flex items-center gap-1" aria-label="Main navigation">
+              <Button variant="ghost" size="sm" className="hidden sm:inline-flex hover:bg-white/50 dark:hover:bg-white/10" asChild><a href="#how">How it works</a></Button>
+              <Button variant="ghost" size="sm" className="hidden md:inline-flex hover:bg-white/50 dark:hover:bg-white/10" asChild><Link href="/#services">Services</Link></Button>
+              <Button variant="ghost" size="sm" className="hover:bg-white/50 dark:hover:bg-white/10" asChild><Link href="/#support">Support</Link></Button>
+            </nav>
+            <ThemeToggle />
+          </div>
+        </div>
+      </header>
+
+      <section id="top" className="relative overflow-hidden scroll-mt-24 hero-ambient-flow">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+          <div className="animate-float-slow absolute -left-20 -top-20 h-80 w-80 rounded-full bg-blue-300/30 blur-3xl dark:bg-blue-600/15 sm:h-96 sm:w-96" />
+          <div className="animate-float-reverse absolute -right-20 top-10 h-80 w-80 rounded-full bg-indigo-200/40 blur-3xl dark:bg-indigo-600/15 sm:h-96 sm:w-96" />
+          <div className="animate-float-drift absolute left-1/4 top-1/3 h-72 w-72 rounded-full bg-teal-200/30 blur-3xl dark:bg-teal-600/15 sm:h-80 sm:w-80" />
+          <div className="animate-float-slow absolute right-1/4 bottom-16 h-64 w-64 rounded-full bg-rose-200/25 blur-3xl dark:bg-rose-600/10 sm:h-72 sm:w-72" />
+        </div>
+
+        <div className="relative z-10 mx-auto flex max-w-5xl flex-col items-center px-4 pt-4 text-center sm:px-6">
+          <h1 className="mt-5 flex max-w-5xl flex-col items-center text-balance text-4xl font-semibold tracking-tight sm:block sm:text-6xl lg:text-7xl">
+            {title ? (
+              title
+            ) : (
+              <>
+                <span>Source From</span>{" "}
+                <CountryTypewriter items={countries} className="min-w-[8ch] justify-center px-0 text-foreground sm:justify-start" typingSpeed={40} deletingSpeed={22} pauseDuration={480} />
+              </>
+            )}
+          </h1>
+
+          <div className="mt-6 flex w-full flex-col justify-center gap-3 sm:w-auto sm:flex-row">
+            <Button size="lg" asChild>
+              <a href={buyerPortalUrl} target="_blank" rel="noopener noreferrer">I&apos;m a buyer<Search aria-hidden="true" /></a>
+            </Button>
+            <Button size="lg" variant="outline" asChild>
+              <a href={sellerPortalUrl} target="_blank" rel="noopener noreferrer">I&apos;m a seller<Store aria-hidden="true" /></a>
+            </Button>
+          </div>
+        </div>
+
+        <div className="relative z-10 mx-auto mt-2 h-72 max-w-7xl overflow-hidden sm:mt-3 sm:h-80" aria-label="Interactive rotating globe showing worldwide trade">
+          <Suspense fallback={<div className="h-full w-full" />}>
+            <World
+              className="absolute left-1/2 -top-16 h-[40rem] w-[40rem] -translate-x-1/2 sm:-top-20 sm:h-[44rem] sm:w-[44rem]"
+              data={globeData}
+              globeConfig={globeConfig}
+            />
+          </Suspense>
+        </div>
+        <Separator />
+      </section>
+
+      <section className="bg-sky-50/25 py-6 dark:bg-sky-950/5 sm:py-8" aria-label="Platform assurances">
+        <div className="mx-auto grid max-w-7xl gap-4 px-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-4 lg:px-8">
+          {trustPoints.map((point) => (
+            <Card key={point.title} className={`gap-4 border-border/40 py-5 shadow-none ${point.tone}`}>
+              <CardContent className="flex gap-3 px-5">
+                <point.icon className="mt-0.5 size-5 shrink-0" aria-hidden="true" />
+                <div><h2 className="font-medium">{point.title}</h2><p className="mt-1 text-sm leading-5 text-muted-foreground">{point.description}</p></div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <section id="how" className="scroll-mt-20 border-y border-border/50 bg-blue-50/35 py-10 dark:bg-blue-950/10 sm:py-12">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="max-w-2xl"><Badge variant="outline">How it works</Badge><h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">From requirement to sourcing partner</h2><p className="mt-4 text-base leading-7 text-muted-foreground">A focused four-step path keeps each sourcing decision clear.</p></div>
+          <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {steps.map((step) => (
+              <Card key={step.number} className={`h-full border-border/40 shadow-none ${step.tone}`}><CardHeader><div className="flex items-center justify-between"><span className="flex size-10 items-center justify-center rounded-md bg-white/60 dark:bg-black/10"><step.icon className="size-5" aria-hidden="true" /></span><Badge variant="secondary">{step.number}</Badge></div><CardTitle className="mt-3">{step.title}</CardTitle><CardDescription className="leading-6">{step.description}</CardDescription></CardHeader></Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="requests" className="scroll-mt-20 border-b border-border/50 bg-background py-10 sm:py-12">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div className="max-w-2xl">
+              <Badge variant="outline">Live buyer requirements</Badge>
+              <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">Explore active sourcing enquiries</h2>
+              <p className="mt-4 text-base leading-7 text-muted-foreground">Browse recent buyer requests and open a card to review the complete sourcing requirement.</p>
+            </div>
+            <Badge variant="secondary" className="w-fit px-3 py-1.5 text-sm">{inquiryData.length} requests</Badge>
+          </div>
+          <InquiryCarousel />
+        </div>
+      </section>
+    </>
+  );
+}

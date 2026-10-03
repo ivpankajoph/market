@@ -5,7 +5,9 @@ import { LocationPage } from "@/components/location-page";
 import { ServiceDetailPage } from "@/components/service-detail-page";
 import { getLocationState, stateRouteParams } from "@/data";
 import { buyerMarkets, getBuyerMarket } from "@/lib/markets";
+import { countryAlternates } from "@/lib/seo";
 import { getService, services } from "@/lib/services";
+import { routePath } from "@/url";
 
 type CountryServicePageProps = {
   params: Promise<{ country: string; slug: string }>;
@@ -31,12 +33,21 @@ export async function generateMetadata({ params }: CountryServicePageProps): Pro
     return {
       title: `Sourcing Services in ${state.name}, ${market.name} | SellersLogin Market`,
       description: `China and India sourcing support for buyers in ${state.name}, ${market.locationName}, including supplier research, verification, procurement, and logistics coordination.`,
+      alternates: countryAlternates(
+        routePath.state(market.slug, state.slug),
+        (alternateMarket) => routePath.market(alternateMarket.slug),
+      ),
     };
   }
 
   return {
     title: `${service!.name} for ${market.name} Buyers | SellersLogin Market`,
     description: `${service!.name} support for buyers in ${market.locationName} who need a clearer, more coordinated way to source internationally.`,
+    alternates: countryAlternates(
+      routePath.marketService(market.slug, service!.slug),
+      (alternateMarket) =>
+        routePath.marketService(alternateMarket.slug, service!.slug),
+    ),
   };
 }
 

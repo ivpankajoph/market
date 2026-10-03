@@ -4,14 +4,13 @@ import {
   Building2,
   Check,
   ChevronRight,
-  Globe2,
   MapPin,
   MapPinned,
   Search,
 } from "lucide-react";
 
 import { SiteFooter } from "@/components/site-footer";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { SourcePageIntro } from "@/components/source-page-intro";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -39,22 +38,7 @@ export function LocationPage({ market, state, city }: LocationPageProps) {
 
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-50 border-b border-border/50 bg-background/85 backdrop-blur-xl">
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight" aria-label="SellersLogin Market home">
-            <span className="flex size-8 items-center justify-center rounded-md border bg-card">
-              <Globe2 className="size-4" aria-hidden="true" />
-            </span>
-            <span>SellersLogin Market</span>
-          </Link>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/#services">All services</Link>
-            </Button>
-            <ThemeToggle />
-          </div>
-        </div>
-      </header>
+      <SourcePageIntro title={`Sourcing Services in ${placeName}`} />
 
       <section className="relative overflow-hidden border-b border-border/50 bg-blue-50/50 dark:bg-blue-950/10">
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
@@ -86,9 +70,9 @@ export function LocationPage({ market, state, city }: LocationPageProps) {
               </Badge>
             </div>
 
-            <h1 className="mt-4 max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
+            <h2 className="mt-4 max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
               Sourcing Services in {placeName}
-            </h1>
+            </h2>
             <p className="mt-4 max-w-2xl text-lg leading-8 text-muted-foreground">
               Find and coordinate China and India sourcing support for buyers in {placeName}, {market.locationName}.
             </p>
@@ -97,7 +81,7 @@ export function LocationPage({ market, state, city }: LocationPageProps) {
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Button size="lg" asChild>
-                <Link href="/#support"><Search aria-hidden="true" />Post a requirement</Link>
+                <a href="https://web.sellerslogin.com/buyers" target="_blank" rel="noopener noreferrer"><Search aria-hidden="true" />Post a requirement</a>
               </Button>
               {!city && state.cities.length > 0 && (
                 <Button size="lg" variant="outline" asChild>

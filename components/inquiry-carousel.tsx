@@ -7,6 +7,7 @@ import {
   Eye,
   Globe2,
   Mail,
+  MapPin,
   PackageSearch,
   Phone,
   UserRound,
@@ -29,6 +30,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import inquiryData from "@/data/inquiries.json";
 
 export type Inquiry = {
   id: number;
@@ -70,25 +72,107 @@ function maskPhone(value: string) {
   return `${clean.slice(0, Math.min(visible, clean.length))}xxxxxx`;
 }
 
-function countryBadge(value: string) {
-  const normalized = value.trim().toLowerCase();
-
-  if (normalized === "china") return { flagSrc: "/flags/china.png", label: "China" };
-  if (normalized === "india") return { flagSrc: "/flags/india.png", label: "India" };
-  if (normalized.includes("any")) return { flagSrc: null, label: "Any country" };
-  return { flagSrc: null, label: value.trim() || "Buyer request" };
+function maskEmail(value: string) {
+  const clean = value.trim();
+  if (!clean) return "Not provided";
+  const atIndex = clean.indexOf("@");
+  if (atIndex > 1) {
+    return `${clean.slice(0, 2)}xxxxxx${clean.slice(atIndex)}`;
+  }
+  return `${clean.slice(0, Math.min(3, clean.length))}xxxxxx`;
 }
 
-function FlagMark({ flagSrc }: { flagSrc: string | null }) {
-  if (!flagSrc) return <Globe2 className="size-4" aria-hidden="true" />;
+function maskAddress(value: string) {
+  const clean = value.trim();
+  if (!clean) return "Not provided";
+  const parts = clean
+    .split(",")
+    .map((p) => p.trim())
+    .filter(Boolean);
+  if (parts.length >= 3) {
+    const publicArea = parts.slice(-2).join(", ");
+    return `xxxx, xxxx, ${publicArea}`;
+  }
+  if (parts.length === 2) {
+    return `xxxx, ${parts[1]}`;
+  }
+  return `${clean.slice(0, Math.min(4, clean.length))}xxxxxx`;
+}
 
+function sourceCountry(value: string) {
+  if (value.trim().toLowerCase().includes("any")) return "Any listed country";
+  return value.trim() || "Not specified";
+}
+
+function buyerCountry(inquiry: Inquiry) {
+  const address = inquiry.address.toLowerCase();
+  const contact = `${inquiry.mobile} ${inquiry.whatsapp}`.replace(/[^0-9+]/g, "");
+
+  const addressCountries: Array<[RegExp, string]> = [
+    [/\b(pakistan|karachi)\b/, "Pakistan"],
+    [/\b(bangladesh|dhaka)\b/, "Bangladesh"],
+    [/\b(nigeria|lagos)\b/, "Nigeria"],
+    [/\b(south africa|drummond)\b/, "South Africa"],
+    [/\b(usa|united states|philadelphia|pennsylvania|myrtle beach|yonkers|new york|roswell)\b|\broswell,?\s+ga\b/, "United States"],
+    [/\b(india|delhi|mumbai|maharashtra|kerala|karnataka|bengaluru|bangalore|hyderabad|telangana|rajasthan|gujarat|tamil nadu|uttar pradesh|west bengal|punjab|haryana|odisha|assam|bihar|jharkhand|noida|surat|ranchi|ernakulam|himatnagar|jamnagar|gurgaon|faridabad|ghaziabad|pune|chennai|kolkata|ahmedabad|jaipur|lucknow|indore|bhopal|patna|vadodara|ludhiana|agra|nashik|varanasi|meerut)\b/, "India"],
+  ];
+
+  const addressMatch = addressCountries.find(([pattern]) => pattern.test(address));
+  if (addressMatch) return addressMatch[1];
+  if (/\b[1-9][0-9]{5}\b/.test(address)) return "India";
+  if (/^\+?880/.test(contact)) return "Bangladesh";
+  if (/^\+?92/.test(contact)) return "Pakistan";
+  if (/^\+?234/.test(contact)) return "Nigeria";
+  if (/^\+?27/.test(contact)) return "South Africa";
+  if (/^\+?1\b/.test(contact) || contact.startsWith("1")) {
+    if (contact.length >= 10 && !contact.startsWith("91")) return "United States";
+  }
+  return "India";
+}
+
+function getCountryFlag(countryName: string): string | null {
+  const normalized = countryName.trim().toLowerCase();
+  if (normalized.includes("india")) return "/flags/india.svg";
+  if (normalized.includes("china")) return "/flags/china.svg";
+  if (
+    normalized.includes("united states") ||
+    normalized.includes("usa") ||
+    normalized === "us"
+  )
+    return "/flags/united-states.svg";
+  if (normalized.includes("pakistan")) return "/flags/pakistan.svg";
+  if (normalized.includes("bangladesh")) return "/flags/bangladesh.svg";
+  if (normalized.includes("south africa")) return "/flags/south-africa.svg";
+  if (normalized.includes("nigeria")) return "/flags/nigeria.svg";
+  if (normalized.includes("vietnam")) return "/flags/vietnam.svg";
+  if (normalized.includes("germany")) return "/flags/germany.svg";
+  if (normalized.includes("united kingdom") || normalized === "uk")
+    return "/flags/uk.svg";
+  if (normalized.includes("australia")) return "/flags/australia.svg";
+  if (normalized.includes("canada")) return "/flags/canada.svg";
+  if (normalized.includes("emirates") || normalized === "uae")
+    return "/flags/uae.svg";
+  if (normalized.includes("new zealand")) return "/flags/new-zealand.svg";
+  return null;
+}
+
+function CountryFlagMark({ countryName }: { countryName: string }) {
+  const flagSrc = getCountryFlag(countryName);
+  if (!flagSrc) {
+    return (
+      <Globe2
+        className="size-3.5 shrink-0 text-muted-foreground"
+        aria-hidden="true"
+      />
+    );
+  }
   return (
     <img
       src={flagSrc}
       alt=""
-      width={24}
-      height={16}
-      className="h-4 w-6 rounded-[2px] border border-black/10 object-cover shadow-xs"
+      width={18}
+      height={12}
+      className="inline-block h-3 w-4.5 shrink-0 rounded-[2px] border border-black/15 object-cover shadow-2xs dark:border-white/20"
       aria-hidden="true"
     />
   );
@@ -105,7 +189,11 @@ function Field({ label, value }: { label: string; value: string }) {
   );
 }
 
-export function InquiryCarousel({ inquiries }: { inquiries: Inquiry[] }) {
+export function InquiryCarousel({
+  inquiries = inquiryData as Inquiry[],
+}: {
+  inquiries?: Inquiry[];
+}) {
   const [selected, setSelected] = React.useState<Inquiry | null>(null);
   const [carouselApi, setCarouselApi] = React.useState<CarouselApi>();
   const carouselRoot = React.useRef<HTMLDivElement>(null);
@@ -161,7 +249,8 @@ export function InquiryCarousel({ inquiries }: { inquiries: Inquiry[] }) {
 
         <CarouselContent className="-ml-3 md:-ml-4">
           {inquiries.map((inquiry, index) => {
-            const country = countryBadge(inquiry.importFrom);
+            const buyerFrom = buyerCountry(inquiry);
+            const sourceFrom = sourceCountry(inquiry.importFrom);
 
             return (
               <CarouselItem
@@ -172,12 +261,24 @@ export function InquiryCarousel({ inquiries }: { inquiries: Inquiry[] }) {
                 className={`h-full min-h-72 border-white/60 shadow-none ${cardTones[index % cardTones.length]}`}
               >
                 <CardContent className="flex h-full flex-col px-5">
-                  <div className="mb-5 flex items-center justify-between gap-3">
-                    <Badge className="bg-white/75 text-foreground shadow-none hover:bg-white/75 dark:bg-black/20">
-                      <FlagMark flagSrc={country.flagSrc} />
-                      {country.label}
-                    </Badge>
-                    <span className="text-sm font-medium text-muted-foreground">
+                  <div className="mb-4 flex items-start justify-between gap-2 border-b border-black/5 pb-3 dark:border-white/10">
+                    <div className="flex min-w-0 flex-col gap-1.5">
+                      <div className="flex items-center gap-1.5 text-xs leading-tight text-muted-foreground">
+                        <span>Buyers From :</span>
+                        <span className="flex items-center gap-1 font-semibold text-foreground">
+                          <CountryFlagMark countryName={buyerFrom} />
+                          <span className="truncate">{buyerFrom}</span>
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs leading-tight text-muted-foreground">
+                        <span>Source From :</span>
+                        <span className="flex items-center gap-1 font-semibold text-foreground">
+                          <CountryFlagMark countryName={sourceFrom} />
+                          <span className="truncate">{sourceFrom}</span>
+                        </span>
+                      </div>
+                    </div>
+                    <span className="shrink-0 text-sm font-medium text-muted-foreground">
                       #{String(inquiry.id).padStart(3, "0")}
                     </span>
                   </div>
@@ -230,18 +331,21 @@ export function InquiryCarousel({ inquiries }: { inquiries: Inquiry[] }) {
           <DialogContent className="grid max-h-[92dvh] grid-rows-[auto_minmax(0,1fr)] gap-0 overflow-hidden border-border/60 p-0 sm:max-w-3xl">
             <DialogHeader className="border-b border-border/60 bg-blue-100/70 p-6 pr-14 dark:bg-blue-950/40">
               <div className="flex flex-wrap items-center gap-2">
-                <Badge>
-                  <FlagMark
-                    flagSrc={countryBadge(selected.importFrom).flagSrc}
-                  />
-                  {countryBadge(selected.importFrom).label}
+                <Badge className="flex items-center gap-1.5">
+                  <span>Buyers From :</span>
+                  <CountryFlagMark countryName={buyerCountry(selected)} />
+                  <span>{buyerCountry(selected)}</span>
+                </Badge>
+                <Badge variant="secondary" className="flex items-center gap-1.5">
+                  <span>Source From :</span>
+                  <CountryFlagMark countryName={sourceCountry(selected.importFrom)} />
+                  <span>{sourceCountry(selected.importFrom)}</span>
                 </Badge>
                 <Badge variant="outline" className="bg-background/60">
                   Request #{String(selected.id).padStart(3, "0")}
                 </Badge>
-             
               </div>
-              <DialogTitle className="mt-2 text-2xl leading-tight">{selected.name}</DialogTitle>
+              <DialogTitle className="mt-2 text-2xl leading-tight">{maskName(selected.name)}</DialogTitle>
           
             </DialogHeader>
 
@@ -260,12 +364,12 @@ export function InquiryCarousel({ inquiries }: { inquiries: Inquiry[] }) {
                   <UserRound className="size-4" aria-hidden="true" /> Contact details
                 </h3>
                 <dl className="mt-3 grid gap-3 sm:grid-cols-2">
-                  <Field label="Full name" value={selected.name} />
-                  <Field label="Email (not a column in the source sheet)" value={selected.email || "Not provided"} />
-                  <Field label="Mobile number with country code" value={selected.mobile} />
-                  <Field label="WhatsApp number with country code" value={selected.whatsapp} />
+                  <Field label="Full name" value={maskName(selected.name)} />
+                  <Field label="Email" value={maskEmail(selected.email)} />
+                  <Field label="Mobile number with country code" value={maskPhone(selected.mobile)} />
+                  <Field label="WhatsApp number with country code" value={maskPhone(selected.whatsapp)} />
                   <div className="sm:col-span-2">
-                    <Field label="Full address with pin code" value={selected.address} />
+                    <Field label="Full address with pin code" value={maskAddress(selected.address)} />
                   </div>
                 </dl>
               </section>

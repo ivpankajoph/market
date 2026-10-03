@@ -141,7 +141,7 @@ export const locationData: CountryLocations[] = [
     ["Schleswig-Holstein", ["Kiel", "Lubeck"]],
     ["Thuringia", ["Erfurt", "Jena"]],
   ]),
-  country("usa", [
+  country("us", [
     ["Alabama", ["Birmingham", "Montgomery"]],
     ["Alaska", ["Anchorage", "Fairbanks"]],
     ["Arizona", ["Phoenix", "Tucson"]],

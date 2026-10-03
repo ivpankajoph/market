@@ -7,7 +7,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 import { cn } from "@/lib/utils";
 
-const COUNTRY_DATA_URL = "https://assets.aceternity.com/globe.json";
+const COUNTRY_DATA_URL = "/globe.json";
 
 export type GlobePosition = {
   order: number;
@@ -93,7 +93,7 @@ export function World({ globeConfig = {}, data, className }: WorldProps) {
     renderer.domElement.className = "block h-full w-full";
     container.appendChild(renderer.domElement);
 
-    const world = new ThreeGlobe({ waitForGlobeReady: true, animateIn: true });
+    const world = new ThreeGlobe({ waitForGlobeReady: false, animateIn: true });
     const material = world.globeMaterial() as THREE.MeshPhongMaterial;
     material.color = new THREE.Color(config.globeColor);
     material.emissive = new THREE.Color(config.emissive);

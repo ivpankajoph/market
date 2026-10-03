@@ -5,8 +5,9 @@ import { LocationPage } from "@/components/location-page";
 import { ServiceDetailPage } from "@/components/service-detail-page";
 import { cityRouteParams, getLocationCity, getLocationState } from "@/data";
 import { getBuyerMarket } from "@/lib/markets";
+import { countryAlternates } from "@/lib/seo";
 import { getService } from "@/lib/services";
-import { regionalServiceRouteParams } from "@/url";
+import { regionalServiceRouteParams, routePath } from "@/url";
 
 type CityPageProps = {
   params: Promise<{ country: string; slug: string; city: string }>;
@@ -33,12 +34,21 @@ export async function generateMetadata({ params }: CityPageProps): Promise<Metad
     return {
       title: `${service.name} in ${state.name}, ${market.name} | SellersLogin Market`,
       description: `${service.name} support for buyers in ${state.name}, ${market.locationName}, with coordinated sourcing, verification, procurement, and logistics support.`,
+      alternates: countryAlternates(
+        routePath.regionalService(market.slug, state.slug, service.slug),
+        (alternateMarket) =>
+          routePath.marketService(alternateMarket.slug, service.slug),
+      ),
     };
   }
 
   return {
     title: `Sourcing Services in ${city!.name}, ${state.name} | SellersLogin Market`,
     description: `China and India sourcing support for buyers in ${city!.name}, ${state.name}, ${market.locationName}, from supplier research to logistics coordination.`,
+    alternates: countryAlternates(
+      routePath.city(market.slug, state.slug, city!.slug),
+      (alternateMarket) => routePath.market(alternateMarket.slug),
+    ),
   };
 }
 
