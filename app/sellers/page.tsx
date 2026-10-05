@@ -16,6 +16,7 @@ import {
   Globe,
   Globe2,
   Layers,
+  Loader2,
   Mail,
   MapPin,
   Package,
@@ -547,6 +548,15 @@ const formSteps = [
   { id: 5, title: "Legal, Tax & Banking", icon: CreditCard, desc: "Country KYC & international payouts" },
 ];
 
+const SELLER_SESSION_DRAFT_KEY = "market-sellers-session-draft-v1";
+
+interface SellerSessionDraft {
+  version: 1;
+  formData: Record<string, unknown>;
+  currentStep: number;
+  hasChosenRoles: boolean;
+}
+
 interface ProductItem {
   id: string;
   name: string;
@@ -586,10 +596,14 @@ export default function SellersPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [paymentDetails, setPaymentDetails] = useState<MarketPaymentDetails | null>(null);
   const [draftMessage, setDraftMessage] = useState("");
+  const [registrationBlockedMessage, setRegistrationBlockedMessage] = useState("");
+  const [isDraftHydrated, setIsDraftHydrated] = useState(false);
   const draftCredentials = useRef<MarketDraftCredentials | null>(null);
   const draftQueue = useRef<Promise<void>>(Promise.resolve());
+  const pendingDraftSaves = useRef(0);
 
   // Step 1: Basic Info
   const [titleOfServices, setTitleOfServices] = useState("");
@@ -704,65 +718,125 @@ export default function SellersPage() {
   }, []);
 
   useEffect(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem("market-sellers-draft") || "null") as MarketDraftCredentials | null;
-      draftCredentials.current = saved;
-      if (saved?.draftId && saved?.draftToken) {
-        void getMarketDraft("sellers", saved).then((result) => {
-          const data = result.data?.formData;
-          if (!data) return;
-          const str = (key: string) => typeof data[key] === "string" ? data[key] as string : "";
-          const arr = (key: string) => Array.isArray(data[key]) ? data[key] as string[] : [];
-          setSelectedRoles(arr("selectedRoles")); setSelectedSourcingTypes(arr("selectedSourcingTypes"));
-          setTitleOfServices(str("titleOfServices")); setChargeType(data.chargeType === "fixed" ? "fixed" : "hourly");
-          setHourlyCharge(str("hourlyCharge") || hourlyRateOptions[2]); setCustomHourlyCharge(str("customHourlyCharge"));
-          setFixedCharge(str("fixedCharge") || fixedRateOptions[1]); setCustomFixedCharge(str("customFixedCharge"));
-          setCompanyName(str("companyName")); setLegalBusinessName(str("legalBusinessName"));
-          setBusinessRole(str("businessRole") || "Manufacturer"); setAboutCompany(str("aboutCompany"));
-          setYearOfEstablishment(str("yearOfEstablishment")); setContactName(str("contactName"));
-          setJobTitle(str("jobTitle")); setEmail(str("email")); setCountryCode(str("countryCode") || "+91");
-          setCustomCountryCode(str("customCountryCode")); setWhatsapp(str("whatsapp")); setWebsite(str("website"));
-          setStreetAddress(str("streetAddress")); setLocationLandmark(str("locationLandmark"));
-          setCountry(str("country") || "India"); setCustomCountry(str("customCountry")); setState(str("state"));
-          setCity(str("city")); setPincode(str("pincode"));
-          setProducts(Array.isArray(data.products) ? data.products as ProductItem[] : []);
-          setTargetRegions(arr("targetRegions")); setCustomRegion(str("customRegion"));
-          setMoqCapability(str("moqCapability") || moqOptions[0]); setCustomMoq(str("customMoq"));
-          setTurnaroundTime(str("turnaroundTime") || turnaroundTimeOptions[0]);
-          setCustomTurnaroundTime(str("customTurnaroundTime")); setSelectedIncoterms(arr("selectedIncoterms"));
-          setSamplePolicy(str("samplePolicy") || "Free Sample (Buyer Pays Freight)");
-          setSourcingRegions(str("sourcingRegions")); setAuditingExpertise(arr("auditingExpertise"));
-          setNetworkSize(str("networkSize") || "10 to 50 Verified Factories"); setServiceScope(str("serviceScope"));
-          setTechStack(str("techStack")); setServicePackages(str("servicePackages")); setCaseStudies(str("caseStudies"));
-          setTeamSize(str("teamSize") || teamSizeOptions[0]); setQcCount(str("qcCount"));
-          setSourcingStaffCount(str("sourcingStaffCount")); setFacilityDetails(str("facilityDetails"));
-          setCertificates(Array.isArray(data.certificates) ? data.certificates as CertificateItem[] : []);
-          setKycJurisdictionTab(str("kycJurisdictionTab")); setPanNumber(str("panNumber"));
-          setGstinNumber(str("gstinNumber")); setMsmeUdyam(str("msmeUdyam")); setCinNumber(str("cinNumber"));
-          setIecCode(str("iecCode")); setEinNumber(str("einNumber")); setStateLicense(str("stateLicense"));
-          setUsResaleCert(str("usResaleCert")); setUkCompaniesHouse(str("ukCompaniesHouse"));
-          setUkVatNumber(str("ukVatNumber")); setUkUtr(str("ukUtr")); setEuVatNumber(str("euVatNumber"));
-          setEuEoriNumber(str("euEoriNumber")); setEuCommercialRegister(str("euCommercialRegister"));
-          setChinaUscc(str("chinaUscc")); setChinaBusinessLicense(str("chinaBusinessLicense"));
-          setChinaCustomsCode(str("chinaCustomsCode")); setLocalTaxId(str("localTaxId"));
-          setOtherBusinessReg(str("otherBusinessReg")); setUploadedKycDoc(str("uploadedKycDoc") || null);
-          setAccountHolder(str("accountHolder")); setBankName(str("bankName"));
-          setAccountOrIban(str("accountOrIban")); setSwiftCode(str("swiftCode"));
-          setSettlementCurrencies(arr("settlementCurrencies"));
-          setWithholdingTaxType(str("withholdingTaxType") || withholdingTaxDocOptions[0]);
-          setTaxResidencyDocName(str("taxResidencyDocName") || null);
-          setAgreedTerms(Boolean(data.agreedTerms)); setAgreedLeadSharing(Boolean(data.agreedLeadSharing));
-          setHasChosenRoles(arr("selectedRoles").length > 0);
-          setCurrentStep(Math.min(Math.max(result.data?.currentStep || 1, 1), formSteps.length));
-          setDraftMessage("Saved draft restored. Please verify your email and WhatsApp again before payment.");
-        }).catch(() => {
-          localStorage.removeItem("market-sellers-draft");
-          draftCredentials.current = null;
-        });
+    let isMounted = true;
+
+    const restoreDraft = (
+      data: Record<string, unknown>,
+      restoredStep: number,
+      restoredHasChosenRoles?: boolean,
+      restoreVerification = false,
+    ) => {
+      if (!isMounted) return;
+
+      const str = (key: string) => typeof data[key] === "string" ? data[key] as string : "";
+      const arr = (key: string) => Array.isArray(data[key]) ? data[key] as string[] : [];
+      setSelectedRoles(arr("selectedRoles")); setSelectedSourcingTypes(arr("selectedSourcingTypes"));
+      setTitleOfServices(str("titleOfServices")); setChargeType(data.chargeType === "fixed" ? "fixed" : "hourly");
+      setHourlyCharge(str("hourlyCharge") || hourlyRateOptions[2]); setCustomHourlyCharge(str("customHourlyCharge"));
+      setFixedCharge(str("fixedCharge") || fixedRateOptions[1]); setCustomFixedCharge(str("customFixedCharge"));
+      setCompanyName(str("companyName")); setLegalBusinessName(str("legalBusinessName"));
+      setBusinessRole(str("businessRole") || "Manufacturer"); setAboutCompany(str("aboutCompany"));
+      setYearOfEstablishment(str("yearOfEstablishment")); setContactName(str("contactName"));
+      setJobTitle(str("jobTitle")); setEmail(str("email")); setCountryCode(str("countryCode") || "+91");
+      setCustomCountryCode(str("customCountryCode")); setWhatsapp(str("whatsapp")); setWebsite(str("website"));
+      setStreetAddress(str("streetAddress")); setLocationLandmark(str("locationLandmark"));
+      setCountry(str("country") || "India"); setCustomCountry(str("customCountry")); setState(str("state"));
+      setCity(str("city")); setPincode(str("pincode"));
+      setProducts(Array.isArray(data.products) ? data.products as ProductItem[] : []);
+      setTargetRegions(arr("targetRegions")); setCustomRegion(str("customRegion"));
+      setMoqCapability(str("moqCapability") || moqOptions[0]); setCustomMoq(str("customMoq"));
+      setTurnaroundTime(str("turnaroundTime") || turnaroundTimeOptions[0]);
+      setCustomTurnaroundTime(str("customTurnaroundTime")); setSelectedIncoterms(arr("selectedIncoterms"));
+      setSamplePolicy(str("samplePolicy") || "Free Sample (Buyer Pays Freight)");
+      setSourcingRegions(str("sourcingRegions")); setAuditingExpertise(arr("auditingExpertise"));
+      setNetworkSize(str("networkSize") || "10 to 50 Verified Factories"); setServiceScope(str("serviceScope"));
+      setTechStack(str("techStack")); setServicePackages(str("servicePackages")); setCaseStudies(str("caseStudies"));
+      setTeamSize(str("teamSize") || teamSizeOptions[0]); setQcCount(str("qcCount"));
+      setSourcingStaffCount(str("sourcingStaffCount")); setFacilityDetails(str("facilityDetails"));
+      setCertificates(Array.isArray(data.certificates) ? data.certificates as CertificateItem[] : []);
+      setCertDropdown(str("certDropdown") || presetCertifications[0]);
+      setCertCustomName(str("certCustomName")); setCertIssuer(str("certIssuer"));
+      setCertFileName(str("certFileName") || null);
+      setKycJurisdictionTab(str("kycJurisdictionTab")); setPanNumber(str("panNumber"));
+      setGstinNumber(str("gstinNumber")); setMsmeUdyam(str("msmeUdyam")); setCinNumber(str("cinNumber"));
+      setIecCode(str("iecCode")); setEinNumber(str("einNumber")); setStateLicense(str("stateLicense"));
+      setUsResaleCert(str("usResaleCert")); setUkCompaniesHouse(str("ukCompaniesHouse"));
+      setUkVatNumber(str("ukVatNumber")); setUkUtr(str("ukUtr")); setEuVatNumber(str("euVatNumber"));
+      setEuEoriNumber(str("euEoriNumber")); setEuCommercialRegister(str("euCommercialRegister"));
+      setChinaUscc(str("chinaUscc")); setChinaBusinessLicense(str("chinaBusinessLicense"));
+      setChinaCustomsCode(str("chinaCustomsCode")); setLocalTaxId(str("localTaxId"));
+      setOtherBusinessReg(str("otherBusinessReg")); setUploadedKycDoc(str("uploadedKycDoc") || null);
+      setAccountHolder(str("accountHolder")); setBankName(str("bankName"));
+      setAccountOrIban(str("accountOrIban")); setSwiftCode(str("swiftCode"));
+      setSettlementCurrencies(arr("settlementCurrencies"));
+      setWithholdingTaxType(str("withholdingTaxType") || withholdingTaxDocOptions[0]);
+      setTaxResidencyDocName(str("taxResidencyDocName") || null);
+      setAgreedTerms(Boolean(data.agreedTerms)); setAgreedLeadSharing(Boolean(data.agreedLeadSharing));
+
+      if (restoreVerification) {
+        setEmailVerified(Boolean(data.emailVerified));
+        setEmailVerificationToken(str("emailVerificationToken"));
+        setWhatsappVerified(Boolean(data.whatsappVerified));
+        setWhatsappVerificationToken(str("whatsappVerificationToken"));
       }
-    } catch {
-      localStorage.removeItem("market-sellers-draft");
-    }
+
+      setHasChosenRoles(restoredHasChosenRoles ?? arr("selectedRoles").length > 0);
+      setCurrentStep(Math.min(Math.max(restoredStep || 1, 1), formSteps.length));
+    };
+
+    const hydrateDraft = async () => {
+      // Defer hydration so React can finish the initial client render first.
+      await Promise.resolve();
+
+      try {
+        const saved = JSON.parse(localStorage.getItem("market-sellers-draft") || "null") as MarketDraftCredentials | null;
+        draftCredentials.current = saved;
+
+        const sessionDraft = JSON.parse(
+          sessionStorage.getItem(SELLER_SESSION_DRAFT_KEY) || "null",
+        ) as SellerSessionDraft | null;
+
+        if (sessionDraft?.version === 1 && sessionDraft.formData) {
+          restoreDraft(
+            sessionDraft.formData,
+            sessionDraft.currentStep,
+            sessionDraft.hasChosenRoles,
+            true,
+          );
+          if (isMounted) {
+            setDraftMessage("");
+          }
+          return;
+        }
+
+        if (saved?.draftId && saved?.draftToken) {
+          try {
+            const result = await getMarketDraft("sellers", saved);
+            const data = result.data?.formData;
+            if (data) {
+              restoreDraft(data, result.data?.currentStep || 1);
+              if (isMounted) {
+                setDraftMessage("Saved draft restored. Please verify your email and WhatsApp again before payment.");
+              }
+            }
+          } catch {
+            localStorage.removeItem("market-sellers-draft");
+            draftCredentials.current = null;
+          }
+        }
+      } catch {
+        localStorage.removeItem("market-sellers-draft");
+        sessionStorage.removeItem(SELLER_SESSION_DRAFT_KEY);
+      } finally {
+        if (isMounted) setIsDraftHydrated(true);
+      }
+    };
+
+    void hydrateDraft();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Dropdown outside click handler
@@ -808,16 +882,21 @@ export default function SellersPage() {
     setSelectedSourcingTypes([]);
   };
 
-  const handleContinueFromRoles = () => {
+  const handleContinueFromRoles = async () => {
     if (selectedRoles.length === 0) return;
     if (selectedRoles.includes("Sourcing Agent") && selectedSourcingTypes.length === 0) return;
 
     // Pre-populate business role in Step 1
-    if (selectedRoles.includes("Manufacturer")) setBusinessRole("Manufacturer");
-    else if (selectedRoles.includes("Sourcing Agent")) setBusinessRole("Sourcing Agent");
-    else if (selectedRoles.includes("Supplier / Trader") || selectedRoles.includes("Exporter")) setBusinessRole("Supplier");
-    else setBusinessRole("Service Provider");
+    const nextBusinessRole = selectedRoles.includes("Manufacturer")
+      ? "Manufacturer"
+      : selectedRoles.includes("Sourcing Agent")
+        ? "Sourcing Agent"
+        : selectedRoles.includes("Supplier / Trader") || selectedRoles.includes("Exporter")
+          ? "Supplier"
+          : "Service Provider";
+    setBusinessRole(nextBusinessRole);
 
+    await saveDraft(1, true, { ...buildPayload(), businessRole: nextBusinessRole });
     setHasChosenRoles(true);
     setCurrentStep(1);
     window.scrollTo({ top: 120, behavior: "smooth" });
@@ -902,7 +981,8 @@ export default function SellersPage() {
     moqCapability, customMoq, turnaroundTime, customTurnaroundTime, selectedIncoterms,
     samplePolicy, sourcingRegions, auditingExpertise, networkSize, serviceScope, techStack,
     servicePackages, caseStudies, teamSize, qcCount, sourcingStaffCount, facilityDetails,
-    certificates, kycJurisdictionTab, panNumber, gstinNumber, msmeUdyam, cinNumber,
+    certificates, certDropdown, certCustomName, certIssuer, certFileName, kycJurisdictionTab,
+    panNumber, gstinNumber, msmeUdyam, cinNumber,
     iecCode, einNumber, stateLicense, usResaleCert, ukCompaniesHouse, ukVatNumber, ukUtr,
     euVatNumber, euEoriNumber, euCommercialRegister, chinaUscc, chinaBusinessLicense,
     chinaCustomsCode, localTaxId, otherBusinessReg, uploadedKycDoc, accountHolder, bankName,
@@ -910,8 +990,38 @@ export default function SellersPage() {
     agreedTerms, agreedLeadSharing,
   });
 
-  const saveDraft = (step = currentStep) => {
-    const payload = buildPayload();
+  const persistSessionDraft = (step = currentStep) => {
+    if (!isDraftHydrated || submitted) return;
+
+    const sessionDraft: SellerSessionDraft = {
+      version: 1,
+      formData: buildPayload(),
+      currentStep: Math.min(Math.max(step, 1), formSteps.length),
+      hasChosenRoles,
+    };
+
+    try {
+      sessionStorage.setItem(SELLER_SESSION_DRAFT_KEY, JSON.stringify(sessionDraft));
+    } catch {
+      // Keep the form usable if storage is unavailable or full.
+    }
+  };
+
+  useEffect(() => {
+    persistSessionDraft();
+  });
+
+  const saveDraft = (
+    step = currentStep,
+    showLoader = false,
+    payloadOverride?: Record<string, unknown>,
+  ) => {
+    persistSessionDraft(step);
+    const payload = payloadOverride || buildPayload();
+    if (showLoader) {
+      pendingDraftSaves.current += 1;
+      setIsSavingDraft(true);
+    }
     draftQueue.current = draftQueue.current
       .catch(() => undefined)
       .then(async () => {
@@ -923,14 +1033,23 @@ export default function SellersPage() {
             setDraftMessage("Draft saved");
           }
         } catch (error) {
-          setDraftMessage(error instanceof Error ? error.message : "Unable to save draft.");
+          const message = error instanceof Error ? error.message : "Unable to save draft.";
+          if ((error as Error & { code?: string })?.code === "MEMBER_EXISTS") {
+            setRegistrationBlockedMessage(message);
+          }
+          setDraftMessage(message);
+        } finally {
+          if (showLoader) {
+            pendingDraftSaves.current = Math.max(0, pendingDraftSaves.current - 1);
+            if (pendingDraftSaves.current === 0) setIsSavingDraft(false);
+          }
         }
       });
     return draftQueue.current;
   };
 
   const goToStep = async (step: number) => {
-    await saveDraft(currentStep);
+    await saveDraft(step, true);
     setCurrentStep(step);
     window.scrollTo({ top: 120, behavior: "smooth" });
   };
@@ -969,14 +1088,15 @@ export default function SellersPage() {
       }
     }
     const nextStep = Math.min(currentStep + 1, formSteps.length);
-    await saveDraft(currentStep);
+    await saveDraft(nextStep, true);
     setCurrentStep(nextStep);
     window.scrollTo({ top: 120, behavior: "smooth" });
   };
 
   const handlePrevStep = async () => {
-    await saveDraft(currentStep);
-    setCurrentStep((prev) => Math.max(prev - 1, 1));
+    const previousStep = Math.max(currentStep - 1, 1);
+    await saveDraft(previousStep, true);
+    setCurrentStep(previousStep);
     window.scrollTo({ top: 120, behavior: "smooth" });
   };
 
@@ -992,7 +1112,7 @@ export default function SellersPage() {
     }
     setIsSubmitting(true);
     try {
-      await saveDraft(currentStep);
+      await saveDraft(currentStep, true);
       const result = await submitMarketForm("sellers", {
         ...buildPayload(),
         ...draftCredentials.current,
@@ -1001,7 +1121,12 @@ export default function SellersPage() {
       setPaymentDetails(result.data);
       window.scrollTo({ top: 120, behavior: "smooth" });
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Unable to submit the form. Please try again.");
+      const message = error instanceof Error ? error.message : "Unable to submit the form. Please try again.";
+      if ((error as Error & { code?: string })?.code === "MEMBER_EXISTS") {
+        setRegistrationBlockedMessage(message);
+      } else {
+        alert(message);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -1013,6 +1138,19 @@ export default function SellersPage() {
 
   return (
     <main className="min-h-screen flex flex-col justify-between bg-background text-foreground">
+      {isSavingDraft && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-background/65 px-4 backdrop-blur-sm"
+          role="status"
+          aria-live="polite"
+          aria-busy="true"
+        >
+          <div className="flex items-center gap-3 rounded-xl border border-border/70 bg-card px-5 py-4 text-sm font-semibold shadow-xl">
+            <Loader2 className="size-5 animate-spin text-primary" />
+            <span>Saving your progress...</span>
+          </div>
+        </div>
+      )}
       {/* Sticky Top Navbar - Exactly Matching /buyers */}
       <header
         className={`sticky top-0 z-50 transition-colors duration-200 ${
@@ -1365,8 +1503,8 @@ export default function SellersPage() {
                   <Button
                     type="button"
                     size="lg"
-                    onClick={handleContinueFromRoles}
-                    disabled={isContinueFromRolesDisabled}
+                    onClick={() => void handleContinueFromRoles()}
+                    disabled={isContinueFromRolesDisabled || isSavingDraft}
                     className="w-full py-6 text-sm sm:text-base font-semibold shadow-md gap-2"
                   >
                     <span>Continue to Partner Registration</span>
@@ -1384,7 +1522,7 @@ export default function SellersPage() {
             /* ============================================================ */
             <div>
               {/* Horizontal Stepper - Exactly matching user reference */}
-              <div className="mb-10 w-full overflow-x-auto pb-4 pt-2 -mx-4 px-4 sm:mx-0 sm:px-2 scrollbar-none">
+              {!registrationBlockedMessage && <div className="mb-10 w-full overflow-x-auto pb-4 pt-2 -mx-4 px-4 sm:mx-0 sm:px-2 scrollbar-none">
                 <div className="flex items-start min-w-[620px] sm:min-w-full">
                   {formSteps.map((step, idx) => {
                     const isCurrent = step.id === currentStep;
@@ -1397,6 +1535,7 @@ export default function SellersPage() {
                         <button
                           type="button"
                           onClick={() => void goToStep(step.id)}
+                          disabled={isSavingDraft || step.id === currentStep}
                           className="group flex flex-col items-center text-center focus:outline-none cursor-pointer"
                         >
                           {/* Circle */}
@@ -1446,10 +1585,31 @@ export default function SellersPage() {
                     );
                   })}
                 </div>
-              </div>
+              </div>}
 
               {/* Form Content or Success Card */}
-              {submitted ? (
+              {registrationBlockedMessage ? (
+                <Card className="mx-auto max-w-2xl border-rose-200 bg-rose-50/80 p-8 text-center shadow-lg dark:border-rose-900/60 dark:bg-rose-950/25 sm:p-10">
+                  <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-300">
+                    <ShieldAlert className="size-7" />
+                  </div>
+                  <h2 className="mt-5 text-2xl font-bold">Registration unavailable</h2>
+                  <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-rose-800 dark:text-rose-200">
+                    {registrationBlockedMessage}
+                  </p>
+                  <p className="mx-auto mt-2 max-w-lg text-sm text-muted-foreground">
+                    Existing members do not need to complete this registration form again.
+                  </p>
+                  <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+                    <Button asChild>
+                      <Link href="/">Back to Market</Link>
+                    </Button>
+                    <Button variant="outline" asChild>
+                      <a href="mailto:tech@sellerslogin.com">Contact support</a>
+                    </Button>
+                  </div>
+                </Card>
+              ) : submitted ? (
                 <Card className="border-emerald-200 bg-emerald-50/50 p-8 sm:p-10 text-center shadow-lg dark:border-emerald-900/50 dark:bg-emerald-950/20 backdrop-blur-sm">
                   <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/50">
                     <CheckCircle2 className="size-8 text-emerald-600 dark:text-emerald-400" />
@@ -1473,6 +1633,7 @@ export default function SellersPage() {
                   payment={paymentDetails}
                   onPaid={() => {
                     localStorage.removeItem("market-sellers-draft");
+                    sessionStorage.removeItem(SELLER_SESSION_DRAFT_KEY);
                     setPaymentDetails(null);
                     setSubmitted(true);
                     window.scrollTo({ top: 120, behavior: "smooth" });
@@ -3100,7 +3261,7 @@ export default function SellersPage() {
                       variant="outline"
                       size="default"
                       onClick={handlePrevStep}
-                      disabled={currentStep === 1}
+                      disabled={currentStep === 1 || isSavingDraft}
                       className="gap-2 text-xs sm:text-sm"
                     >
                       <ArrowLeft className="size-4" /> Previous Step
@@ -3111,16 +3272,18 @@ export default function SellersPage() {
                         type="button"
                         size="default"
                         onClick={handleNextStep}
+                        disabled={isSavingDraft}
                         className="gap-2 text-xs sm:text-sm font-semibold shadow-xs"
                       >
-                        <span>Continue to {formSteps[currentStep].title}</span>
-                        <ArrowRight className="size-4" />
+                        {isSavingDraft ? <Loader2 className="size-4 animate-spin" /> : null}
+                        <span>{isSavingDraft ? "Saving..." : `Continue to ${formSteps[currentStep].title}`}</span>
+                        {!isSavingDraft ? <ArrowRight className="size-4" /> : null}
                       </Button>
                     ) : (
                       <Button
                         type="submit"
                         size="lg"
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || isSavingDraft}
                         className="px-8 py-5 text-sm sm:text-base font-semibold shadow-md gap-2"
                       >
                         <CheckCircle2 className="size-5" /> {isSubmitting ? "Saving..." : "Continue to Verification Payment"}

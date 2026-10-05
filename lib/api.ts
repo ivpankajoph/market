@@ -19,7 +19,11 @@ async function readApiResult<T = unknown>(response: Response) {
   const result = (await response.json().catch(() => null)) as ApiResult<T> | null;
 
   if (!response.ok || !result?.success) {
-    throw new Error(result?.message || "Something went wrong. Please try again.");
+    const error = new Error(
+      result?.message || "Something went wrong. Please try again.",
+    ) as Error & { code?: string };
+    error.code = result?.code;
+    throw error;
   }
 
   return result;
