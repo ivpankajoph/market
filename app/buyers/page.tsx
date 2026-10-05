@@ -35,8 +35,16 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { OtpVerificationButton } from "@/components/otp-verification-button";
+import { MarketVerificationPayment } from "@/components/market-verification-payment";
 import { routePath } from "@/url";
-import { buildWhatsappNumber, submitMarketForm } from "@/lib/api";
+import {
+  buildWhatsappNumber,
+  getMarketDraft,
+  type MarketDraftCredentials,
+  type MarketPaymentDetails,
+  saveMarketDraft,
+  submitMarketForm,
+} from "@/lib/api";
 
 const sourceCountryOptions = [
   { id: "china", label: "China", flagImg: "/flags/china.svg" },
@@ -735,6 +743,10 @@ export default function BuyersPage() {
   // Submission Status
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [paymentDetails, setPaymentDetails] = useState<MarketPaymentDetails | null>(null);
+  const [draftMessage, setDraftMessage] = useState("");
+  const draftCredentials = useRef<MarketDraftCredentials | null>(null);
+  const draftQueue = useRef<Promise<void>>(Promise.resolve());
 
   const lookingForId = useId();
   const detailedReqId = useId();
@@ -746,6 +758,43 @@ export default function BuyersPage() {
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("market-buyers-draft") || "null") as MarketDraftCredentials | null;
+      draftCredentials.current = saved;
+      if (saved?.draftId && saved?.draftToken) {
+        void getMarketDraft("buyers", saved).then((result) => {
+          const data = result.data?.formData;
+          if (!data) return;
+          const text = (key: string) => typeof data[key] === "string" ? data[key] as string : "";
+          setFullName(text("fullName")); setEmail(text("email")); setCountryCode(text("countryCode") || "+91");
+          setWhatsapp(text("whatsapp")); setCompanyName(text("companyName")); setWebsite(text("website"));
+          setStreetAddress(text("streetAddress")); setLandmark(text("landmark")); setCity(text("city"));
+          setState(text("state")); setCountry(text("country") || "India"); setPincode(text("pincode"));
+          setOrderPlaceTime(text("orderPlaceTime") || orderPlaceTimes[0]);
+          setSelectedSources(Array.isArray(data.selectedSources) ? data.selectedSources as string[] : []);
+          setOrderVolume(text("orderVolume") || orderVolumes[2]); setLookingFor(text("lookingFor"));
+          setDetailedRequirement(text("detailedRequirement"));
+          setBudgetType(data.budgetType === "fixed" ? "fixed" : "hourly");
+          setHourlyBudget(text("hourlyBudget") || hourlyBudgets[1]); setFixedBudget(text("fixedBudget") || fixedBudgets[2]);
+          setQuantity(text("quantity")); setQuantityUnit(text("quantityUnit") || quantityUnits[0]);
+          setCustomCountry(text("customCountry")); setCustomCountryCode(text("customCountryCode"));
+          setCustomSourceOther(text("customSourceOther")); setCustomOrderPlaceTime(text("customOrderPlaceTime"));
+          setCustomOrderVolume(text("customOrderVolume")); setCustomQuantityUnit(text("customQuantityUnit"));
+          setCustomHourlyBudget(text("customHourlyBudget")); setCustomFixedBudget(text("customFixedBudget"));
+          setAgreedOffPlatform(Boolean(data.agreedOffPlatform)); setAgreedLeadSharing(Boolean(data.agreedLeadSharing));
+          setAgreedPartnerAccess(Boolean(data.agreedPartnerAccess));
+          setDraftMessage("Saved draft restored. Please verify your email and WhatsApp again before payment.");
+        }).catch(() => {
+          localStorage.removeItem("market-buyers-draft");
+          draftCredentials.current = null;
+        });
+      }
+    } catch {
+      localStorage.removeItem("market-buyers-draft");
+    }
   }, []);
 
   const handleCountryChange = (newCountry: string) => {
@@ -781,6 +830,41 @@ export default function BuyersPage() {
     }
   };
 
+  const buildPayload = (): Record<string, unknown> => ({
+    fullName, email, emailVerified, emailVerificationToken, countryCode, whatsapp,
+    whatsappVerified, whatsappVerificationToken, companyName, website, streetAddress,
+    landmark, city, state, country, pincode, orderPlaceTime, selectedSources, orderVolume,
+    lookingFor, detailedRequirement, budgetType, hourlyBudget, fixedBudget, quantity,
+    quantityUnit, customCountry, customCountryCode, customSourceOther, customOrderPlaceTime,
+    customOrderVolume, customQuantityUnit, customHourlyBudget, customFixedBudget,
+    sampleImage: sampleImage
+      ? { name: sampleImage.name, originalSize: sampleImage.originalSize, compressedSize: sampleImage.compressedSize }
+      : undefined,
+    agreedOffPlatform, agreedLeadSharing, agreedPartnerAccess,
+  });
+
+  const saveDraft = () => {
+    const payload = buildPayload();
+    if (!Object.values(payload).some((value) => typeof value === "string" && value.trim())) {
+      return draftQueue.current;
+    }
+    draftQueue.current = draftQueue.current
+      .catch(() => undefined)
+      .then(async () => {
+        try {
+          const result = await saveMarketDraft("buyers", payload, 1, draftCredentials.current);
+          if (result.data) {
+            draftCredentials.current = { draftId: result.data.draftId, draftToken: result.data.draftToken };
+            localStorage.setItem("market-buyers-draft", JSON.stringify(draftCredentials.current));
+            setDraftMessage("Draft saved");
+          }
+        } catch (error) {
+          setDraftMessage(error instanceof Error ? error.message : "Unable to save draft.");
+        }
+      });
+    return draftQueue.current;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreedOffPlatform) {
@@ -793,53 +877,13 @@ export default function BuyersPage() {
     }
     setIsSubmitting(true);
     try {
-      await submitMarketForm("buyers", {
-        fullName,
-        email,
-        emailVerified,
-        emailVerificationToken,
-        countryCode,
-        whatsapp,
-        whatsappVerified,
-        whatsappVerificationToken,
-        companyName,
-        website,
-        streetAddress,
-        landmark,
-        city,
-        state,
-        country,
-        pincode,
-        orderPlaceTime,
-        selectedSources,
-        orderVolume,
-        lookingFor,
-        detailedRequirement,
-        budgetType,
-        hourlyBudget,
-        fixedBudget,
-        quantity,
-        quantityUnit,
-        customCountry,
-        customCountryCode,
-        customSourceOther,
-        customOrderPlaceTime,
-        customOrderVolume,
-        customQuantityUnit,
-        customHourlyBudget,
-        customFixedBudget,
-        sampleImage: sampleImage
-          ? {
-              name: sampleImage.name,
-              originalSize: sampleImage.originalSize,
-              compressedSize: sampleImage.compressedSize,
-            }
-          : undefined,
-        agreedOffPlatform,
-        agreedLeadSharing,
-        agreedPartnerAccess,
+      await saveDraft();
+      const result = await submitMarketForm("buyers", {
+        ...buildPayload(),
+        ...draftCredentials.current,
       });
-      setSubmitted(true);
+      if (!result.data) throw new Error("Payment details were not returned.");
+      setPaymentDetails(result.data);
       window.scrollTo({ top: 300, behavior: "smooth" });
     } catch (error) {
       alert(error instanceof Error ? error.message : "Unable to submit the form. Please try again.");
@@ -932,8 +976,24 @@ export default function BuyersPage() {
                     </Button>
                   </div>
                 </Card>
+              ) : paymentDetails ? (
+                <MarketVerificationPayment
+                  form="buyers"
+                  payment={paymentDetails}
+                  onPaid={() => {
+                    localStorage.removeItem("market-buyers-draft");
+                    setPaymentDetails(null);
+                    setSubmitted(true);
+                    window.scrollTo({ top: 300, behavior: "smooth" });
+                  }}
+                />
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} onBlurCapture={() => void saveDraft()} className="space-y-6">
+                  {draftMessage && (
+                    <p className={`text-center text-xs ${/already|unable|no longer/i.test(draftMessage) ? "text-rose-600 dark:text-rose-400" : "text-muted-foreground"}`}>
+                      {draftMessage}
+                    </p>
+                  )}
                   {/* Card 1: Contact & Company Profile */}
                   <Card className="border-border/60 bg-card/90 shadow-sm backdrop-blur-sm">
                     <CardHeader className="border-b border-border/40 pb-4">
@@ -1698,11 +1758,14 @@ export default function BuyersPage() {
 
                   {/* Submit CTA */}
                   <div className="pt-2 text-center">
+                    <p className="mb-3 text-sm font-semibold text-foreground">
+                      One-time verification fee due at checkout: US${country.trim().toLowerCase() === "india" ? "15" : "20"}. No recurring charge.
+                    </p>
                     <Button size="lg" type="submit" disabled={isSubmitting} className="w-full sm:w-auto px-10 py-6 text-base font-semibold shadow-md">
-                      <Search className="size-5 mr-1" /> {isSubmitting ? "Submitting..." : "Post Requirement to Verified Agents"}
+                      <Search className="size-5 mr-1" /> {isSubmitting ? "Saving..." : "Continue to Verification Payment"}
                     </Button>
                     <p className="mt-3 text-xs text-muted-foreground">
-                      By clicking Submit, your requirement will be screened and dispatched to matching category agents. No spam policy.
+                      Your form will be submitted for review only after successful payment.
                     </p>
                   </div>
                 </form>

@@ -39,8 +39,16 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { OtpVerificationButton } from "@/components/otp-verification-button";
+import { MarketVerificationPayment } from "@/components/market-verification-payment";
 import { routePath } from "@/url";
-import { buildWhatsappNumber, submitMarketForm } from "@/lib/api";
+import {
+  buildWhatsappNumber,
+  getMarketDraft,
+  type MarketDraftCredentials,
+  type MarketPaymentDetails,
+  saveMarketDraft,
+  submitMarketForm,
+} from "@/lib/api";
 
 // Destination & Origin Countries (Identical to /buyers)
 const destinationCountries = [
@@ -578,6 +586,10 @@ export default function SellersPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [paymentDetails, setPaymentDetails] = useState<MarketPaymentDetails | null>(null);
+  const [draftMessage, setDraftMessage] = useState("");
+  const draftCredentials = useRef<MarketDraftCredentials | null>(null);
+  const draftQueue = useRef<Promise<void>>(Promise.resolve());
 
   // Step 1: Basic Info
   const [titleOfServices, setTitleOfServices] = useState("");
@@ -689,6 +701,68 @@ export default function SellersPage() {
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("market-sellers-draft") || "null") as MarketDraftCredentials | null;
+      draftCredentials.current = saved;
+      if (saved?.draftId && saved?.draftToken) {
+        void getMarketDraft("sellers", saved).then((result) => {
+          const data = result.data?.formData;
+          if (!data) return;
+          const str = (key: string) => typeof data[key] === "string" ? data[key] as string : "";
+          const arr = (key: string) => Array.isArray(data[key]) ? data[key] as string[] : [];
+          setSelectedRoles(arr("selectedRoles")); setSelectedSourcingTypes(arr("selectedSourcingTypes"));
+          setTitleOfServices(str("titleOfServices")); setChargeType(data.chargeType === "fixed" ? "fixed" : "hourly");
+          setHourlyCharge(str("hourlyCharge") || hourlyRateOptions[2]); setCustomHourlyCharge(str("customHourlyCharge"));
+          setFixedCharge(str("fixedCharge") || fixedRateOptions[1]); setCustomFixedCharge(str("customFixedCharge"));
+          setCompanyName(str("companyName")); setLegalBusinessName(str("legalBusinessName"));
+          setBusinessRole(str("businessRole") || "Manufacturer"); setAboutCompany(str("aboutCompany"));
+          setYearOfEstablishment(str("yearOfEstablishment")); setContactName(str("contactName"));
+          setJobTitle(str("jobTitle")); setEmail(str("email")); setCountryCode(str("countryCode") || "+91");
+          setCustomCountryCode(str("customCountryCode")); setWhatsapp(str("whatsapp")); setWebsite(str("website"));
+          setStreetAddress(str("streetAddress")); setLocationLandmark(str("locationLandmark"));
+          setCountry(str("country") || "India"); setCustomCountry(str("customCountry")); setState(str("state"));
+          setCity(str("city")); setPincode(str("pincode"));
+          setProducts(Array.isArray(data.products) ? data.products as ProductItem[] : []);
+          setTargetRegions(arr("targetRegions")); setCustomRegion(str("customRegion"));
+          setMoqCapability(str("moqCapability") || moqOptions[0]); setCustomMoq(str("customMoq"));
+          setTurnaroundTime(str("turnaroundTime") || turnaroundTimeOptions[0]);
+          setCustomTurnaroundTime(str("customTurnaroundTime")); setSelectedIncoterms(arr("selectedIncoterms"));
+          setSamplePolicy(str("samplePolicy") || "Free Sample (Buyer Pays Freight)");
+          setSourcingRegions(str("sourcingRegions")); setAuditingExpertise(arr("auditingExpertise"));
+          setNetworkSize(str("networkSize") || "10 to 50 Verified Factories"); setServiceScope(str("serviceScope"));
+          setTechStack(str("techStack")); setServicePackages(str("servicePackages")); setCaseStudies(str("caseStudies"));
+          setTeamSize(str("teamSize") || teamSizeOptions[0]); setQcCount(str("qcCount"));
+          setSourcingStaffCount(str("sourcingStaffCount")); setFacilityDetails(str("facilityDetails"));
+          setCertificates(Array.isArray(data.certificates) ? data.certificates as CertificateItem[] : []);
+          setKycJurisdictionTab(str("kycJurisdictionTab")); setPanNumber(str("panNumber"));
+          setGstinNumber(str("gstinNumber")); setMsmeUdyam(str("msmeUdyam")); setCinNumber(str("cinNumber"));
+          setIecCode(str("iecCode")); setEinNumber(str("einNumber")); setStateLicense(str("stateLicense"));
+          setUsResaleCert(str("usResaleCert")); setUkCompaniesHouse(str("ukCompaniesHouse"));
+          setUkVatNumber(str("ukVatNumber")); setUkUtr(str("ukUtr")); setEuVatNumber(str("euVatNumber"));
+          setEuEoriNumber(str("euEoriNumber")); setEuCommercialRegister(str("euCommercialRegister"));
+          setChinaUscc(str("chinaUscc")); setChinaBusinessLicense(str("chinaBusinessLicense"));
+          setChinaCustomsCode(str("chinaCustomsCode")); setLocalTaxId(str("localTaxId"));
+          setOtherBusinessReg(str("otherBusinessReg")); setUploadedKycDoc(str("uploadedKycDoc") || null);
+          setAccountHolder(str("accountHolder")); setBankName(str("bankName"));
+          setAccountOrIban(str("accountOrIban")); setSwiftCode(str("swiftCode"));
+          setSettlementCurrencies(arr("settlementCurrencies"));
+          setWithholdingTaxType(str("withholdingTaxType") || withholdingTaxDocOptions[0]);
+          setTaxResidencyDocName(str("taxResidencyDocName") || null);
+          setAgreedTerms(Boolean(data.agreedTerms)); setAgreedLeadSharing(Boolean(data.agreedLeadSharing));
+          setHasChosenRoles(arr("selectedRoles").length > 0);
+          setCurrentStep(Math.min(Math.max(result.data?.currentStep || 1, 1), formSteps.length));
+          setDraftMessage("Saved draft restored. Please verify your email and WhatsApp again before payment.");
+        }).catch(() => {
+          localStorage.removeItem("market-sellers-draft");
+          draftCredentials.current = null;
+        });
+      }
+    } catch {
+      localStorage.removeItem("market-sellers-draft");
+    }
   }, []);
 
   // Dropdown outside click handler
@@ -818,7 +892,50 @@ export default function SellersPage() {
     setSettlementCurrencies((prev) => (prev.includes(cur) ? prev.filter((c) => c !== cur) : [...prev, cur]));
   };
 
-  const handleNextStep = () => {
+  const buildPayload = (): Record<string, unknown> => ({
+    selectedRoles, selectedSourcingTypes, titleOfServices, chargeType, hourlyCharge,
+    customHourlyCharge, fixedCharge, customFixedCharge, companyName, legalBusinessName,
+    businessRole, aboutCompany, yearOfEstablishment, contactName, jobTitle, email,
+    emailVerified, emailVerificationToken, countryCode, customCountryCode, whatsapp,
+    whatsappVerified, whatsappVerificationToken, website, streetAddress, locationLandmark,
+    country, customCountry, state, city, pincode, products, targetRegions, customRegion,
+    moqCapability, customMoq, turnaroundTime, customTurnaroundTime, selectedIncoterms,
+    samplePolicy, sourcingRegions, auditingExpertise, networkSize, serviceScope, techStack,
+    servicePackages, caseStudies, teamSize, qcCount, sourcingStaffCount, facilityDetails,
+    certificates, kycJurisdictionTab, panNumber, gstinNumber, msmeUdyam, cinNumber,
+    iecCode, einNumber, stateLicense, usResaleCert, ukCompaniesHouse, ukVatNumber, ukUtr,
+    euVatNumber, euEoriNumber, euCommercialRegister, chinaUscc, chinaBusinessLicense,
+    chinaCustomsCode, localTaxId, otherBusinessReg, uploadedKycDoc, accountHolder, bankName,
+    accountOrIban, swiftCode, settlementCurrencies, withholdingTaxType, taxResidencyDocName,
+    agreedTerms, agreedLeadSharing,
+  });
+
+  const saveDraft = (step = currentStep) => {
+    const payload = buildPayload();
+    draftQueue.current = draftQueue.current
+      .catch(() => undefined)
+      .then(async () => {
+        try {
+          const result = await saveMarketDraft("sellers", payload, step, draftCredentials.current);
+          if (result.data) {
+            draftCredentials.current = { draftId: result.data.draftId, draftToken: result.data.draftToken };
+            localStorage.setItem("market-sellers-draft", JSON.stringify(draftCredentials.current));
+            setDraftMessage("Draft saved");
+          }
+        } catch (error) {
+          setDraftMessage(error instanceof Error ? error.message : "Unable to save draft.");
+        }
+      });
+    return draftQueue.current;
+  };
+
+  const goToStep = async (step: number) => {
+    await saveDraft(currentStep);
+    setCurrentStep(step);
+    window.scrollTo({ top: 120, behavior: "smooth" });
+  };
+
+  const handleNextStep = async () => {
     if (currentStep === 1) {
       if (!titleOfServices.trim()) {
         alert("Please enter a Title of Services (up to 70 characters).");
@@ -851,11 +968,14 @@ export default function SellersPage() {
         return;
       }
     }
-    setCurrentStep((prev) => Math.min(prev + 1, formSteps.length));
+    const nextStep = Math.min(currentStep + 1, formSteps.length);
+    await saveDraft(currentStep);
+    setCurrentStep(nextStep);
     window.scrollTo({ top: 120, behavior: "smooth" });
   };
 
-  const handlePrevStep = () => {
+  const handlePrevStep = async () => {
+    await saveDraft(currentStep);
     setCurrentStep((prev) => Math.max(prev - 1, 1));
     window.scrollTo({ top: 120, behavior: "smooth" });
   };
@@ -872,91 +992,13 @@ export default function SellersPage() {
     }
     setIsSubmitting(true);
     try {
-      await submitMarketForm("sellers", {
-        selectedRoles,
-        selectedSourcingTypes,
-        titleOfServices,
-        chargeType,
-        hourlyCharge,
-        customHourlyCharge,
-        fixedCharge,
-        customFixedCharge,
-        companyName,
-        legalBusinessName,
-        businessRole,
-        aboutCompany,
-        yearOfEstablishment,
-        contactName,
-        jobTitle,
-        email,
-        emailVerified,
-        emailVerificationToken,
-        countryCode,
-        customCountryCode,
-        whatsapp,
-        whatsappVerified,
-        whatsappVerificationToken,
-        website,
-        streetAddress,
-        locationLandmark,
-        country,
-        customCountry,
-        state,
-        city,
-        pincode,
-        products,
-        targetRegions,
-        customRegion,
-        moqCapability,
-        customMoq,
-        turnaroundTime,
-        customTurnaroundTime,
-        selectedIncoterms,
-        samplePolicy,
-        sourcingRegions,
-        auditingExpertise,
-        networkSize,
-        serviceScope,
-        techStack,
-        servicePackages,
-        caseStudies,
-        teamSize,
-        qcCount,
-        sourcingStaffCount,
-        facilityDetails,
-        certificates,
-        kycJurisdictionTab,
-        panNumber,
-        gstinNumber,
-        msmeUdyam,
-        cinNumber,
-        iecCode,
-        einNumber,
-        stateLicense,
-        usResaleCert,
-        ukCompaniesHouse,
-        ukVatNumber,
-        ukUtr,
-        euVatNumber,
-        euEoriNumber,
-        euCommercialRegister,
-        chinaUscc,
-        chinaBusinessLicense,
-        chinaCustomsCode,
-        localTaxId,
-        otherBusinessReg,
-        uploadedKycDoc,
-        accountHolder,
-        bankName,
-        accountOrIban,
-        swiftCode,
-        settlementCurrencies,
-        withholdingTaxType,
-        taxResidencyDocName,
-        agreedTerms,
-        agreedLeadSharing,
+      await saveDraft(currentStep);
+      const result = await submitMarketForm("sellers", {
+        ...buildPayload(),
+        ...draftCredentials.current,
       });
-      setSubmitted(true);
+      if (!result.data) throw new Error("Payment details were not returned.");
+      setPaymentDetails(result.data);
       window.scrollTo({ top: 120, behavior: "smooth" });
     } catch (error) {
       alert(error instanceof Error ? error.message : "Unable to submit the form. Please try again.");
@@ -1354,7 +1396,7 @@ export default function SellersPage() {
                         {/* Circle Node & Label Underneath */}
                         <button
                           type="button"
-                          onClick={() => setCurrentStep(step.id)}
+                          onClick={() => void goToStep(step.id)}
                           className="group flex flex-col items-center text-center focus:outline-none cursor-pointer"
                         >
                           {/* Circle */}
@@ -1425,8 +1467,24 @@ export default function SellersPage() {
                     </Button>
                   </div>
                 </Card>
+              ) : paymentDetails ? (
+                <MarketVerificationPayment
+                  form="sellers"
+                  payment={paymentDetails}
+                  onPaid={() => {
+                    localStorage.removeItem("market-sellers-draft");
+                    setPaymentDetails(null);
+                    setSubmitted(true);
+                    window.scrollTo({ top: 120, behavior: "smooth" });
+                  }}
+                />
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} onBlurCapture={() => void saveDraft(currentStep)} className="space-y-6">
+                  {draftMessage && (
+                    <p className={`text-center text-xs ${/already|unable|no longer/i.test(draftMessage) ? "text-rose-600 dark:text-rose-400" : "text-muted-foreground"}`}>
+                      {draftMessage}
+                    </p>
+                  )}
 
                   {/* ============================================================ */}
                   {/* STEP 1: Basic Information, Address & Contact Details */}
@@ -3031,6 +3089,11 @@ export default function SellersPage() {
                   )}
 
                   {/* Step Navigation Controls */}
+                  {currentStep === formSteps.length && (
+                    <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 text-center text-sm">
+                      <strong>One-time verification fee:</strong> US${country.trim().toLowerCase() === "india" ? "15" : "20"}. This is charged at checkout and does not recur.
+                    </div>
+                  )}
                   <div className="flex items-center justify-between pt-2">
                     <Button
                       type="button"
@@ -3060,7 +3123,7 @@ export default function SellersPage() {
                         disabled={isSubmitting}
                         className="px-8 py-5 text-sm sm:text-base font-semibold shadow-md gap-2"
                       >
-                        <CheckCircle2 className="size-5" /> {isSubmitting ? "Submitting..." : "Submit Partner Registration"}
+                        <CheckCircle2 className="size-5" /> {isSubmitting ? "Saving..." : "Continue to Verification Payment"}
                       </Button>
                     )}
                   </div>

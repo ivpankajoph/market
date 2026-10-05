@@ -2,19 +2,21 @@ const apiBaseUrl = String(
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081/api/v1",
 ).replace(/\/+$/, "");
 
-type MarketForm = "buyers" | "sellers";
+export type MarketForm = "buyers" | "sellers";
 
 export type OtpChannel = "email" | "whatsapp";
 
-type ApiResult = {
+type ApiResult<T = unknown> = {
   success?: boolean;
   message?: string;
   resendAfter?: number;
   verificationToken?: string;
+  code?: string;
+  data?: T;
 };
 
-async function readApiResult(response: Response) {
-  const result = (await response.json().catch(() => null)) as ApiResult | null;
+async function readApiResult<T = unknown>(response: Response) {
+  const result = (await response.json().catch(() => null)) as ApiResult<T> | null;
 
   if (!response.ok || !result?.success) {
     throw new Error(result?.message || "Something went wrong. Please try again.");
@@ -82,5 +84,94 @@ export async function submitMarketForm(
     body: JSON.stringify(payload),
   });
 
+  return readApiResult<MarketPaymentDetails>(response);
+}
+
+export type MarketDraftCredentials = {
+  draftId: string;
+  draftToken: string;
+};
+
+export type MarketPaymentDetails = {
+  applicationId: string;
+  accessToken: string;
+  checkoutKey: string;
+  orderId: string;
+  amount: number;
+  currency: "USD";
+  feeUsd: number;
+  name: string;
+  email: string;
+  contact: string;
+};
+
+export async function saveMarketDraft(
+  form: MarketForm,
+  payload: Record<string, unknown>,
+  currentStep: number,
+  credentials?: MarketDraftCredentials | null,
+) {
+  const response = await fetch(`${apiBaseUrl}/market/${form}/draft`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      data: payload,
+      currentStep,
+      draftId: credentials?.draftId,
+      draftToken: credentials?.draftToken,
+    }),
+  });
+  return readApiResult<MarketDraftCredentials & { currentStep: number }>(response);
+}
+
+export async function getMarketDraft(
+  form: MarketForm,
+  credentials: MarketDraftCredentials,
+) {
+  const response = await fetch(
+    `${apiBaseUrl}/market/${form}/draft/${credentials.draftId}`,
+    { headers: { "x-market-draft-token": credentials.draftToken } },
+  );
+  return readApiResult<{
+    draftId: string;
+    currentStep: number;
+    formData: Record<string, unknown>;
+  }>(response);
+}
+
+export async function verifyMarketPayment(
+  form: MarketForm,
+  payment: MarketPaymentDetails,
+  razorpayPaymentId: string,
+  razorpaySignature: string,
+) {
+  const response = await fetch(
+    `${apiBaseUrl}/market/${form}/${payment.applicationId}/payment/verify`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-market-payment-token": payment.accessToken,
+      },
+      body: JSON.stringify({ razorpayPaymentId, razorpaySignature }),
+    },
+  );
+  return readApiResult(response);
+}
+
+export async function requestMarketPaymentHelp(
+  form: MarketForm,
+  payment: MarketPaymentDetails,
+) {
+  const response = await fetch(
+    `${apiBaseUrl}/market/${form}/${payment.applicationId}/payment/help`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-market-payment-token": payment.accessToken,
+      },
+    },
+  );
   return readApiResult(response);
 }
