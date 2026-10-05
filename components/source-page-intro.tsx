@@ -149,7 +149,7 @@ export function SourcePageIntro({ title }: SourcePageIntroProps) {
               <Link href={routePath.buyers}>I&apos;m a buyer<Search aria-hidden="true" /></Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
-              <a href={sellerPortalUrl} target="_blank" rel="noopener noreferrer">I&apos;m a seller<Store aria-hidden="true" /></a>
+              <Link href={routePath.sellers}>I&apos;m a seller<Store aria-hidden="true" /></Link>
             </Button>
           </div>
         </div>

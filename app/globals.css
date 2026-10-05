@@ -276,3 +276,31 @@ body {
   animation: float-drift 22s ease-in-out infinite;
 }
 
+/* Ensure pointer cursor for all buttons, dropdowns, selects, and interactive controls across the entire site */
+button,
+[role="button"],
+select,
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+input[type="checkbox"],
+input[type="radio"],
+label[for],
+label:has(input[type="checkbox"]),
+label:has(input[type="radio"]),
+summary,
+[data-slot="button"],
+[data-slot="dropdown-trigger"],
+[data-slot="dropdown-menu-item"] {
+  cursor: pointer;
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"],
+select:disabled,
+input:disabled,
+[data-slot="button"][disabled] {
+  cursor: not-allowed;
+}
+
+
