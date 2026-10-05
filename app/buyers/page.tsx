@@ -690,7 +690,7 @@ export default function BuyersPage() {
 
   // Sourcing Specs
   const [orderPlaceTime, setOrderPlaceTime] = useState(orderPlaceTimes[0]);
-  const [selectedSources, setSelectedSources] = useState<string[]>(["china"]);
+  const [selectedSources, setSelectedSources] = useState<string[]>([]);
   const [orderVolume, setOrderVolume] = useState(orderVolumes[2]);
 
   // Requirement Details

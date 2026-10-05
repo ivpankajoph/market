@@ -12,12 +12,14 @@ import {
   ChevronDown,
   CreditCard,
   FileCheck2,
+  FileText,
   Globe,
   Globe2,
   Layers,
   Mail,
   MapPin,
   Package,
+  Paperclip,
   Phone,
   Plus,
   Search,
@@ -167,20 +169,78 @@ const targetRegionOptions = [
 const moqOptions = ["No MOQ", "10 to 50 Units", "50 to 200 Units", "200 to 500 Units", "500 to 2,000 Units", "Above 2,000 Units", "Custom MOQ"];
 const turnaroundTimeOptions = ["Ready Stock (24-48 hrs)", "3 to 7 Days", "1 to 2 Weeks", "2 to 4 Weeks", "1 to 2 Months", "Custom TAT"];
 const teamSizeOptions = ["1 to 10", "11 to 50", "51 to 200", "201 to 500", "500+"];
-const presetCertifications = [
-  "ISO 9001 (Quality Management)",
-  "CE Marking (European Conformity)",
-  "RoHS Compliance (Hazardous Substances)",
-  "FDA Registered (US Food & Drug)",
-  "GMP Certification (Good Manufacturing)",
-  "BIS Registration (Bureau of Indian Standards)",
-  "UL / FCC Certified (Safety & Electronics)",
-  "SGS Audited Facility",
-  "Intertek Clean Compliance",
-  "TÜV Rheinland Inspected",
-  "Custom Certificate",
+const certificationGroups = [
+  {
+    group: "International Quality Certifications",
+    items: [
+      "ISO 9001 (Quality Management)",
+      "CE Marking (European Conformity)",
+      "RoHS Compliance (Hazardous Substances)",
+      "FDA Registered (US Food & Drug)",
+      "GMP Certification (Good Manufacturing)",
+    ],
+  },
+  {
+    group: "Regional Compliance Certifications",
+    items: [
+      "BIS for India (Bureau of Indian Standards)",
+      "UL / FCC for US (Safety & Compliance)",
+      "CE for EU (European Market Access)",
+    ],
+  },
+  {
+    group: "Third-Party Inspection Partner Approvals",
+    items: [
+      "SGS Audited Facility",
+      "Intertek Clean Compliance",
+      "TÜV Rheinland Inspected",
+    ],
+  },
+  {
+    group: "Custom & Other Standards",
+    items: [
+      "Custom Certificate",
+    ],
+  },
 ];
-const currencyOptions = ["USD ($)", "EUR (€)", "INR (₹)", "GBP (£)", "AED (د.إ)", "AUD (A$)", "CAD (C$)", "CNY (¥)"];
+
+const presetCertifications = certificationGroups.flatMap((g) => g.items);
+
+const sampleAvailabilityOptions = [
+  "Free Sample (Buyer Pays Freight)",
+  "Free Sample & Freight Included",
+  "Paid Sample at Production Cost",
+  "Available on Request",
+];
+
+const withholdingTaxDocOptions = [
+  "W-8BEN (Foreign Individuals / Sole Proprietors)",
+  "W-8BEN-E (Foreign Entities / Corporations)",
+  "W-9 (US Entities & Tax Residents)",
+  "Certificate of Tax Residence (Local Jurisdiction)",
+  "Local Tax Clearance Form",
+  "Exempt / Not Applicable",
+];
+
+const kycJurisdictions = [
+  { name: "India", flag: "/flags/india.svg" },
+  { name: "United States", flag: "/flags/united-states.svg" },
+  { name: "United Kingdom", flag: "/flags/uk.svg" },
+  { name: "European Union (EU)", flag: "/flags/european-union.svg" },
+  { name: "China", flag: "/flags/china.svg" },
+  { name: "Other Global Regions", flag: "" },
+];
+
+const currencyOptions = [
+  { code: "USD ($)", flag: "/flags/united-states.svg" },
+  { code: "EUR (€)", flag: "/flags/european-union.svg" },
+  { code: "INR (₹)", flag: "/flags/india.svg" },
+  { code: "GBP (£)", flag: "/flags/uk.svg" },
+  { code: "AED (د.إ)", flag: "/flags/uae.svg" },
+  { code: "AUD (A$)", flag: "/flags/australia.svg" },
+  { code: "CAD (C$)", flag: "/flags/canada.svg" },
+  { code: "CNY (¥)", flag: "/flags/china.svg" },
+];
 
 function capitalizeFirst(val: string): string {
   if (!val) return "";
@@ -465,28 +525,30 @@ function StateSelect({
   );
 }
 
-// 7 Steps Definition
+// 5 Steps Definition matching User Specification exactly
 const formSteps = [
-  { id: 1, title: "Basic Info", icon: Building2, desc: "Services, role, pricing & company intro" },
-  { id: 2, title: "Contact & Address", icon: Phone, desc: "Direct communications & operating address" },
-  { id: 3, title: "Capabilities", icon: Package, desc: "Products catalog, MOQs & shipping terms" },
-  { id: 4, title: "Portfolio", icon: Layers, desc: "Factory hubs, auditing & tech stack" },
-  { id: 5, title: "Certificates", icon: Award, desc: "Team infrastructure & quality credentials" },
-  { id: 6, title: "Legal KYC", icon: ShieldCheck, desc: "Jurisdiction tax IDs & registration proof" },
-  { id: 7, title: "Payouts", icon: CreditCard, desc: "Banking details & escrow compliance" },
+  { id: 1, title: "Basic Information", icon: Building2, desc: "Global standards, address & contact" },
+  { id: 2, title: "Operational Capabilities", icon: Package, desc: "Products catalog, MOQs & shipping" },
+  { id: 3, title: "Catalog & Portfolio", icon: Layers, desc: "Sourcing network, services & case studies" },
+  { id: 4, title: "Infrastructure & Team", icon: Award, desc: "Team capacity, facilities & certificates" },
+  { id: 5, title: "Legal, Tax & Banking", icon: CreditCard, desc: "Country KYC & international payouts" },
 ];
 
 interface ProductItem {
   id: string;
   name: string;
   category: string;
+  specs: string;
   moq: string;
+  sampleAvailability: string;
+  imageName?: string;
 }
 
 interface CertificateItem {
   id: string;
   name: string;
   issuingBody: string;
+  fileName?: string;
 }
 
 export default function SellersPage() {
@@ -522,7 +584,7 @@ export default function SellersPage() {
   const [legalBusinessName, setLegalBusinessName] = useState("");
   const [businessRole, setBusinessRole] = useState("Manufacturer");
   const [aboutCompany, setAboutCompany] = useState("");
-  const [yearOfEstablishment, setYearOfEstablishment] = useState("2018");
+  const [yearOfEstablishment, setYearOfEstablishment] = useState("");
 
   // Step 2: Contact & Address
   const [contactName, setContactName] = useState("");
@@ -542,49 +604,64 @@ export default function SellersPage() {
   const [city, setCity] = useState("");
   const [pincode, setPincode] = useState("");
 
-  // Step 3: Operational & Sourcing Capabilities
-  const [products, setProducts] = useState<ProductItem[]>([
-    { id: "1", name: "Custom CNC Machined Aluminum Components", category: "Industrial Hardware", moq: "100 Units" },
-  ]);
-  const [targetRegions, setTargetRegions] = useState<string[]>(["North America", "European Union", "India"]);
+  // Step 2: Operational & Sourcing Capabilities
+  const [products, setProducts] = useState<ProductItem[]>([]);
+  const [targetRegions, setTargetRegions] = useState<string[]>([]);
   const [customRegion, setCustomRegion] = useState("");
-  const [moqCapability, setMoqCapability] = useState(moqOptions[1]);
+  const [moqCapability, setMoqCapability] = useState(moqOptions[0]);
   const [customMoq, setCustomMoq] = useState("");
-  const [turnaroundTime, setTurnaroundTime] = useState(turnaroundTimeOptions[2]);
+  const [turnaroundTime, setTurnaroundTime] = useState(turnaroundTimeOptions[0]);
   const [customTurnaroundTime, setCustomTurnaroundTime] = useState("");
-  const [selectedIncoterms, setSelectedIncoterms] = useState<string[]>(["FOB", "CIF", "EXW"]);
+  const [selectedIncoterms, setSelectedIncoterms] = useState<string[]>([]);
 
-  // Step 4: Catalog & Portfolio
+  // Step 3: Catalog & Portfolio
   const [samplePolicy, setSamplePolicy] = useState("Free Sample (Buyer Pays Freight)");
-  const [sourcingRegions, setSourcingRegions] = useState("Shenzhen, Ningbo, Dongguan (China) | Delhi NCR, Gujarat (India)");
-  const [auditingExpertise, setAuditingExpertise] = useState<string[]>(["On-site Audit", "Pre-shipment Inspection"]);
-  const [networkSize, setNetworkSize] = useState("100 to 250 Verified Factories");
+  const [sourcingRegions, setSourcingRegions] = useState("");
+  const [auditingExpertise, setAuditingExpertise] = useState<string[]>([]);
+  const [networkSize, setNetworkSize] = useState("10 to 50 Verified Factories");
   const [serviceScope, setServiceScope] = useState("");
   const [techStack, setTechStack] = useState("");
+  const [servicePackages, setServicePackages] = useState("");
+  const [caseStudies, setCaseStudies] = useState("");
 
-  // Step 5: Infrastructure & Certifications
-  const [teamSize, setTeamSize] = useState(teamSizeOptions[1]);
-  const [qcCount, setQcCount] = useState("8");
-  const [facilitySize, setFacilitySize] = useState("25,000 Sq. Ft.");
-  const [certificates, setCertificates] = useState<CertificateItem[]>([
-    { id: "1", name: "ISO 9001 (Quality Management)", issuingBody: "TÜV Rheinland" },
-  ]);
+  // Step 4: Infrastructure & Certifications
+  const [teamSize, setTeamSize] = useState(teamSizeOptions[0]);
+  const [qcCount, setQcCount] = useState("");
+  const [sourcingStaffCount, setSourcingStaffCount] = useState("");
+  const [facilityDetails, setFacilityDetails] = useState("");
+  const [certificates, setCertificates] = useState<CertificateItem[]>([]);
   const [certDropdown, setCertDropdown] = useState(presetCertifications[0]);
   const [certCustomName, setCertCustomName] = useState("");
   const [certIssuer, setCertIssuer] = useState("");
+  const [certFileName, setCertFileName] = useState<string | null>(null);
 
   // Step 6: Legal & Tax (KYC)
+  const [kycJurisdictionTab, setKycJurisdictionTab] = useState<string>("");
+  // India
   const [panNumber, setPanNumber] = useState("");
   const [gstinNumber, setGstinNumber] = useState("");
   const [msmeUdyam, setMsmeUdyam] = useState("");
   const [cinNumber, setCinNumber] = useState("");
   const [iecCode, setIecCode] = useState("");
+  // United States
   const [einNumber, setEinNumber] = useState("");
   const [stateLicense, setStateLicense] = useState("");
+  const [usResaleCert, setUsResaleCert] = useState("");
+  // United Kingdom
+  const [ukCompaniesHouse, setUkCompaniesHouse] = useState("");
   const [ukVatNumber, setUkVatNumber] = useState("");
+  const [ukUtr, setUkUtr] = useState("");
+  // European Union (EU)
   const [euVatNumber, setEuVatNumber] = useState("");
+  const [euEoriNumber, setEuEoriNumber] = useState("");
+  const [euCommercialRegister, setEuCommercialRegister] = useState("");
+  // China
   const [chinaUscc, setChinaUscc] = useState("");
+  const [chinaBusinessLicense, setChinaBusinessLicense] = useState("");
+  const [chinaCustomsCode, setChinaCustomsCode] = useState("");
+  // Other Global Regions
   const [localTaxId, setLocalTaxId] = useState("");
+  const [otherBusinessReg, setOtherBusinessReg] = useState("");
   const [uploadedKycDoc, setUploadedKycDoc] = useState<string | null>(null);
 
   // Step 7: Banking & Payouts
@@ -592,10 +669,11 @@ export default function SellersPage() {
   const [bankName, setBankName] = useState("");
   const [accountOrIban, setAccountOrIban] = useState("");
   const [swiftCode, setSwiftCode] = useState("");
-  const [settlementCurrencies, setSettlementCurrencies] = useState<string[]>(["USD ($)", "EUR (€)"]);
-  const [taxDocUploaded, setTaxDocUploaded] = useState(false);
+  const [settlementCurrencies, setSettlementCurrencies] = useState<string[]>([]);
+  const [withholdingTaxType, setWithholdingTaxType] = useState(withholdingTaxDocOptions[0]);
+  const [taxResidencyDocName, setTaxResidencyDocName] = useState<string | null>(null);
   const [agreedTerms, setAgreedTerms] = useState(false);
-  const [agreedLeadSharing, setAgreedLeadSharing] = useState(true);
+  const [agreedLeadSharing, setAgreedLeadSharing] = useState(false);
 
   // Scroll handler
   useEffect(() => {
@@ -672,7 +750,18 @@ export default function SellersPage() {
   };
 
   const addProduct = () => {
-    setProducts([...products, { id: Date.now().toString(), name: "", category: "", moq: "50 Units" }]);
+    setProducts([
+      ...products,
+      {
+        id: Date.now().toString(),
+        name: "",
+        category: "",
+        specs: "",
+        moq: "50 Units",
+        sampleAvailability: sampleAvailabilityOptions[0],
+        imageName: "",
+      },
+    ]);
   };
 
   const removeProduct = (id: string) => {
@@ -687,9 +776,18 @@ export default function SellersPage() {
   const addCertificate = () => {
     const name = certDropdown === "Custom Certificate" ? certCustomName.trim() : certDropdown;
     if (!name) return;
-    setCertificates([...certificates, { id: Date.now().toString(), name, issuingBody: certIssuer || "Accredited Body" }]);
+    setCertificates([
+      ...certificates,
+      {
+        id: Date.now().toString(),
+        name,
+        issuingBody: certIssuer.trim() || "Accredited Body",
+        fileName: certFileName || undefined,
+      },
+    ]);
     setCertCustomName("");
     setCertIssuer("");
+    setCertFileName(null);
   };
 
   const removeCertificate = (id: string) => {
@@ -726,10 +824,18 @@ export default function SellersPage() {
         alert(`About content must be at least 100 characters (currently ${aboutCompany.trim().length} chars).`);
         return;
       }
-    }
-    if (currentStep === 2) {
       if (!contactName.trim() || !email.trim() || !whatsapp.trim()) {
         alert("Please provide Contact Person Name, Email, and WhatsApp number.");
+        return;
+      }
+      if (!streetAddress.trim() || !city.trim() || !pincode.trim()) {
+        alert("Please provide complete operating address details (Street address, City, Pincode).");
+        return;
+      }
+    }
+    if (currentStep === 2) {
+      if (targetRegions.length === 0) {
+        alert("Please select at least one Target Export & Sourcing Region.");
         return;
       }
     }
@@ -1102,7 +1208,7 @@ export default function SellersPage() {
             </div>
           ) : (
             /* ============================================================ */
-            /* SCREEN 2: 7-STEP REGISTRATION FORM (Connected Stepper)        */
+            /* SCREEN 2: 5-STEP REGISTRATION FORM (Connected Stepper)        */
             /* ============================================================ */
             <div>
               {/* Selected Role Summary Bar with Change Role option */}
@@ -1219,10 +1325,11 @@ export default function SellersPage() {
                 <form onSubmit={handleSubmit} className="space-y-6">
 
                   {/* ============================================================ */}
-                  {/* STEP 1: Basic Information & Identification */}
+                  {/* STEP 1: Basic Information, Address & Contact Details */}
                   {/* ============================================================ */}
                   {currentStep === 1 && (
-                    <Card className="border-border/60 bg-card/90 shadow-sm backdrop-blur-sm">
+                    <div className="space-y-6">
+                      <Card className="border-border/60 bg-card/90 shadow-sm backdrop-blur-sm">
                       <CardHeader className="border-b border-border/40 pb-4">
                         <div className="flex items-center gap-3">
                           <span className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -1425,12 +1532,7 @@ export default function SellersPage() {
                         </div>
                       </CardContent>
                     </Card>
-                  )}
 
-                  {/* ============================================================ */}
-                  {/* STEP 2: Contact & Address */}
-                  {/* ============================================================ */}
-                  {currentStep === 2 && (
                     <Card className="border-border/60 bg-card/90 shadow-sm backdrop-blur-sm">
                       <CardHeader className="border-b border-border/40 pb-4">
                         <div className="flex items-center gap-3">
@@ -1438,8 +1540,7 @@ export default function SellersPage() {
                             <Phone className="size-4" />
                           </span>
                           <div>
-                            <CardTitle className="text-lg">Contact &amp; Communication Details</CardTitle>
-                            
+                            <CardTitle className="text-lg">Contact &amp; Operating Address Details</CardTitle>
                           </div>
                         </div>
                       </CardHeader>
@@ -1671,12 +1772,13 @@ export default function SellersPage() {
                         </div>
                       </CardContent>
                     </Card>
-                  )}
+                  </div>
+                )}
 
-                  {/* ============================================================ */}
-                  {/* STEP 3: Capabilities */}
-                  {/* ============================================================ */}
-                  {currentStep === 3 && (
+                {/* ============================================================ */}
+                {/* STEP 2: Operational & Sourcing Capabilities */}
+                {/* ============================================================ */}
+                {currentStep === 2 && (
                     <Card className="border-border/60 bg-card/90 shadow-sm backdrop-blur-sm">
                       <CardHeader className="border-b border-border/40 pb-4">
                         <div className="flex items-center gap-3">
@@ -1691,72 +1793,6 @@ export default function SellersPage() {
                       </CardHeader>
 
                       <CardContent className="space-y-6 pt-6">
-                        {/* Products Catalog Section */}
-                        <div>
-                          <div className="flex items-center justify-between mb-3">
-                            <div>
-                              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                                Products &amp; Capabilities Catalog <span className="text-rose-500">*</span>
-                              </label>
-                              <p className="text-[11px] text-muted-foreground">Add products you manufacture, inspect, or source for buyers</p>
-                            </div>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={addProduct}
-                              className="gap-1.5 text-xs h-8 border-dashed"
-                            >
-                              <Plus className="size-3.5" /> Add Product
-                            </Button>
-                          </div>
-
-                          <div className="space-y-3">
-                            {products.map((prod, idx) => (
-                              <div
-                                key={prod.id}
-                                className="flex flex-col sm:flex-row items-start sm:items-center gap-2.5 p-3 rounded-lg border border-border/70 bg-background/60 shadow-xs"
-                              >
-                                <span className="text-xs font-bold text-muted-foreground px-1">#{idx + 1}</span>
-                                <input
-                                  type="text"
-                                  required
-                                  placeholder="Product Title (e.g. CNC Aluminum Enclosures)"
-                                  value={prod.name}
-                                  onChange={(e) => updateProduct(prod.id, "name", capitalizeFirst(e.target.value))}
-                                  className="flex-1 w-full rounded-md border border-input bg-background px-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
-                                />
-                                <input
-                                  type="text"
-                                  required
-                                  placeholder="Category (e.g. Hardware)"
-                                  value={prod.category}
-                                  onChange={(e) => updateProduct(prod.id, "category", capitalizeWords(e.target.value))}
-                                  className="w-full sm:w-36 rounded-md border border-input bg-background px-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
-                                />
-                                <input
-                                  type="text"
-                                  placeholder="MOQ (e.g. 50 Units)"
-                                  value={prod.moq}
-                                  onChange={(e) => updateProduct(prod.id, "moq", e.target.value)}
-                                  className="w-full sm:w-28 rounded-md border border-input bg-background px-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
-                                />
-                                {products.length > 1 && (
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => removeProduct(prod.id)}
-                                    className="text-rose-500 hover:text-rose-600 h-8 w-8 p-0 shrink-0"
-                                  >
-                                    <Trash2 className="size-3.5" />
-                                  </Button>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-
                         {/* Target Export and Import Countries */}
                         <div>
                           <div className="flex items-center justify-between mb-1.5">
@@ -1886,9 +1922,9 @@ export default function SellersPage() {
                   )}
 
                   {/* ============================================================ */}
-                  {/* STEP 4: Portfolio */}
+                  {/* STEP 3: Catalog, Portfolio & Service Offerings */}
                   {/* ============================================================ */}
-                  {currentStep === 4 && (
+                  {currentStep === 3 && (
                     <Card className="border-border/60 bg-card/90 shadow-sm backdrop-blur-sm">
                       <CardHeader className="border-b border-border/40 pb-4">
                         <div className="flex items-center gap-3">
@@ -1896,131 +1932,170 @@ export default function SellersPage() {
                             <Layers className="size-4" />
                           </span>
                           <div>
-                            <CardTitle className="text-lg">Sourcing Network &amp; Portfolio</CardTitle>
-                            
+                            <CardTitle className="text-lg">Catalog, Portfolio &amp; Service Offerings</CardTitle>
                           </div>
                         </div>
                       </CardHeader>
 
-                      <CardContent className="grid gap-5 pt-6 sm:grid-cols-2">
-                        {/* Sample Policy */}
-                        <div>
-                          <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                            Sample Policy <span className="text-rose-500">*</span>
-                          </label>
-                          <select
-                            value={samplePolicy}
-                            onChange={(e) => setSamplePolicy(e.target.value)}
-                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-xs transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                          >
-                            <option value="Free Sample (Buyer Pays Freight)">Free Sample (Buyer Pays Freight)</option>
-                            <option value="Free Sample & Freight Included">Free Sample &amp; Freight Included</option>
-                            <option value="Paid Sample at Production Cost">Paid Sample at Production Cost</option>
-                            <option value="Custom Sample Policy">Custom Sample Terms</option>
-                          </select>
-                        </div>
+                      <CardContent className="space-y-6 pt-6">
+                        {/* Sample Availability Policy */}
+                        <div className="grid gap-5 sm:grid-cols-2">
+                          <div>
+                            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                              Sample Availability Terms <span className="text-rose-500">*</span>
+                            </label>
+                            <select
+                              value={samplePolicy}
+                              onChange={(e) => setSamplePolicy(e.target.value)}
+                              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-xs transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                            >
+                              {sampleAvailabilityOptions.map((opt) => (
+                                <option key={opt} value={opt}>{opt}</option>
+                              ))}
+                              <option value="Custom Sample Terms">Custom Sample Terms</option>
+                            </select>
+                          </div>
 
-                        {/* Supplier Network Size */}
-                        <div>
-                          <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                            Supplier / Factory Network Size <span className="text-rose-500">*</span>
-                          </label>
-                          <select
-                            value={networkSize}
-                            onChange={(e) => setNetworkSize(e.target.value)}
-                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-xs transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                          >
-                            <option value="10 to 50 Verified Factories">10 to 50 Verified Factories</option>
-                            <option value="50 to 100 Verified Factories">50 to 100 Verified Factories</option>
-                            <option value="100 to 250 Verified Factories">100 to 250 Verified Factories</option>
-                            <option value="250+ Verified Factories">250+ Verified Factories</option>
-                            <option value="Sole In-House Manufacturing">Sole In-House Manufacturing Facility</option>
-                          </select>
-                        </div>
-
-                        {/* Sourcing Regions / Factory Hubs */}
-                        <div className="sm:col-span-2">
-                          <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                            Sourcing Regions &amp; Industrial Hubs <span className="text-rose-500">*</span>
-                          </label>
-                          <input
-                            type="text"
-                            required
-                            placeholder="e.g. Shenzhen, Dongguan, Ningbo (China) | Delhi NCR, Gujarat, Tirupur (India)"
-                            value={sourcingRegions}
-                            onChange={(e) => setSourcingRegions(capitalizeFirst(e.target.value))}
-                            className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                          />
-                        </div>
-
-                        {/* Factory Auditing & QC Capabilities */}
-                        <div className="sm:col-span-2">
-                          <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                            Quality Control &amp; Auditing Expertise <span className="text-rose-500">*</span>
-                          </label>
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                            {[
-                              "On-site Factory Audit",
-                              "Pre-shipment Inspection",
-                              "Production Monitoring",
-                              "Social Compliance Audit",
-                              "Container Loading Check",
-                              "Lab Chemical Testing",
-                            ].map((item) => {
-                              const isSelected = auditingExpertise.includes(item);
-                              return (
-                                <button
-                                  key={item}
-                                  type="button"
-                                  onClick={() => toggleAuditCapability(item)}
-                                  className={`rounded-md border p-2 text-xs font-medium text-left transition-all ${
-                                    isSelected
-                                      ? "border-primary bg-primary/10 text-primary font-semibold"
-                                      : "border-input bg-background text-muted-foreground hover:bg-muted"
-                                  }`}
-                                >
-                                  {isSelected ? "✓ " : "+ "} {item}
-                                </button>
-                              );
-                            })}
+                          <div>
+                            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                              Verified Manufacturer Network Size <span className="text-rose-500">*</span>
+                            </label>
+                            <select
+                              value={networkSize}
+                              onChange={(e) => setNetworkSize(e.target.value)}
+                              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-xs transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                            >
+                              <option value="10 to 50 Verified Factories">10 to 50 Verified Factories</option>
+                              <option value="50 to 100 Verified Factories">50 to 100 Verified Factories</option>
+                              <option value="100 to 250 Verified Factories">100 to 250 Verified Factories</option>
+                              <option value="250+ Verified Factories">250+ Verified Factories</option>
+                              <option value="Sole In-House Manufacturing">Sole In-House Manufacturing Facility</option>
+                            </select>
                           </div>
                         </div>
 
-                        {/* Tech Stack & Engineering Tools */}
-                        <div>
-                          <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                            Tech Stack / Engineering Software
-                          </label>
-                          <input
-                            type="text"
-                            placeholder="e.g. SolidWorks, AutoCAD, ERP, 3D Prototyping"
-                            value={techStack}
-                            onChange={(e) => setTechStack(capitalizeWords(e.target.value))}
-                            className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                          />
+                        {/* Sourcing Agent Portfolio */}
+                        <div className="space-y-4 rounded-lg border border-border/70 bg-background/50 p-4">
+                          <h3 className="text-xs font-bold uppercase tracking-wider text-primary">
+                            Sourcing Agent Portfolio
+                          </h3>
+
+                          <div>
+                            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                              Sourcing Regions Covered &amp; Industrial Hubs <span className="text-rose-500">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              required
+                              placeholder="e.g. Shenzhen, Dongguan, Ningbo (China) | Delhi NCR, Gujarat, Tirupur (India)"
+                              value={sourcingRegions}
+                              onChange={(e) => setSourcingRegions(capitalizeFirst(e.target.value))}
+                              className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                              Factory Auditing &amp; Quality Inspection Expertise <span className="text-rose-500">*</span>
+                            </label>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                              {[
+                                "On-site Factory Audit",
+                                "Pre-shipment Inspection",
+                                "Production Monitoring",
+                                "Social Compliance Audit",
+                                "Container Loading Check",
+                                "Lab Chemical Testing",
+                              ].map((item) => {
+                                const isSelected = auditingExpertise.includes(item);
+                                return (
+                                  <button
+                                    key={item}
+                                    type="button"
+                                    onClick={() => toggleAuditCapability(item)}
+                                    className={`rounded-md border p-2 text-xs font-medium text-left transition-all cursor-pointer ${
+                                      isSelected
+                                        ? "border-primary bg-primary/10 text-primary font-semibold"
+                                        : "border-input bg-background text-muted-foreground hover:bg-muted"
+                                    }`}
+                                  >
+                                    {isSelected ? "✓ " : "+ "} {item}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
                         </div>
 
-                        {/* Service Scope Summary */}
-                        <div>
-                          <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                            Service Scope Summary
-                          </label>
-                          <input
-                            type="text"
-                            placeholder="e.g. End-to-end OEM/ODM Sourcing &amp; Customs Brokerage"
-                            value={serviceScope}
-                            onChange={(e) => setServiceScope(capitalizeFirst(e.target.value))}
-                            className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                          />
+                        {/* Service Provider Portfolio */}
+                        <div className="space-y-4 rounded-lg border border-border/70 bg-background/50 p-4">
+                          <h3 className="text-xs font-bold uppercase tracking-wider text-primary">
+                            Service Provider Portfolio
+                          </h3>
+
+                          <div className="grid gap-4 sm:grid-cols-2">
+                            <div>
+                              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                                Scope of Work <span className="text-rose-500">*</span>
+                              </label>
+                              <input
+                                type="text"
+                                required
+                                placeholder="e.g. End-to-end OEM/ODM Sourcing, Design &amp; Customs Brokerage"
+                                value={serviceScope}
+                                onChange={(e) => setServiceScope(capitalizeFirst(e.target.value))}
+                                className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                                Technical Stack / Engineering Software
+                              </label>
+                              <input
+                                type="text"
+                                placeholder="e.g. SolidWorks, AutoCAD, ERP, 3D Prototyping, PLM"
+                                value={techStack}
+                                onChange={(e) => setTechStack(capitalizeWords(e.target.value))}
+                                className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                              />
+                            </div>
+
+                            <div className="sm:col-span-2">
+                              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                                Service Packages
+                              </label>
+                              <input
+                                type="text"
+                                placeholder="e.g. Basic Sourcing | Full Turnkey OEM/ODM | Quality Inspection Retainer"
+                                value={servicePackages}
+                                onChange={(e) => setServicePackages(capitalizeFirst(e.target.value))}
+                                className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                              />
+                            </div>
+
+                            <div className="sm:col-span-2">
+                              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                                Past Project Case Studies
+                              </label>
+                              <textarea
+                                rows={2}
+                                placeholder="Describe notable past export or sourcing deliverables, volume handled, client satisfaction, or certifications achieved..."
+                                value={caseStudies}
+                                onChange={(e) => setCaseStudies(capitalizeFirst(e.target.value))}
+                                className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                              />
+                            </div>
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
                   )}
 
                   {/* ============================================================ */}
-                  {/* STEP 5: Infrastructure & Certifications */}
+                  {/* STEP 4: Infrastructure, Capacity & Team */}
                   {/* ============================================================ */}
-                  {currentStep === 5 && (
+                  {currentStep === 4 && (
                     <Card className="border-border/60 bg-card/90 shadow-sm backdrop-blur-sm">
                       <CardHeader className="border-b border-border/40 pb-4">
                         <div className="flex items-center gap-3">
@@ -2028,22 +2103,23 @@ export default function SellersPage() {
                             <Award className="size-4" />
                           </span>
                           <div>
-                            <CardTitle className="text-lg">Infrastructure &amp; Certifications</CardTitle>
+                            <CardTitle className="text-lg">Infrastructure, Capacity &amp; Team Certifications</CardTitle>
                           </div>
                         </div>
                       </CardHeader>
 
                       <CardContent className="space-y-6 pt-6">
+                        {/* Team & Workforce Counts */}
                         <div className="grid gap-5 sm:grid-cols-3">
-                          {/* Team Size */}
+                          {/* Total Team Size */}
                           <div>
                             <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                              Team Size <span className="text-rose-500">*</span>
+                              Total Team Size &amp; Workforce <span className="text-rose-500">*</span>
                             </label>
                             <select
                               value={teamSize}
                               onChange={(e) => setTeamSize(e.target.value)}
-                              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-xs transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-xs transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
                             >
                               {teamSizeOptions.map((t) => (
                                 <option key={t} value={t}>{t} Staff</option>
@@ -2051,10 +2127,10 @@ export default function SellersPage() {
                             </select>
                           </div>
 
-                          {/* QC Staff Count */}
+                          {/* Dedicated QC Staff Count */}
                           <div>
                             <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                              Dedicated QC Staff <span className="text-rose-500">*</span>
+                              Dedicated Quality Control (QC) Count <span className="text-rose-500">*</span>
                             </label>
                             <input
                               type="number"
@@ -2067,43 +2143,71 @@ export default function SellersPage() {
                             />
                           </div>
 
-                          {/* Facility Size */}
+                          {/* Dedicated Sourcing Staff Count */}
                           <div>
                             <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                              Facility Size (Sq. Ft.) <span className="text-rose-500">*</span>
+                              Dedicated Sourcing Staff Count <span className="text-rose-500">*</span>
                             </label>
                             <input
-                              type="text"
+                              type="number"
+                              min="0"
                               required
-                              placeholder="e.g. 25,000 Sq. Ft."
-                              value={facilitySize}
-                              onChange={(e) => setFacilitySize(e.target.value)}
+                              placeholder="e.g. 12"
+                              value={sourcingStaffCount}
+                              onChange={(e) => setSourcingStaffCount(e.target.value)}
                               className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                             />
                           </div>
                         </div>
 
-                        {/* Certifications Dynamic List */}
+                        {/* Facility Details */}
                         <div>
                           <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                            Add Business &amp; Quality Certifications
+                            Facility Details (Warehouse Size, Plant Sq. Footage or Office Setup) <span className="text-rose-500">*</span>
                           </label>
+                          <textarea
+                            rows={3}
+                            required
+                            placeholder="e.g. 35,000 Sq. Ft. manufacturing plant with CNC milling shop floor, 15,000 Sq. Ft. bonded warehouse, and cleanroom assembly area..."
+                            value={facilityDetails}
+                            onChange={(e) => setFacilityDetails(capitalizeFirst(e.target.value))}
+                            className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                          />
+                        </div>
 
-                          <div className="flex flex-col sm:flex-row gap-2.5 p-3 rounded-lg border border-border/70 bg-background/60 shadow-xs mb-3">
+                        {/* Certifications & Quality Standards */}
+                        <div className="space-y-3 rounded-lg border border-border/70 bg-background/50 p-4">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h3 className="text-xs font-bold uppercase tracking-wider text-primary">
+                                Certifications &amp; Quality Standards
+                              </h3>
+                              <p className="text-[11px] text-muted-foreground">
+                                Select from international, regional, or third-party approvals, attach documentation, and add to your verified profile.
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Certificate Adder Row */}
+                          <div className="flex flex-col sm:flex-row gap-2.5 p-3 rounded-lg border border-border/70 bg-card shadow-xs">
                             <select
                               value={certDropdown}
                               onChange={(e) => setCertDropdown(e.target.value)}
-                              className="flex-1 rounded-md border border-input bg-background px-3 py-1.5 text-xs text-foreground focus:border-primary focus:outline-none"
+                              className="flex-1 rounded-md border border-input bg-background px-3 py-1.5 text-xs text-foreground focus:border-primary focus:outline-none cursor-pointer"
                             >
-                              {presetCertifications.map((c) => (
-                                <option key={c} value={c}>{c}</option>
+                              {certificationGroups.map((grp) => (
+                                <optgroup key={grp.group} label={grp.group}>
+                                  {grp.items.map((c) => (
+                                    <option key={c} value={c}>{c}</option>
+                                  ))}
+                                </optgroup>
                               ))}
                             </select>
 
                             {certDropdown === "Custom Certificate" && (
                               <input
                                 type="text"
-                                placeholder="Enter certificate name..."
+                                placeholder="Certificate Name..."
                                 value={certCustomName}
                                 onChange={(e) => setCertCustomName(capitalizeFirst(e.target.value))}
                                 className="w-full sm:w-44 rounded-md border border-input bg-background px-3 py-1.5 text-xs text-foreground focus:border-primary focus:outline-none"
@@ -2112,38 +2216,65 @@ export default function SellersPage() {
 
                             <input
                               type="text"
-                              placeholder="Issuing Body (e.g. TÜV / SGS)"
+                              placeholder="Issuing Body (e.g. TÜV / SGS / BIS)"
                               value={certIssuer}
                               onChange={(e) => setCertIssuer(capitalizeWords(e.target.value))}
                               className="w-full sm:w-40 rounded-md border border-input bg-background px-3 py-1.5 text-xs text-foreground focus:border-primary focus:outline-none"
                             />
 
+                            {/* Certificate File Upload Option */}
+                            <label className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-dashed border-input bg-background text-xs text-muted-foreground hover:text-foreground cursor-pointer shrink-0 transition-colors">
+                              <Paperclip className="size-3.5 text-primary" />
+                              <span className="truncate max-w-[120px]">
+                                {certFileName ? certFileName : "Upload Cert"}
+                              </span>
+                              <input
+                                type="file"
+                                accept=".pdf,.jpg,.jpeg,.png"
+                                className="hidden"
+                                onChange={(e) => {
+                                  if (e.target.files && e.target.files[0]) {
+                                    setCertFileName(e.target.files[0].name);
+                                  }
+                                }}
+                              />
+                            </label>
+
                             <Button
                               type="button"
-                              variant="secondary"
+                              variant="default"
                               size="sm"
                               onClick={addCertificate}
-                              className="h-8 gap-1 text-xs shrink-0"
+                              className="h-8 gap-1 text-xs shrink-0 cursor-pointer"
                             >
-                              <Plus className="size-3.5" /> Add Cert
+                              <Plus className="size-3.5" /> Add Certificate
                             </Button>
                           </div>
 
-                          <div className="flex flex-wrap gap-2">
+                          {/* Render added certificates */}
+                          <div className="flex flex-wrap gap-2 pt-1">
                             {certificates.map((cert) => (
                               <div
                                 key={cert.id}
-                                className="flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs text-foreground shadow-2xs"
+                                className="flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-3 py-1.5 text-xs text-foreground shadow-2xs"
                               >
-                                <FileCheck2 className="size-3.5 text-primary shrink-0" />
-                                <span className="font-semibold text-primary">{cert.name}</span>
-                                <span className="text-muted-foreground">({cert.issuingBody})</span>
+                                <FileCheck2 className="size-4 text-primary shrink-0" />
+                                <div>
+                                  <span className="font-semibold text-primary">{cert.name}</span>
+                                  <span className="text-muted-foreground ml-1.5">({cert.issuingBody})</span>
+                                  {cert.fileName && (
+                                    <span className="ml-2 inline-flex items-center gap-1 text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
+                                      <Paperclip className="size-3" /> {cert.fileName}
+                                    </span>
+                                  )}
+                                </div>
                                 <button
                                   type="button"
                                   onClick={() => removeCertificate(cert.id)}
-                                  className="text-muted-foreground hover:text-rose-500 ml-1"
+                                  className="text-muted-foreground hover:text-rose-500 ml-2 cursor-pointer"
+                                  title="Remove certificate"
                                 >
-                                  <X className="size-3" />
+                                  <X className="size-3.5" />
                                 </button>
                               </div>
                             ))}
@@ -2154,223 +2285,432 @@ export default function SellersPage() {
                   )}
 
                   {/* ============================================================ */}
-                  {/* STEP 6: Legal & Tax (KYC) */}
+                  {/* STEP 5: Country-Specific Legal, Tax & Banking Setup */}
                   {/* ============================================================ */}
-                  {currentStep === 6 && (
-                    <Card className="border-border/60 bg-card/90 shadow-sm backdrop-blur-sm">
-                      <CardHeader className="border-b border-border/40 pb-4">
-                        <div className="flex items-center gap-3">
-                          <span className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                            <ShieldCheck className="size-4" />
-                          </span>
-                          <div>
-                            <CardTitle className="text-lg">Legal &amp; Tax Identification (KYC)</CardTitle>
-                          </div>
-                        </div>
-                      </CardHeader>
-
-                      <CardContent className="grid gap-5 pt-6 sm:grid-cols-2">
-                        {country === "India" && (
-                          <>
-                            <div>
-                              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                                PAN Number (Company/Individual) <span className="text-rose-500">*</span>
-                              </label>
-                              <input
-                                type="text"
-                                required
-                                maxLength={10}
-                                placeholder="ABCDE1234F"
-                                value={panNumber}
-                                onChange={(e) => setPanNumber(e.target.value.toUpperCase())}
-                                className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 uppercase"
-                              />
-                            </div>
-
-                            <div>
-                              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                                GSTIN Number <span className="text-rose-500">*</span>
-                              </label>
-                              <input
-                                type="text"
-                                required
-                                maxLength={15}
-                                placeholder="24ABCDE1234F1Z5"
-                                value={gstinNumber}
-                                onChange={(e) => setGstinNumber(e.target.value.toUpperCase())}
-                                className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 uppercase"
-                              />
-                            </div>
-
-                            <div>
-                              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                                MSME / Udyam Registration Number
-                              </label>
-                              <input
-                                type="text"
-                                placeholder="UDYAM-GJ-01-0012345"
-                                value={msmeUdyam}
-                                onChange={(e) => setMsmeUdyam(e.target.value.toUpperCase())}
-                                className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                              />
-                            </div>
-
-                            <div>
-                              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                                IEC Code (Import Export Code)
-                              </label>
-                              <input
-                                type="text"
-                                maxLength={10}
-                                placeholder="10-digit IEC Code"
-                                value={iecCode}
-                                onChange={(e) => setIecCode(e.target.value.toUpperCase())}
-                                className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                              />
-                            </div>
-                          </>
-                        )}
-
-                        {country === "United States" && (
-                          <>
-                            <div>
-                              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                                Federal EIN / Tax ID <span className="text-rose-500">*</span>
-                              </label>
-                              <input
-                                type="text"
-                                required
-                                placeholder="XX-XXXXXXX"
-                                value={einNumber}
-                                onChange={(e) => setEinNumber(e.target.value)}
-                                className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                                State Business Registration Number
-                              </label>
-                              <input
-                                type="text"
-                                placeholder="State Entity Number"
-                                value={stateLicense}
-                                onChange={(e) => setStateLicense(e.target.value)}
-                                className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                              />
-                            </div>
-                          </>
-                        )}
-
-                        {country === "China" && (
-                          <div className="sm:col-span-2">
-                            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                              Unified Social Credit Code (USCC) <span className="text-rose-500">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              required
-                              maxLength={18}
-                              placeholder="18-digit Unified Social Credit Code"
-                              value={chinaUscc}
-                              onChange={(e) => setChinaUscc(e.target.value.toUpperCase())}
-                              className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 uppercase"
-                            />
-                          </div>
-                        )}
-
-                        {country !== "India" && country !== "United States" && country !== "China" && (
-                          <>
-                            <div>
-                              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                                National Tax ID / VAT Number <span className="text-rose-500">*</span>
-                              </label>
-                              <input
-                                type="text"
-                                required
-                                placeholder="Official Tax ID"
-                                value={localTaxId}
-                                onChange={(e) => setLocalTaxId(e.target.value.toUpperCase())}
-                                className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                                Corporate Registration Number
-                              </label>
-                              <input
-                                type="text"
-                                placeholder="Commercial Registry No"
-                                value={cinNumber}
-                                onChange={(e) => setCinNumber(e.target.value.toUpperCase())}
-                                className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                              />
-                            </div>
-                          </>
-                        )}
-
-                        {/* Upload KYC Document Box */}
-                        <div className="sm:col-span-2">
-                          <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                            Upload Certificate of Incorporation / Business License
-                          </label>
-                          <div className="rounded-lg border-2 border-dashed border-border/80 bg-background/50 p-5 text-center transition-colors hover:border-primary/50">
-                            {uploadedKycDoc ? (
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                  <FileCheck2 className="size-5 text-emerald-500" />
-                                  <span className="text-xs font-semibold text-foreground">{uploadedKycDoc}</span>
-                                  <Badge variant="outline" className="text-[10px] text-emerald-600">Attached</Badge>
-                                </div>
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => setUploadedKycDoc(null)}
-                                  className="text-rose-500 hover:text-rose-600"
-                                >
-                                  <X className="size-4" /> Remove
-                                </Button>
-                              </div>
-                            ) : (
-                              <label className="cursor-pointer flex flex-col items-center justify-center">
-                                <UploadCloud className="size-8 text-muted-foreground mb-2" />
-                                <span className="text-sm font-medium text-foreground">
-                                  Click to attach Certificate or Business License PDF / JPG
-                                </span>
-                                <span className="mt-1 text-xs text-muted-foreground">
-                                  Official document for verified partner badge • Max size 5 MB
-                                </span>
-                                <input
-                                  type="file"
-                                  accept=".pdf,.jpg,.jpeg,.png"
-                                  onChange={(e) => {
-                                    if (e.target.files && e.target.files[0]) {
-                                      setUploadedKycDoc(e.target.files[0].name);
-                                    }
-                                  }}
-                                  className="hidden"
-                                />
-                              </label>
-                            )}
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-
-                  {/* ============================================================ */}
-                  {/* STEP 7: Banking & Payout Details */}
-                  {/* ============================================================ */}
-                  {currentStep === 7 && (
+                  {currentStep === 5 && (
                     <div className="space-y-6">
+                      {(() => {
+                    const defaultJurisdiction =
+                      country === "India"
+                        ? "India"
+                        : country === "United States"
+                        ? "United States"
+                        : country === "United Kingdom"
+                        ? "United Kingdom"
+                        : country === "China"
+                        ? "China"
+                        : country === "Germany"
+                        ? "European Union (EU)"
+                        : "Other Global Regions";
+                    const activeJurisdiction = kycJurisdictionTab || defaultJurisdiction;
+
+                    return (
                       <Card className="border-border/60 bg-card/90 shadow-sm backdrop-blur-sm">
+                        <CardHeader className="border-b border-border/40 pb-4">
+                          <div className="flex items-center gap-3">
+                            <span className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                              <ShieldCheck className="size-4" />
+                            </span>
+                            <div>
+                              <CardTitle className="text-lg">Country-Specific Legal, Tax &amp; Compliance (KYC)</CardTitle>
+                            </div>
+                          </div>
+                        </CardHeader>
+
+                        <CardContent className="space-y-6 pt-6">
+                          {/* Jurisdiction Selector Tabs */}
+                          <div>
+                            <div className="flex items-center justify-between mb-2">
+                              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                Select Compliance Jurisdiction
+                              </label>
+                              <span className="text-[11px] text-muted-foreground">
+                                Operating Country: <strong className="text-foreground">{country}</strong>
+                              </span>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              {kycJurisdictions.map((jur) => {
+                                const isSelected = activeJurisdiction === jur.name;
+                                return (
+                                  <button
+                                    key={jur.name}
+                                    type="button"
+                                    onClick={() => setKycJurisdictionTab(jur.name)}
+                                    className={`inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
+                                      isSelected
+                                        ? "bg-primary text-primary-foreground shadow-xs"
+                                        : "border border-input bg-background text-muted-foreground hover:bg-muted hover:text-foreground"
+                                    }`}
+                                  >
+                                    {jur.flag ? (
+                                      <img
+                                        src={jur.flag}
+                                        alt=""
+                                        className="h-3.5 w-5 rounded-[2px] object-cover border border-black/10 shrink-0"
+                                      />
+                                    ) : (
+                                      <Globe className="size-3.5 text-cyan-500 shrink-0" />
+                                    )}
+                                    <span>{jur.name}</span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          {/* Country-Specific Compliance Fields */}
+                          <div className="grid gap-5 sm:grid-cols-2">
+                            {/* 1. INDIA */}
+                            {activeJurisdiction === "India" && (
+                              <>
+                                <div>
+                                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                                    PAN Number (Company / Individual) <span className="text-rose-500">*</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    required
+                                    maxLength={10}
+                                    placeholder="e.g. ABCDE1234F"
+                                    value={panNumber}
+                                    onChange={(e) => setPanNumber(e.target.value.toUpperCase())}
+                                    className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 uppercase"
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                                    GSTIN Number <span className="text-rose-500">*</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    required
+                                    maxLength={15}
+                                    placeholder="e.g. 24ABCDE1234F1Z5"
+                                    value={gstinNumber}
+                                    onChange={(e) => setGstinNumber(e.target.value.toUpperCase())}
+                                    className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 uppercase"
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                                    MSME / Udyam Registration Number
+                                  </label>
+                                  <input
+                                    type="text"
+                                    placeholder="e.g. UDYAM-GJ-01-0012345"
+                                    value={msmeUdyam}
+                                    onChange={(e) => setMsmeUdyam(e.target.value.toUpperCase())}
+                                    className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                                    CIN / LLPIN (Corporate Identity No.)
+                                  </label>
+                                  <input
+                                    type="text"
+                                    placeholder="e.g. U72900GJ2020PTC114567"
+                                    value={cinNumber}
+                                    onChange={(e) => setCinNumber(e.target.value.toUpperCase())}
+                                    className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 uppercase"
+                                  />
+                                </div>
+
+                                <div className="sm:col-span-2">
+                                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                                    IEC Code (Import Export Code)
+                                  </label>
+                                  <input
+                                    type="text"
+                                    maxLength={10}
+                                    placeholder="e.g. 0512345678"
+                                    value={iecCode}
+                                    onChange={(e) => setIecCode(e.target.value.toUpperCase())}
+                                    className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 uppercase"
+                                  />
+                                </div>
+                              </>
+                            )}
+
+                            {/* 2. UNITED STATES */}
+                            {activeJurisdiction === "United States" && (
+                              <>
+                                <div>
+                                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                                    EIN (Employer Identification Number) <span className="text-rose-500">*</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    required
+                                    placeholder="e.g. 12-3456789"
+                                    value={einNumber}
+                                    onChange={(e) => setEinNumber(e.target.value)}
+                                    className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                                    State Business License Number
+                                  </label>
+                                  <input
+                                    type="text"
+                                    placeholder="e.g. CA-CORP-987654"
+                                    value={stateLicense}
+                                    onChange={(e) => setStateLicense(e.target.value)}
+                                    className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                  />
+                                </div>
+
+                                <div className="sm:col-span-2">
+                                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                                    Resale Certificate / Sales Tax ID
+                                  </label>
+                                  <input
+                                    type="text"
+                                    placeholder="e.g. RES-99887766-TAX"
+                                    value={usResaleCert}
+                                    onChange={(e) => setUsResaleCert(e.target.value)}
+                                    className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                  />
+                                </div>
+                              </>
+                            )}
+
+                            {/* 3. UNITED KINGDOM */}
+                            {activeJurisdiction === "United Kingdom" && (
+                              <>
+                                <div>
+                                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                                    Companies House Registration Number <span className="text-rose-500">*</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    required
+                                    placeholder="e.g. 01234567"
+                                    value={ukCompaniesHouse}
+                                    onChange={(e) => setUkCompaniesHouse(e.target.value.toUpperCase())}
+                                    className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 uppercase"
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                                    VAT Registration Number
+                                  </label>
+                                  <input
+                                    type="text"
+                                    placeholder="e.g. GB 123 4567 89"
+                                    value={ukVatNumber}
+                                    onChange={(e) => setUkVatNumber(e.target.value.toUpperCase())}
+                                    className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 uppercase"
+                                  />
+                                </div>
+
+                                <div className="sm:col-span-2">
+                                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                                    Unique Taxpayer Reference (UTR)
+                                  </label>
+                                  <input
+                                    type="text"
+                                    maxLength={10}
+                                    placeholder="e.g. 10-digit UTR"
+                                    value={ukUtr}
+                                    onChange={(e) => setUkUtr(e.target.value)}
+                                    className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                  />
+                                </div>
+                              </>
+                            )}
+
+                            {/* 4. EUROPEAN UNION (EU) */}
+                            {activeJurisdiction === "European Union (EU)" && (
+                              <>
+                                <div>
+                                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                                    VAT Identification Number <span className="text-rose-500">*</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    required
+                                    placeholder="e.g. DE123456789"
+                                    value={euVatNumber}
+                                    onChange={(e) => setEuVatNumber(e.target.value.toUpperCase())}
+                                    className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 uppercase"
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                                    EORI Number (Economic Operators Reg &amp; ID) <span className="text-rose-500">*</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    required
+                                    placeholder="e.g. DE123456789012"
+                                    value={euEoriNumber}
+                                    onChange={(e) => setEuEoriNumber(e.target.value.toUpperCase())}
+                                    className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 uppercase"
+                                  />
+                                </div>
+
+                                <div className="sm:col-span-2">
+                                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                                    Commercial Register Extract Reference
+                                  </label>
+                                  <input
+                                    type="text"
+                                    placeholder="e.g. HRB 12345 Amtsgericht Frankfurt"
+                                    value={euCommercialRegister}
+                                    onChange={(e) => setEuCommercialRegister(e.target.value)}
+                                    className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                  />
+                                </div>
+                              </>
+                            )}
+
+                            {/* 5. CHINA */}
+                            {activeJurisdiction === "China" && (
+                              <>
+                                <div className="sm:col-span-2">
+                                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                                    Unified Social Credit Code (USCC) <span className="text-rose-500">*</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    required
+                                    maxLength={18}
+                                    placeholder="e.g. 91330100MA2Bxxxxxx"
+                                    value={chinaUscc}
+                                    onChange={(e) => setChinaUscc(e.target.value.toUpperCase())}
+                                    className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 uppercase"
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                                    Business License Number
+                                  </label>
+                                  <input
+                                    type="text"
+                                    placeholder="e.g. 330100000xxxxxx"
+                                    value={chinaBusinessLicense}
+                                    onChange={(e) => setChinaBusinessLicense(e.target.value.toUpperCase())}
+                                    className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 uppercase"
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                                    Customs Registration Code (CR Code)
+                                  </label>
+                                  <input
+                                    type="text"
+                                    maxLength={10}
+                                    placeholder="e.g. 10-digit Customs Code"
+                                    value={chinaCustomsCode}
+                                    onChange={(e) => setChinaCustomsCode(e.target.value.toUpperCase())}
+                                    className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 uppercase"
+                                  />
+                                </div>
+                              </>
+                            )}
+
+                            {/* 6. OTHER GLOBAL REGIONS */}
+                            {activeJurisdiction === "Other Global Regions" && (
+                              <>
+                                <div>
+                                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                                    Local Tax ID / National Tax Number <span className="text-rose-500">*</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    required
+                                    placeholder="Official Tax / VAT Registration"
+                                    value={localTaxId}
+                                    onChange={(e) => setLocalTaxId(e.target.value.toUpperCase())}
+                                    className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                                    Business Registration / Incorporation Certificate
+                                  </label>
+                                  <input
+                                    type="text"
+                                    placeholder="Commercial Registry / Legal Entity No"
+                                    value={otherBusinessReg}
+                                    onChange={(e) => setOtherBusinessReg(e.target.value.toUpperCase())}
+                                    className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                  />
+                                </div>
+                              </>
+                            )}
+
+                            {/* Upload Certificate of Incorporation / Business License */}
+                            <div className="sm:col-span-2">
+                              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                                Upload Certificate of Incorporation / Business License Document
+                              </label>
+                              <div className="rounded-lg border-2 border-dashed border-border/80 bg-background/50 p-5 text-center transition-colors hover:border-primary/50">
+                                {uploadedKycDoc ? (
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <FileCheck2 className="size-5 text-emerald-500" />
+                                      <span className="text-xs font-semibold text-foreground">{uploadedKycDoc}</span>
+                                      <Badge variant="outline" className="text-[10px] text-emerald-600">Attached</Badge>
+                                    </div>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => setUploadedKycDoc(null)}
+                                      className="text-rose-500 hover:text-rose-600 cursor-pointer"
+                                    >
+                                      <X className="size-4 mr-1" /> Remove
+                                    </Button>
+                                  </div>
+                                ) : (
+                                  <label className="cursor-pointer flex flex-col items-center justify-center">
+                                    <UploadCloud className="size-8 text-muted-foreground mb-2" />
+                                    <span className="text-sm font-medium text-foreground">
+                                      Click to attach Certificate or Business License PDF / JPG
+                                    </span>
+                                    <span className="mt-1 text-xs text-muted-foreground">
+                                      Official jurisdiction proof for verified partner badge • Max 5 MB
+                                    </span>
+                                    <input
+                                      type="file"
+                                      accept=".pdf,.jpg,.jpeg,.png"
+                                      onChange={(e) => {
+                                        if (e.target.files && e.target.files[0]) {
+                                          setUploadedKycDoc(e.target.files[0].name);
+                                        }
+                                      }}
+                                      className="hidden"
+                                    />
+                                  </label>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })()}
+
+                  <Card className="border-border/60 bg-card/90 shadow-sm backdrop-blur-sm">
                         <CardHeader className="border-b border-border/40 pb-4">
                           <div className="flex items-center gap-3">
                             <span className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
                               <CreditCard className="size-4" />
                             </span>
                             <div>
-                              <CardTitle className="text-lg">Banking &amp; Settlement Payout Details</CardTitle>
+                              <CardTitle className="text-lg">Banking &amp; International Payout Setup</CardTitle>
                             </div>
                           </div>
                         </CardHeader>
@@ -2379,12 +2719,12 @@ export default function SellersPage() {
                           {/* Account Holder Name */}
                           <div>
                             <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                              Bank Account Holder Name <span className="text-rose-500">*</span>
+                              Bank Account Holder Name (Must match legal entity name) <span className="text-rose-500">*</span>
                             </label>
                             <input
                               type="text"
                               required
-                              placeholder="Legal Entity Name or Personal Name"
+                              placeholder="Legal Entity Name or Official Account Holder"
                               value={accountHolder}
                               onChange={(e) => setAccountHolder(capitalizeWords(e.target.value))}
                               className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
@@ -2424,12 +2764,12 @@ export default function SellersPage() {
                           {/* SWIFT / BIC */}
                           <div>
                             <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                              SWIFT / BIC / Routing Code <span className="text-rose-500">*</span>
+                              Routing Number / SWIFT / BIC Code <span className="text-rose-500">*</span>
                             </label>
                             <input
                               type="text"
                               required
-                              placeholder="8 or 11 Character SWIFT/BIC"
+                              placeholder="8 or 11 Character SWIFT/BIC or Routing Code"
                               value={swiftCode}
                               onChange={(e) => setSwiftCode(e.target.value.toUpperCase())}
                               className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
@@ -2439,26 +2779,102 @@ export default function SellersPage() {
                           {/* Accepted Settlement Currencies */}
                           <div className="sm:col-span-2">
                             <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                              Accepted Settlement Currencies <span className="text-rose-500">*</span>
+                              Currency Support for Settlements <span className="text-rose-500">*</span>
                             </label>
                             <div className="flex flex-wrap gap-2">
                               {currencyOptions.map((cur) => {
-                                const isSelected = settlementCurrencies.includes(cur);
+                                const isSelected = settlementCurrencies.includes(cur.code);
                                 return (
                                   <button
-                                    key={cur}
+                                    key={cur.code}
                                     type="button"
-                                    onClick={() => toggleCurrency(cur)}
-                                    className={`rounded-md border px-3 py-1.5 text-xs font-semibold transition-all ${
+                                    onClick={() => toggleCurrency(cur.code)}
+                                    className={`inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
                                       isSelected
                                         ? "border-primary bg-primary text-primary-foreground shadow-xs"
-                                        : "border-input bg-background text-muted-foreground hover:bg-muted"
+                                        : "border-input bg-background text-muted-foreground hover:bg-muted hover:text-foreground"
                                     }`}
                                   >
-                                    {cur}
+                                    {cur.flag ? (
+                                      <img
+                                        src={cur.flag}
+                                        alt=""
+                                        className="h-3.5 w-5 rounded-[2px] object-cover border border-black/10 shrink-0"
+                                      />
+                                    ) : null}
+                                    <span>{cur.code}</span>
                                   </button>
                                 );
                               })}
+                            </div>
+                          </div>
+
+                          {/* Tax Residency & Withholding Tax Documents */}
+                          <div className="sm:col-span-2 space-y-3 rounded-lg border border-border/70 bg-background/50 p-4">
+                            <div>
+                              <h3 className="text-xs font-bold uppercase tracking-wider text-primary">
+                                Tax Residency &amp; Withholding Tax Documents
+                              </h3>
+                              <p className="text-[11px] text-muted-foreground mt-0.5">
+                                Required for cross-border settlements, international remittances, and tax treaty benefits (e.g. W-8BEN / W-9 for US, local tax forms).
+                              </p>
+                            </div>
+
+                            <div className="grid gap-3 sm:grid-cols-2">
+                              <div>
+                                <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                                  Withholding Tax Form Type <span className="text-rose-500">*</span>
+                                </label>
+                                <select
+                                  value={withholdingTaxType}
+                                  onChange={(e) => setWithholdingTaxType(e.target.value)}
+                                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-xs sm:text-sm text-foreground shadow-xs transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                                >
+                                  {withholdingTaxDocOptions.map((opt) => (
+                                    <option key={opt} value={opt}>{opt}</option>
+                                  ))}
+                                </select>
+                              </div>
+
+                              <div>
+                                <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                                  Attach Tax Residency / Withholding Document
+                                </label>
+                                {taxResidencyDocName ? (
+                                  <div className="flex items-center justify-between h-[38px] px-3 rounded-md border border-border bg-background">
+                                    <div className="flex items-center gap-1.5 truncate">
+                                      <FileCheck2 className="size-4 text-emerald-500 shrink-0" />
+                                      <span className="text-xs font-semibold text-foreground truncate">{taxResidencyDocName}</span>
+                                    </div>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => setTaxResidencyDocName(null)}
+                                      className="text-rose-500 hover:text-rose-600 h-6 px-1.5 text-xs cursor-pointer"
+                                    >
+                                      <X className="size-3.5" />
+                                    </Button>
+                                  </div>
+                                ) : (
+                                  <label className="flex items-center justify-between w-full h-[38px] px-3 rounded-md border border-dashed border-input bg-background hover:bg-muted/50 cursor-pointer text-xs transition-colors">
+                                    <span className="truncate text-muted-foreground">
+                                      Attach W-8BEN, W-9 or Local Tax Form (PDF / JPG)
+                                    </span>
+                                    <UploadCloud className="size-4 text-primary shrink-0 ml-1.5" />
+                                    <input
+                                      type="file"
+                                      accept=".pdf,.jpg,.jpeg,.png"
+                                      className="hidden"
+                                      onChange={(e) => {
+                                        if (e.target.files && e.target.files[0]) {
+                                          setTaxResidencyDocName(e.target.files[0].name);
+                                        }
+                                      }}
+                                    />
+                                  </label>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </CardContent>
