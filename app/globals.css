@@ -303,4 +303,13 @@ input:disabled,
   cursor: not-allowed;
 }
 
+.bg-popover {
+  background-color: #ffffff !important;
+}
+
+.dark .bg-popover,
+:is(.dark .bg-popover) {
+  background-color: #171717 !important;
+}
+
 

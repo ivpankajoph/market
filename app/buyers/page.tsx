@@ -179,7 +179,7 @@ function CountrySelect({
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 top-full z-50 mt-1.5 max-h-64 min-w-[220px] w-full overflow-y-auto rounded-lg border border-border/80 bg-popover/95 p-1.5 shadow-xl backdrop-blur-md [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-muted-foreground/25">
+        <div className="absolute left-0 top-full z-50 mt-1.5 max-h-64 min-w-[220px] w-full overflow-y-auto rounded-lg border border-border/80 bg-white dark:bg-[#18181b] p-1.5 shadow-2xl [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-muted-foreground/25">
           {destinationCountries.map((c) => {
             const isChosen = c.name === value;
             return (
@@ -600,7 +600,7 @@ function StateSelect({
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 top-full z-50 mt-1.5 w-full min-w-[240px] rounded-lg border border-border/80 bg-popover/95 p-1.5 shadow-xl backdrop-blur-md">
+        <div className="absolute left-0 top-full z-50 mt-1.5 w-full min-w-[240px] rounded-lg border border-border/80 bg-white dark:bg-[#18181b] p-1.5 shadow-2xl [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-muted-foreground/25">
           <div className="relative mb-1.5 px-1 pt-1">
             <Search className="pointer-events-none absolute left-3.5 top-3.5 size-3.5 text-muted-foreground" />
             <input

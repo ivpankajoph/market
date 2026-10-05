@@ -291,7 +291,7 @@ function CountrySelect({ value, onChange }: { value: string; onChange: (val: str
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 top-full z-50 mt-1 max-h-56 w-full min-w-[200px] overflow-y-auto rounded-lg border border-border/80 bg-popover p-1 shadow-lg backdrop-blur-md">
+        <div className="absolute left-0 top-full z-50 mt-1 max-h-56 w-full min-w-[200px] overflow-y-auto rounded-lg border border-border/80 bg-white dark:bg-[#18181b] p-1 shadow-2xl [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-muted-foreground/25">
           {destinationCountries.map((c) => {
             const isChosen = c.name === value;
             return (
@@ -373,7 +373,7 @@ function CountryCodeSelect({
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 top-full z-50 mt-1 max-h-60 w-56 overflow-y-auto rounded-lg border border-border/80 bg-popover p-1 shadow-xl backdrop-blur-md [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-muted-foreground/25">
+        <div className="absolute left-0 top-full z-50 mt-1 max-h-60 w-56 overflow-y-auto rounded-lg border border-border/80 bg-white dark:bg-[#18181b] p-1 shadow-2xl [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-muted-foreground/25">
           {countryCodes.map((c) => {
             const isChosen = c.code === value;
             return (
@@ -470,7 +470,7 @@ function StateSelect({
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 top-full z-50 mt-1 max-h-56 w-full min-w-[220px] overflow-y-auto rounded-lg border border-border/80 bg-popover p-1 shadow-lg backdrop-blur-md">
+        <div className="absolute left-0 top-full z-50 mt-1 max-h-64 w-full min-w-[220px] overflow-y-auto rounded-lg border border-border/80 bg-white dark:bg-[#18181b] p-1.5 shadow-2xl [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-muted-foreground/25">
           <div className="relative mb-1.5 px-1 pt-1">
             <Search className="pointer-events-none absolute left-3 top-2.5 size-3.5 text-muted-foreground" />
             <input
@@ -479,11 +479,11 @@ function StateSelect({
               value={search}
               autoFocus
               onChange={(e) => setSearch(capitalizeWords(e.target.value))}
-              className="w-full rounded-md border border-input bg-background pl-8 pr-2.5 py-1 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
+              className="w-full rounded-md border border-input bg-muted/30 dark:bg-zinc-800/80 pl-8 pr-2.5 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
             />
           </div>
 
-          <div className="max-h-40 overflow-y-auto space-y-0.5">
+          <div className="max-h-48 overflow-y-auto space-y-0.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-muted-foreground/25">
             {filtered.map((s) => {
               const isChosen = s.toLowerCase() === value.toLowerCase();
               return (
@@ -495,8 +495,8 @@ function StateSelect({
                     setIsOpen(false);
                     setSearch("");
                   }}
-                  className={`flex w-full items-center justify-between rounded-md px-2.5 py-1.5 text-left text-xs transition-colors ${
-                    isChosen ? "bg-primary/10 text-primary font-semibold" : "text-foreground hover:bg-muted/80"
+                  className={`flex w-full items-center justify-between rounded-md px-2.5 py-1.5 text-left text-xs transition-colors cursor-pointer ${
+                    isChosen ? "bg-primary/10 text-primary font-semibold" : "text-foreground hover:bg-muted"
                   }`}
                 >
                   <span className="truncate">{s}</span>
