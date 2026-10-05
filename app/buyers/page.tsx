@@ -34,7 +34,9 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { OtpVerificationButton } from "@/components/otp-verification-button";
 import { routePath } from "@/url";
+import { buildWhatsappNumber, submitMarketForm } from "@/lib/api";
 
 const sourceCountryOptions = [
   { id: "china", label: "China", flagImg: "/flags/china.svg" },
@@ -670,12 +672,12 @@ export default function BuyersPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [emailVerified, setEmailVerified] = useState(false);
-  const [isVerifyingEmail, setIsVerifyingEmail] = useState(false);
+  const [emailVerificationToken, setEmailVerificationToken] = useState("");
 
   const [countryCode, setCountryCode] = useState("+91");
   const [whatsapp, setWhatsapp] = useState("");
   const [whatsappVerified, setWhatsappVerified] = useState(false);
-  const [isVerifyingWhatsapp, setIsVerifyingWhatsapp] = useState(false);
+  const [whatsappVerificationToken, setWhatsappVerificationToken] = useState("");
 
   const [companyName, setCompanyName] = useState("");
   const [website, setWebsite] = useState("");
@@ -732,6 +734,7 @@ export default function BuyersPage() {
 
   // Submission Status
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const lookingForId = useId();
   const detailedReqId = useId();
@@ -761,30 +764,6 @@ export default function BuyersPage() {
     );
   };
 
-  const handleSimulateEmailVerify = () => {
-    if (!email || !email.includes("@")) {
-      alert("Please enter a valid email address first.");
-      return;
-    }
-    setIsVerifyingEmail(true);
-    setTimeout(() => {
-      setIsVerifyingEmail(false);
-      setEmailVerified(true);
-    }, 1200);
-  };
-
-  const handleSimulateWhatsappVerify = () => {
-    if (!whatsapp || whatsapp.length < 6) {
-      alert("Please enter a valid WhatsApp phone number first.");
-      return;
-    }
-    setIsVerifyingWhatsapp(true);
-    setTimeout(() => {
-      setIsVerifyingWhatsapp(false);
-      setWhatsappVerified(true);
-    }, 1200);
-  };
-
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -802,14 +781,71 @@ export default function BuyersPage() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreedOffPlatform) {
       alert("Please acknowledge the Platform Payment & Fraud Disclaimer checkbox before submitting.");
       return;
     }
-    setSubmitted(true);
-    window.scrollTo({ top: 300, behavior: "smooth" });
+    if (!emailVerified || !emailVerificationToken || !whatsappVerified || !whatsappVerificationToken) {
+      alert("Please verify both your email address and WhatsApp number before submitting.");
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      await submitMarketForm("buyers", {
+        fullName,
+        email,
+        emailVerified,
+        emailVerificationToken,
+        countryCode,
+        whatsapp,
+        whatsappVerified,
+        whatsappVerificationToken,
+        companyName,
+        website,
+        streetAddress,
+        landmark,
+        city,
+        state,
+        country,
+        pincode,
+        orderPlaceTime,
+        selectedSources,
+        orderVolume,
+        lookingFor,
+        detailedRequirement,
+        budgetType,
+        hourlyBudget,
+        fixedBudget,
+        quantity,
+        quantityUnit,
+        customCountry,
+        customCountryCode,
+        customSourceOther,
+        customOrderPlaceTime,
+        customOrderVolume,
+        customQuantityUnit,
+        customHourlyBudget,
+        customFixedBudget,
+        sampleImage: sampleImage
+          ? {
+              name: sampleImage.name,
+              originalSize: sampleImage.originalSize,
+              compressedSize: sampleImage.compressedSize,
+            }
+          : undefined,
+        agreedOffPlatform,
+        agreedLeadSharing,
+        agreedPartnerAccess,
+      });
+      setSubmitted(true);
+      window.scrollTo({ top: 300, behavior: "smooth" });
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Unable to submit the form. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -948,28 +984,23 @@ export default function BuyersPage() {
                               onChange={(e) => {
                                 setEmail(e.target.value);
                                 setEmailVerified(false);
+                                setEmailVerificationToken("");
                               }}
                               className="w-full rounded-md border border-input bg-background pl-9 pr-3 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                             />
                           </div>
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant={emailVerified ? "secondary" : "outline"}
-                            onClick={handleSimulateEmailVerify}
-                            disabled={isVerifyingEmail || emailVerified}
+                          <OtpVerificationButton
+                            channel="email"
+                            target={email.trim().toLowerCase()}
+                            verified={emailVerified}
+                            onVerified={(token) => {
+                              setEmailVerificationToken(token);
+                              setEmailVerified(true);
+                            }}
+                            label="Verify Email"
+                            verifiedVariant="secondary"
                             className="shrink-0"
-                          >
-                            {isVerifyingEmail ? (
-                              "Verifying..."
-                            ) : emailVerified ? (
-                              <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold text-xs">
-                                <Check className="size-3.5" /> Verified
-                              </span>
-                            ) : (
-                              "Verify Email"
-                            )}
-                          </Button>
+                          />
                         </div>
                       </div>
 
@@ -1000,7 +1031,11 @@ export default function BuyersPage() {
                             <select
                               aria-label="WhatsApp Country Code"
                               value={countryCode}
-                              onChange={(e) => setCountryCode(e.target.value)}
+                              onChange={(e) => {
+                                setCountryCode(e.target.value);
+                                setWhatsappVerified(false);
+                                setWhatsappVerificationToken("");
+                              }}
                               className="bg-transparent text-xs font-semibold text-foreground focus:outline-none cursor-pointer"
                             >
                               {countryCodes.map((c) => (
@@ -1016,7 +1051,11 @@ export default function BuyersPage() {
                               required
                               placeholder="+Code"
                               value={customCountryCode}
-                              onChange={(e) => setCustomCountryCode(e.target.value.replace(/[^\d+]/g, "").slice(0, 5))}
+                              onChange={(e) => {
+                                setCustomCountryCode(e.target.value.replace(/[^\d+]/g, "").slice(0, 5));
+                                setWhatsappVerified(false);
+                                setWhatsappVerificationToken("");
+                              }}
                               className="w-20 rounded-md border border-input bg-background px-2 py-1.5 text-xs font-semibold text-foreground shadow-xs placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 shrink-0"
                             />
                           )}
@@ -1030,28 +1069,22 @@ export default function BuyersPage() {
                               onChange={(e) => {
                                 setWhatsapp(e.target.value);
                                 setWhatsappVerified(false);
+                                setWhatsappVerificationToken("");
                               }}
                               className="w-full rounded-md border border-input bg-background pl-9 pr-3 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                             />
                           </div>
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant={whatsappVerified ? "secondary" : "outline"}
-                            onClick={handleSimulateWhatsappVerify}
-                            disabled={isVerifyingWhatsapp || whatsappVerified}
+                          <OtpVerificationButton
+                            channel="whatsapp"
+                            target={buildWhatsappNumber(countryCode, customCountryCode, whatsapp)}
+                            verified={whatsappVerified}
+                            onVerified={(token) => {
+                              setWhatsappVerificationToken(token);
+                              setWhatsappVerified(true);
+                            }}
+                            verifiedVariant="secondary"
                             className="shrink-0"
-                          >
-                            {isVerifyingWhatsapp ? (
-                              "Sending..."
-                            ) : whatsappVerified ? (
-                              <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold text-xs">
-                                <Check className="size-3.5" /> Verified
-                              </span>
-                            ) : (
-                              "Verify"
-                            )}
-                          </Button>
+                          />
                         </div>
                       </div>
 
@@ -1665,8 +1698,8 @@ export default function BuyersPage() {
 
                   {/* Submit CTA */}
                   <div className="pt-2 text-center">
-                    <Button size="lg" type="submit" className="w-full sm:w-auto px-10 py-6 text-base font-semibold shadow-md">
-                      <Search className="size-5 mr-1" /> Post Requirement to Verified Agents
+                    <Button size="lg" type="submit" disabled={isSubmitting} className="w-full sm:w-auto px-10 py-6 text-base font-semibold shadow-md">
+                      <Search className="size-5 mr-1" /> {isSubmitting ? "Submitting..." : "Post Requirement to Verified Agents"}
                     </Button>
                     <p className="mt-3 text-xs text-muted-foreground">
                       By clicking Submit, your requirement will be screened and dispatched to matching category agents. No spam policy.

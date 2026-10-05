@@ -38,7 +38,9 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { OtpVerificationButton } from "@/components/otp-verification-button";
 import { routePath } from "@/url";
+import { buildWhatsappNumber, submitMarketForm } from "@/lib/api";
 
 // Destination & Origin Countries (Identical to /buyers)
 const destinationCountries = [
@@ -205,6 +207,9 @@ const certificationGroups = [
 ];
 
 const presetCertifications = certificationGroups.flatMap((g) => g.items);
+
+const currentYear = new Date().getFullYear();
+const establishmentYears = Array.from({ length: currentYear - 1949 }, (_, i) => String(currentYear - i));
 
 const sampleAvailabilityOptions = [
   "Free Sample (Buyer Pays Freight)",
@@ -572,6 +577,7 @@ export default function SellersPage() {
   // Registration Stepper State
   const [currentStep, setCurrentStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Step 1: Basic Info
   const [titleOfServices, setTitleOfServices] = useState("");
@@ -591,10 +597,12 @@ export default function SellersPage() {
   const [jobTitle, setJobTitle] = useState("");
   const [email, setEmail] = useState("");
   const [emailVerified, setEmailVerified] = useState(false);
+  const [emailVerificationToken, setEmailVerificationToken] = useState("");
   const [countryCode, setCountryCode] = useState("+91");
   const [customCountryCode, setCustomCountryCode] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [whatsappVerified, setWhatsappVerified] = useState(false);
+  const [whatsappVerificationToken, setWhatsappVerificationToken] = useState("");
   const [website, setWebsite] = useState("");
   const [streetAddress, setStreetAddress] = useState("");
   const [locationLandmark, setLocationLandmark] = useState("");
@@ -820,6 +828,10 @@ export default function SellersPage() {
         alert("Please enter your Company Name.");
         return;
       }
+      if (!yearOfEstablishment) {
+        alert("Please select the Year of Establishment.");
+        return;
+      }
       if (aboutCompany.trim().length < 100) {
         alert(`About content must be at least 100 characters (currently ${aboutCompany.trim().length} chars).`);
         return;
@@ -848,14 +860,109 @@ export default function SellersPage() {
     window.scrollTo({ top: 120, behavior: "smooth" });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreedTerms) {
       alert("Please accept the Platform Compliance Agreement to complete seller registration.");
       return;
     }
-    setSubmitted(true);
-    window.scrollTo({ top: 120, behavior: "smooth" });
+    if (!emailVerified || !emailVerificationToken || !whatsappVerified || !whatsappVerificationToken) {
+      alert("Please verify both your business email and WhatsApp number before submitting.");
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      await submitMarketForm("sellers", {
+        selectedRoles,
+        selectedSourcingTypes,
+        titleOfServices,
+        chargeType,
+        hourlyCharge,
+        customHourlyCharge,
+        fixedCharge,
+        customFixedCharge,
+        companyName,
+        legalBusinessName,
+        businessRole,
+        aboutCompany,
+        yearOfEstablishment,
+        contactName,
+        jobTitle,
+        email,
+        emailVerified,
+        emailVerificationToken,
+        countryCode,
+        customCountryCode,
+        whatsapp,
+        whatsappVerified,
+        whatsappVerificationToken,
+        website,
+        streetAddress,
+        locationLandmark,
+        country,
+        customCountry,
+        state,
+        city,
+        pincode,
+        products,
+        targetRegions,
+        customRegion,
+        moqCapability,
+        customMoq,
+        turnaroundTime,
+        customTurnaroundTime,
+        selectedIncoterms,
+        samplePolicy,
+        sourcingRegions,
+        auditingExpertise,
+        networkSize,
+        serviceScope,
+        techStack,
+        servicePackages,
+        caseStudies,
+        teamSize,
+        qcCount,
+        sourcingStaffCount,
+        facilityDetails,
+        certificates,
+        kycJurisdictionTab,
+        panNumber,
+        gstinNumber,
+        msmeUdyam,
+        cinNumber,
+        iecCode,
+        einNumber,
+        stateLicense,
+        usResaleCert,
+        ukCompaniesHouse,
+        ukVatNumber,
+        ukUtr,
+        euVatNumber,
+        euEoriNumber,
+        euCommercialRegister,
+        chinaUscc,
+        chinaBusinessLicense,
+        chinaCustomsCode,
+        localTaxId,
+        otherBusinessReg,
+        uploadedKycDoc,
+        accountHolder,
+        bankName,
+        accountOrIban,
+        swiftCode,
+        settlementCurrencies,
+        withholdingTaxType,
+        taxResidencyDocName,
+        agreedTerms,
+        agreedLeadSharing,
+      });
+      setSubmitted(true);
+      window.scrollTo({ top: 120, behavior: "smooth" });
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Unable to submit the form. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const isContinueFromRolesDisabled =
@@ -924,7 +1031,30 @@ export default function SellersPage() {
             <h1 className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
               Register as a Verified Partner
             </h1>
-
+            {hasChosenRoles && selectedRoles.length > 0 && (
+              <div className="flex items-center justify-center flex-wrap gap-2 pt-1 text-xs sm:text-sm text-muted-foreground">
+                <span>Selected Roles:</span>
+                <span className="font-semibold text-foreground">
+                  {selectedRoles.join(", ")}
+                  {selectedSourcingTypes.length > 0 && (
+                    <span className="text-muted-foreground font-normal">
+                      {" "}
+                      ({selectedSourcingTypes.length} sourcing specializations)
+                    </span>
+                  )}
+                </span>
+                <span className="text-muted-foreground/40">•</span>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setHasChosenRoles(false)}
+                  className="h-6 px-2.5 text-xs font-semibold rounded-full cursor-pointer hover:bg-muted"
+                >
+                  Change Roles
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* ============================================================ */}
@@ -1211,32 +1341,6 @@ export default function SellersPage() {
             /* SCREEN 2: 5-STEP REGISTRATION FORM (Connected Stepper)        */
             /* ============================================================ */
             <div>
-              {/* Selected Role Summary Bar with Change Role option */}
-              <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border/70 bg-card/80 px-4 py-2.5 backdrop-blur-sm shadow-xs">
-                <div className="flex flex-wrap items-center gap-2 text-xs">
-                  <span className="font-semibold text-muted-foreground">Selected Roles:</span>
-                  {selectedRoles.map((r) => (
-                    <Badge key={r} variant="secondary" className="font-semibold">
-                      {r}
-                    </Badge>
-                  ))}
-                  {selectedSourcingTypes.length > 0 && (
-                    <span className="text-[11px] text-muted-foreground">
-                      ({selectedSourcingTypes.length} sourcing specializations)
-                    </span>
-                  )}
-                </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setHasChosenRoles(false)}
-                  className="text-xs h-7 px-2.5 hover:bg-muted"
-                >
-                  Change Roles
-                </Button>
-              </div>
-
               {/* Horizontal Stepper - Exactly matching user reference */}
               <div className="mb-10 w-full overflow-x-auto pb-4 pt-2 -mx-4 px-4 sm:mx-0 sm:px-2 scrollbar-none">
                 <div className="flex items-start min-w-[620px] sm:min-w-full">
@@ -1499,16 +1603,19 @@ export default function SellersPage() {
                           <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
                             Year of Establishment <span className="text-rose-500">*</span>
                           </label>
-                          <input
-                            type="number"
-                            min="1950"
-                            max="2026"
+                          <select
                             required
-                            placeholder="e.g. 2018"
                             value={yearOfEstablishment}
                             onChange={(e) => setYearOfEstablishment(e.target.value)}
-                            className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                          />
+                            className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                          >
+                            <option value="">Select Year of Establishment...</option>
+                            {establishmentYears.map((yr) => (
+                              <option key={yr} value={yr}>
+                                {yr}
+                              </option>
+                            ))}
+                          </select>
                         </div>
 
                         {/* About Me / Company - Min 100 chars */}
@@ -1597,25 +1704,21 @@ export default function SellersPage() {
                                 onChange={(e) => {
                                   setEmail(e.target.value);
                                   setEmailVerified(false);
+                                  setEmailVerificationToken("");
                                 }}
                                 className="w-full rounded-md border border-input bg-background pl-9 pr-3 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                               />
                             </div>
-                            <Button
-                              type="button"
-                              variant={emailVerified ? "outline" : "default"}
-                              size="sm"
-                              onClick={() => {
-                                if (!email.includes("@")) {
-                                  alert("Please enter a valid email address");
-                                  return;
-                                }
+                            <OtpVerificationButton
+                              channel="email"
+                              target={email.trim().toLowerCase()}
+                              verified={emailVerified}
+                              onVerified={(token) => {
+                                setEmailVerificationToken(token);
                                 setEmailVerified(true);
                               }}
                               className="px-3"
-                            >
-                              {emailVerified ? <Check className="size-4 text-emerald-500" /> : "Verify"}
-                            </Button>
+                            />
                           </div>
                         </div>
 
@@ -1630,13 +1733,24 @@ export default function SellersPage() {
                             </span>
                           </div>
                           <div className="flex gap-2">
-                            <CountryCodeSelect value={countryCode} onChange={setCountryCode} />
+                            <CountryCodeSelect
+                              value={countryCode}
+                              onChange={(value) => {
+                                setCountryCode(value);
+                                setWhatsappVerified(false);
+                                setWhatsappVerificationToken("");
+                              }}
+                            />
                             {countryCode === "custom" && (
                               <input
                                 type="text"
                                 placeholder="+..."
                                 value={customCountryCode}
-                                onChange={(e) => setCustomCountryCode(e.target.value)}
+                                onChange={(e) => {
+                                  setCustomCountryCode(e.target.value);
+                                  setWhatsappVerified(false);
+                                  setWhatsappVerificationToken("");
+                                }}
                                 className="w-16 rounded-md border border-input bg-background px-2.5 py-2 text-xs text-foreground shadow-xs focus:border-primary focus:outline-none"
                               />
                             )}
@@ -1650,25 +1764,21 @@ export default function SellersPage() {
                                 onChange={(e) => {
                                   setWhatsapp(e.target.value);
                                   setWhatsappVerified(false);
+                                  setWhatsappVerificationToken("");
                                 }}
                                 className="w-full rounded-md border border-input bg-background pl-9 pr-3 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                               />
                             </div>
-                            <Button
-                              type="button"
-                              variant={whatsappVerified ? "outline" : "default"}
-                              size="sm"
-                              onClick={() => {
-                                if (whatsapp.length < 7) {
-                                  alert("Please enter a valid WhatsApp number");
-                                  return;
-                                }
+                            <OtpVerificationButton
+                              channel="whatsapp"
+                              target={buildWhatsappNumber(countryCode, customCountryCode, whatsapp)}
+                              verified={whatsappVerified}
+                              onVerified={(token) => {
+                                setWhatsappVerificationToken(token);
                                 setWhatsappVerified(true);
                               }}
                               className="px-3"
-                            >
-                              {whatsappVerified ? <Check className="size-4 text-emerald-500" /> : "Verify"}
-                            </Button>
+                            />
                           </div>
                         </div>
 
@@ -1842,14 +1952,14 @@ export default function SellersPage() {
 
                         <div className="grid gap-5 sm:grid-cols-2">
                           {/* MOQ Capabilities */}
-                          <div>
-                            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                              Minimum Order Quantity (MOQ) <span className="text-rose-500">*</span>
+                          <div className="flex flex-col justify-between h-full">
+                            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 min-h-[2rem] flex items-end">
+                              <span>Minimum Order Quantity (MOQ) <span className="text-rose-500">*</span></span>
                             </label>
                             <select
                               value={moqCapability}
                               onChange={(e) => setMoqCapability(e.target.value)}
-                              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-xs transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                              className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-xs transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
                             >
                               {moqOptions.map((m) => (
                                 <option key={m} value={m}>{m}</option>
@@ -1867,14 +1977,14 @@ export default function SellersPage() {
                           </div>
 
                           {/* Turnaround Time */}
-                          <div>
-                            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                              Average Turnaround Time (TAT) <span className="text-rose-500">*</span>
+                          <div className="flex flex-col justify-between h-full">
+                            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 min-h-[2rem] flex items-end">
+                              <span>Average Turnaround Time (TAT) <span className="text-rose-500">*</span></span>
                             </label>
                             <select
                               value={turnaroundTime}
                               onChange={(e) => setTurnaroundTime(e.target.value)}
-                              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-xs transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                              className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-xs transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
                             >
                               {turnaroundTimeOptions.map((t) => (
                                 <option key={t} value={t}>{t}</option>
@@ -1940,14 +2050,14 @@ export default function SellersPage() {
                       <CardContent className="space-y-6 pt-6">
                         {/* Sample Availability Policy */}
                         <div className="grid gap-5 sm:grid-cols-2">
-                          <div>
-                            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                              Sample Availability Terms <span className="text-rose-500">*</span>
+                          <div className="flex flex-col justify-between h-full">
+                            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 min-h-[2rem] flex items-end">
+                              <span>Sample Availability Terms <span className="text-rose-500">*</span></span>
                             </label>
                             <select
                               value={samplePolicy}
                               onChange={(e) => setSamplePolicy(e.target.value)}
-                              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-xs transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                              className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-xs transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
                             >
                               {sampleAvailabilityOptions.map((opt) => (
                                 <option key={opt} value={opt}>{opt}</option>
@@ -1956,14 +2066,14 @@ export default function SellersPage() {
                             </select>
                           </div>
 
-                          <div>
-                            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                              Verified Manufacturer Network Size <span className="text-rose-500">*</span>
+                          <div className="flex flex-col justify-between h-full">
+                            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 min-h-[2rem] flex items-end">
+                              <span>Verified Manufacturer Network Size <span className="text-rose-500">*</span></span>
                             </label>
                             <select
                               value={networkSize}
                               onChange={(e) => setNetworkSize(e.target.value)}
-                              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-xs transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                              className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-xs transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
                             >
                               <option value="10 to 50 Verified Factories">10 to 50 Verified Factories</option>
                               <option value="50 to 100 Verified Factories">50 to 100 Verified Factories</option>
@@ -2112,14 +2222,14 @@ export default function SellersPage() {
                         {/* Team & Workforce Counts */}
                         <div className="grid gap-5 sm:grid-cols-3">
                           {/* Total Team Size */}
-                          <div>
-                            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                              Total Team Size &amp; Workforce <span className="text-rose-500">*</span>
+                          <div className="flex flex-col justify-between h-full">
+                            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 min-h-[2rem] flex items-end">
+                              <span>Total Team Size &amp; Workforce <span className="text-rose-500">*</span></span>
                             </label>
                             <select
                               value={teamSize}
                               onChange={(e) => setTeamSize(e.target.value)}
-                              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-xs transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                              className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-xs transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
                             >
                               {teamSizeOptions.map((t) => (
                                 <option key={t} value={t}>{t} Staff</option>
@@ -2128,9 +2238,9 @@ export default function SellersPage() {
                           </div>
 
                           {/* Dedicated QC Staff Count */}
-                          <div>
-                            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                              Dedicated Quality Control (QC) Count <span className="text-rose-500">*</span>
+                          <div className="flex flex-col justify-between h-full">
+                            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 min-h-[2rem] flex items-end">
+                              <span>Dedicated Quality Control (QC) Count <span className="text-rose-500">*</span></span>
                             </label>
                             <input
                               type="number"
@@ -2139,14 +2249,14 @@ export default function SellersPage() {
                               placeholder="e.g. 8"
                               value={qcCount}
                               onChange={(e) => setQcCount(e.target.value)}
-                              className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                              className="w-full h-10 rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                             />
                           </div>
 
                           {/* Dedicated Sourcing Staff Count */}
-                          <div>
-                            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                              Dedicated Sourcing Staff Count <span className="text-rose-500">*</span>
+                          <div className="flex flex-col justify-between h-full">
+                            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 min-h-[2rem] flex items-end">
+                              <span>Dedicated Sourcing Staff Count <span className="text-rose-500">*</span></span>
                             </label>
                             <input
                               type="number"
@@ -2155,7 +2265,7 @@ export default function SellersPage() {
                               placeholder="e.g. 12"
                               value={sourcingStaffCount}
                               onChange={(e) => setSourcingStaffCount(e.target.value)}
-                              className="w-full rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                              className="w-full h-10 rounded-md border border-input bg-background px-3.5 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                             />
                           </div>
                         </div>
@@ -2947,9 +3057,10 @@ export default function SellersPage() {
                       <Button
                         type="submit"
                         size="lg"
+                        disabled={isSubmitting}
                         className="px-8 py-5 text-sm sm:text-base font-semibold shadow-md gap-2"
                       >
-                        <CheckCircle2 className="size-5" /> Submit Partner Registration
+                        <CheckCircle2 className="size-5" /> {isSubmitting ? "Submitting..." : "Submit Partner Registration"}
                       </Button>
                     )}
                   </div>
