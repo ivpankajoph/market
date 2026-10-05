@@ -31,6 +31,7 @@ import { CountryTypewriter } from "@/components/ui/country-typewriter";
 import { World, type GlobePosition } from "@/components/ui/globe-client";
 import { Separator } from "@/components/ui/separator";
 import inquiryData from "@/data/inquiries.json";
+import { routePath } from "@/url";
 
 const buyerPortalUrl = "https://web.sellerslogin.com/buyers";
 const sellerPortalUrl = "https://web.sellerslogin.com/sellers";
@@ -145,7 +146,7 @@ export function SourcePageIntro({ title }: SourcePageIntroProps) {
 
           <div className="mt-6 flex w-full flex-col justify-center gap-3 sm:w-auto sm:flex-row">
             <Button size="lg" asChild>
-              <a href={buyerPortalUrl} target="_blank" rel="noopener noreferrer">I&apos;m a buyer<Search aria-hidden="true" /></a>
+              <Link href={routePath.buyers}>I&apos;m a buyer<Search aria-hidden="true" /></Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
               <a href={sellerPortalUrl} target="_blank" rel="noopener noreferrer">I&apos;m a seller<Store aria-hidden="true" /></a>
