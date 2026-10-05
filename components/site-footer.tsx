@@ -61,9 +61,12 @@ export function SiteFooter({
             <p className="mt-4 max-w-md text-base leading-7 text-slate-300">
               Practical sourcing, verification, procurement, and logistics coordination for buyers in {marketName} working with China and India.
             </p>
+            <p className="mt-3 text-xs leading-5 text-slate-400">
+              ChinaIndiaSourcing on SellersLogin Market is operated by <span className="text-slate-200 font-medium">Life Changing Networks Pvt. Ltd.</span>, an authorised partner of <a href="https://www.sellerslogin.com" target="_blank" rel="noopener noreferrer" className="text-cyan-300 hover:underline">SellersLogin.com</a>.
+            </p>
             <div className="mt-5 space-y-3 text-sm text-slate-300">
               <div className="flex items-center gap-3"><MapPinned className="size-4 text-cyan-300" aria-hidden="true" /><span>Serving buyers across {marketName}</span></div>
-              <a href="mailto:support@sellerslogin.market" className="flex items-center gap-3 hover:text-white"><Mail className="size-4 text-cyan-300" aria-hidden="true" /><span>support@sellerslogin.market</span></a>
+              <a href="mailto:info@onlinepromotionhouse.com" className="flex items-center gap-3 hover:text-white"><Mail className="size-4 text-cyan-300" aria-hidden="true" /><span>info@onlinepromotionhouse.com</span></a>
             </div>
           </div>
 
@@ -86,9 +89,23 @@ export function SiteFooter({
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 pt-5 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-2"><PackageCheck className="size-4" aria-hidden="true" /><span>Buy, verify, and ship with one coordinated network.</span></div>
-          <p>© {new Date().getFullYear()} SellersLogin Market</p>
+        <div className="flex flex-col gap-4 pt-6 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-2">
+            <PackageCheck className="size-4" aria-hidden="true" />
+            <span>Buy, verify, and ship with one coordinated network.</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs">
+            <Link href={routePath.terms} className="text-slate-300 hover:text-white transition-colors underline-offset-4 hover:underline">
+              Terms &amp; Conditions
+            </Link>
+            <a href="https://www.sellerslogin.com/privacy" target="_blank" rel="noopener noreferrer" className="text-slate-300 hover:text-white transition-colors underline-offset-4 hover:underline">
+              Privacy Policy
+            </a>
+            <Link href="/terms#safety" className="text-amber-300/90 hover:text-amber-200 transition-colors underline-offset-4 hover:underline">
+              Safety Notices
+            </Link>
+            <span>© {new Date().getFullYear()} SellersLogin Market</span>
+          </div>
         </div>
       </div>
     </footer>

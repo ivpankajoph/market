@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -155,13 +156,33 @@ export default function Home() {
 
       <section className="pb-10 sm:pb-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Alert className="border-amber-200/60 bg-amber-100/60 dark:border-amber-900/40 dark:bg-amber-950/25"><ShieldCheck aria-hidden="true" /><AlertTitle>Payment protection applies only on the platform</AlertTitle><AlertDescription><p>SellersLogin Market introduces buyers and sourcing agents. Payment safeguards, price commitments, and package refunds apply only when the transaction is completed through the platform. Payments made directly to an agent remain the buyer&apos;s responsibility.</p></AlertDescription></Alert>
+          <Alert className="border-amber-300/80 bg-amber-100/70 text-amber-950 dark:border-amber-800/60 dark:bg-amber-950/35 dark:text-amber-100">
+            <ShieldCheck className="size-5 text-amber-700 dark:text-amber-400" aria-hidden="true" />
+            <AlertTitle className="font-semibold text-amber-900 dark:text-amber-200">
+              Sourcing Safety &amp; Payment Protection Notice
+            </AlertTitle>
+            <AlertDescription className="mt-2 space-y-2 text-sm leading-6 text-amber-950/90 dark:text-amber-200/90">
+              <p className="font-medium">
+                &ldquo;Never pay advance money to unverified parties. Inspect goods before shipment.&rdquo; Use trusted inspection agencies and secure payment methods for China and India sourcing.
+              </p>
+              <p>
+                SellersLogin Market introduces buyers and sourcing agents. Payment safeguards, price commitments, and package refunds apply only when transactions are coordinated through the verified platform flow. Payments conducted off-platform remain the buyer&apos;s sole responsibility.
+              </p>
+              <p className="pt-1">
+                Read our full{" "}
+                <Link href={routePath.terms} className="font-semibold underline underline-offset-4 hover:text-amber-900 dark:hover:text-white">
+                  Terms &amp; Conditions
+                </Link>{" "}
+                and anti-fraud guidelines.
+              </p>
+            </AlertDescription>
+          </Alert>
         </div>
       </section>
 
       <section id="support" className="scroll-mt-20 border-t border-border/50 bg-blue-50/35 py-10 dark:bg-blue-950/10 sm:py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Card id="start" className="scroll-mt-24 overflow-hidden border-border/40 bg-blue-100/60 shadow-none dark:bg-blue-950/25"><CardContent className="grid gap-8 py-2 sm:p-10 lg:grid-cols-[1fr_auto] lg:items-center"><div><Badge variant="secondary"><Sparkles aria-hidden="true" />Buyers and sourcing agents welcome</Badge><h2 className="mt-4 max-w-2xl text-3xl font-semibold tracking-tight sm:text-4xl">Ready to begin your next sourcing request?</h2><p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">Post your requirement as a buyer, or join the network as a sourcing agent.</p></div><div className="flex flex-col gap-3 sm:flex-row lg:flex-col"><Button size="lg" asChild><a href="https://web.sellerslogin.com/buyers" target="_blank" rel="noopener noreferrer"><Search aria-hidden="true" />Post a requirement</a></Button><Button size="lg" variant="outline" asChild><a href="https://web.sellerslogin.com/sellers" target="_blank" rel="noopener noreferrer"><Store aria-hidden="true" />Join as an agent</a></Button><Button size="lg" variant="ghost" asChild><a href="mailto:support@sellerslogin.market"><Headphones aria-hidden="true" />Contact support</a></Button></div></CardContent></Card>
+          <Card id="start" className="scroll-mt-24 overflow-hidden border-border/40 bg-blue-100/60 shadow-none dark:bg-blue-950/25"><CardContent className="grid gap-8 py-2 sm:p-10 lg:grid-cols-[1fr_auto] lg:items-center"><div><Badge variant="secondary"><Sparkles aria-hidden="true" />Buyers and sourcing agents welcome</Badge><h2 className="mt-4 max-w-2xl text-3xl font-semibold tracking-tight sm:text-4xl">Ready to begin your next sourcing request?</h2><p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">Post your requirement as a buyer, or join the network as a sourcing agent.</p></div><div className="flex flex-col gap-3 sm:flex-row lg:flex-col"><Button size="lg" asChild><a href="https://web.sellerslogin.com/buyers" target="_blank" rel="noopener noreferrer"><Search aria-hidden="true" />Post a requirement</a></Button><Button size="lg" variant="outline" asChild><a href="https://web.sellerslogin.com/sellers" target="_blank" rel="noopener noreferrer"><Store aria-hidden="true" />Join as an agent</a></Button><Button size="lg" variant="ghost" asChild><a href="mailto:info@onlinepromotionhouse.com"><Headphones aria-hidden="true" />Contact support</a></Button></div></CardContent></Card>
         </div>
       </section>
 

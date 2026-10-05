@@ -6,6 +6,7 @@ export const siteOrigin = "https://market.sellerslogin.com";
 
 export const routePath = {
   home: "/",
+  terms: "/terms",
   market: (marketSlug: string) => `/${marketSlug}`,
   section: (section: "top" | "how" | "categories" | "support" | "services") =>
     `/#${section}`,
@@ -68,6 +69,7 @@ export const regionalServicePaths = regionalServiceRouteParams.map(
 const canonicalWebsitePaths = Array.from(
   new Set([
     routePath.home,
+    routePath.terms,
     ...sectionPaths,
     ...marketPaths,
     ...marketServicePaths,

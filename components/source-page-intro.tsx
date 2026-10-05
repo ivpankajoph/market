@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import {
   BadgeCheck,
   ClipboardList,
@@ -85,13 +85,26 @@ type SourcePageIntroProps = {
 };
 
 export function SourcePageIntro({ title }: SourcePageIntroProps) {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 15);
+    };
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <>
-      <header className="sticky top-0 z-50 overflow-hidden border-b border-border/40 hero-ambient-flow backdrop-blur-md">
-        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-          <div className="animate-float-slow absolute -left-10 -top-12 h-36 w-36 rounded-full bg-blue-300/25 blur-2xl dark:bg-blue-600/15" />
-          <div className="animate-float-reverse absolute right-12 -top-10 h-36 w-36 rounded-full bg-indigo-200/35 blur-2xl dark:bg-indigo-600/15" />
-        </div>
+      <header
+        className={`sticky top-0 z-50 transition-colors duration-200 ${
+          isScrolled
+            ? "border-b border-border/40 bg-background/85 backdrop-blur-md shadow-xs"
+            : "border-b border-transparent bg-transparent"
+        }`}
+      >
         <div className="relative z-10 mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight" aria-label="SellersLogin Market home">
             <span className="flex size-8 items-center justify-center rounded-md border border-border/50 bg-white/70 shadow-xs dark:bg-black/20">
@@ -110,7 +123,7 @@ export function SourcePageIntro({ title }: SourcePageIntroProps) {
         </div>
       </header>
 
-      <section id="top" className="relative overflow-hidden scroll-mt-24 hero-ambient-flow">
+      <section id="top" className="relative -mt-16 overflow-hidden scroll-mt-24 hero-ambient-flow pt-16">
         <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
           <div className="animate-float-slow absolute -left-20 -top-20 h-80 w-80 rounded-full bg-blue-300/30 blur-3xl dark:bg-blue-600/15 sm:h-96 sm:w-96" />
           <div className="animate-float-reverse absolute -right-20 top-10 h-80 w-80 rounded-full bg-indigo-200/40 blur-3xl dark:bg-indigo-600/15 sm:h-96 sm:w-96" />
