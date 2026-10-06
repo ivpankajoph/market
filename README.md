@@ -1,6 +1,6 @@
-# SellersLogin Market
+# Chinaindiasourcing
 
-A standard Next.js application for the SellersLogin Market website.
+A standard Next.js application for the Chinaindiasourcing website.
 
 ## Local development
 

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Globe2, Mail, MapPinned, PackageCheck } from "lucide-react";
+import { ArrowRight, Globe2, MapPinned, PackageCheck } from "lucide-react";
 
 import { chinaServiceNames, indiaServiceNames, serviceSlug } from "@/lib/services";
 import { routePath } from "@/url";
@@ -56,17 +56,16 @@ export function SiteFooter({
               <span className="flex size-10 items-center justify-center rounded-xl border border-white/15 bg-white/10">
                 <Globe2 className="size-5" aria-hidden="true" />
               </span>
-              SellersLogin Market
+              Chinaindiasourcing
             </Link>
             <p className="mt-4 max-w-md text-base leading-7 text-slate-300">
-              Practical sourcing, verification, procurement, and logistics coordination for buyers in {marketName} working with China and India.
+              Practical sourcing, verification, procurement, and logistics coordination for buyers in {marketName} working with suppliers worldwide.
             </p>
             <p className="mt-3 text-xs leading-5 text-slate-400">
-              ChinaIndiaSourcing on SellersLogin Market is operated by <span className="text-slate-200 font-medium">Life Changing Networks Pvt. Ltd.</span>, an authorised partner of <a href="https://www.sellerslogin.com" target="_blank" rel="noopener noreferrer" className="text-cyan-300 hover:underline">SellersLogin.com</a>.
+              Chinaindiasourcing is operated by <span className="text-slate-200 font-medium">Life Changing Networks Pvt. Ltd.</span>, an authorised partner of <a href="https://www.sellerslogin.com" target="_blank" rel="noopener noreferrer" className="text-cyan-300 hover:underline">SellersLogin.com</a>.
             </p>
             <div className="mt-5 space-y-3 text-sm text-slate-300">
               <div className="flex items-center gap-3"><MapPinned className="size-4 text-cyan-300" aria-hidden="true" /><span>Serving buyers across {marketName}</span></div>
-              <a href="mailto:info@onlinepromotionhouse.com" className="flex items-center gap-3 hover:text-white"><Mail className="size-4 text-cyan-300" aria-hidden="true" /><span>info@onlinepromotionhouse.com</span></a>
             </div>
           </div>
 
@@ -89,6 +88,12 @@ export function SiteFooter({
           </div>
         </div>
 
+        <div className="relative -mt-3 mb-7 flex justify-end">
+          <Link href={routePath.services} className="inline-flex items-center gap-2 rounded-lg border border-cyan-300/30 bg-cyan-300/10 px-4 py-2 text-sm font-semibold text-cyan-100 transition-colors hover:bg-cyan-300/20">
+            More countries &amp; services <ArrowRight className="size-4" aria-hidden="true" />
+          </Link>
+        </div>
+
         <div className="flex flex-col gap-4 pt-6 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
             <PackageCheck className="size-4" aria-hidden="true" />
@@ -104,7 +109,7 @@ export function SiteFooter({
             <Link href="/terms#safety" className="text-amber-300/90 hover:text-amber-200 transition-colors underline-offset-4 hover:underline">
               Safety Notices
             </Link>
-            <span>© {new Date().getFullYear()} SellersLogin Market</span>
+            <span>&copy; {new Date().getFullYear()} Chinaindiasourcing</span>
           </div>
         </div>
       </div>

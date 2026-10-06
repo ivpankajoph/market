@@ -72,7 +72,7 @@ export function MarketVerificationPayment({
         order_id: payment.orderId,
         amount: payment.amount,
         currency: payment.currency,
-        name: "SellersLogin Market",
+        name: "Chinaindiasourcing",
         description: "One-time partner verification fee",
         prefill: { name: payment.name, email: payment.email, contact: payment.contact },
         theme: { color: "#111827" },

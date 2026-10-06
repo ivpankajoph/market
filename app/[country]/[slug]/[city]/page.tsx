@@ -7,7 +7,7 @@ import { cityRouteParams, getLocationCity, getLocationState } from "@/data";
 import { getBuyerMarket } from "@/lib/markets";
 import { countryAlternates } from "@/lib/seo";
 import { getService } from "@/lib/services";
-import { regionalServiceRouteParams, routePath } from "@/url";
+import { routePath } from "@/url";
 
 type CityPageProps = {
   params: Promise<{ country: string; slug: string; city: string }>;
@@ -18,7 +18,10 @@ export function generateStaticParams() {
     ({ country, state, city }) => ({ country, slug: state, city }),
   );
 
-  return [...locationCityRouteParams, ...regionalServiceRouteParams];
+  // Regional service combinations remain available through dynamic generation.
+  // Pre-rendering every state × service pair would create tens of thousands of
+  // pages and make routine production builds unnecessarily expensive.
+  return locationCityRouteParams;
 }
 
 export async function generateMetadata({ params }: CityPageProps): Promise<Metadata> {
@@ -28,12 +31,12 @@ export async function generateMetadata({ params }: CityPageProps): Promise<Metad
   const city = getLocationCity(country, stateSlug, citySlug);
   const service = getService(citySlug);
 
-  if (!market || !state || (!city && !service)) return { title: "Page not found | SellersLogin Market" };
+  if (!market || !state || (!city && !service)) return { title: "Page not found | Chinaindiasourcing" };
 
   if (service) {
     return {
-      title: `${service.name} in ${state.name}, ${market.name} | SellersLogin Market`,
-      description: `${service.name} support for buyers in ${state.name}, ${market.locationName}, with coordinated sourcing, verification, procurement, and logistics support.`,
+      title: `${service.name} in ${state.name}, ${market.name} | Chinaindiasourcing`,
+      description: `${service.name} connecting ${service.origin} suppliers with buyers in ${state.name}, ${market.locationName}. Explore quotations, quality checkpoints, documentation, and delivery coordination.`,
       alternates: countryAlternates(
         routePath.regionalService(market.slug, state.slug, service.slug),
         (alternateMarket) =>
@@ -43,7 +46,7 @@ export async function generateMetadata({ params }: CityPageProps): Promise<Metad
   }
 
   return {
-    title: `Sourcing Services in ${city!.name}, ${state.name} | SellersLogin Market`,
+    title: `Sourcing Services in ${city!.name}, ${state.name} | Chinaindiasourcing`,
     description: `China and India sourcing support for buyers in ${city!.name}, ${state.name}, ${market.locationName}, from supplier research to logistics coordination.`,
     alternates: countryAlternates(
       routePath.city(market.slug, state.slug, city!.slug),

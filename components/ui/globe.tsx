@@ -46,9 +46,10 @@ export interface WorldProps {
   globeConfig?: GlobeConfig;
   data: GlobePosition[];
   className?: string;
+  onReady?: () => void;
 }
 
-export function World({ globeConfig = {}, data, className }: WorldProps) {
+export function World({ globeConfig = {}, data, className, onReady }: WorldProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -93,7 +94,10 @@ export function World({ globeConfig = {}, data, className }: WorldProps) {
     renderer.domElement.className = "block h-full w-full";
     container.appendChild(renderer.domElement);
 
-    const world = new ThreeGlobe({ waitForGlobeReady: false, animateIn: true });
+    // Render at the final scale immediately. ThreeGlobe's entrance animation
+    // starts from a tiny globe on every mount, which looks like a layout jump
+    // when navigating between pages.
+    const world = new ThreeGlobe({ waitForGlobeReady: false, animateIn: false });
     const material = world.globeMaterial() as THREE.MeshPhongMaterial;
     material.color = new THREE.Color(config.globeColor);
     material.emissive = new THREE.Color(config.emissive);
@@ -213,6 +217,7 @@ export function World({ globeConfig = {}, data, className }: WorldProps) {
     resize();
 
     let frame = 0;
+    let readyFrame = 0;
     const render = () => {
       controls.update();
       world.setPointOfView(camera);
@@ -220,10 +225,12 @@ export function World({ globeConfig = {}, data, className }: WorldProps) {
       frame = window.requestAnimationFrame(render);
     };
     render();
+    readyFrame = window.requestAnimationFrame(() => onReady?.());
 
     return () => {
       abortController.abort();
       window.cancelAnimationFrame(frame);
+      window.cancelAnimationFrame(readyFrame);
       resizeObserver.disconnect();
       controls.dispose();
       world._destructor();
@@ -232,7 +239,7 @@ export function World({ globeConfig = {}, data, className }: WorldProps) {
         container.removeChild(renderer.domElement);
       }
     };
-  }, [data, globeConfig]);
+  }, [data, globeConfig, onReady]);
 
   return (
     <div

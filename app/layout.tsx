@@ -5,7 +5,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteOrigin),
-  title: "SellersLogin Market",
+  title: "Chinaindiasourcing",
   description:
     "A simple global marketplace where buyers and sellers discover trusted business opportunities.",
   alternates: countryAlternates(

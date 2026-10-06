@@ -22,10 +22,10 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: MarketPageProps): Promise<Metadata> {
   const { country } = await params;
   const market = getBuyerMarket(country);
-  if (!market) return { title: "Page not found | SellersLogin Market" };
+  if (!market) return { title: "Page not found | Chinaindiasourcing" };
 
   return {
-    title: `Sourcing Services for Buyers in ${market.name} | SellersLogin Market`,
+    title: `Sourcing Services for Buyers in ${market.name} | Chinaindiasourcing`,
     description: `Explore international sourcing, procurement, inspection, and logistics services for buyers in ${market.locationName}.`,
     alternates: countryAlternates(
       routePath.market(market.slug),

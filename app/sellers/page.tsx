@@ -1169,12 +1169,12 @@ export default function SellersPage() {
           <Link
             href="/"
             className="flex items-center gap-2 font-semibold tracking-tight"
-            aria-label="SellersLogin Market home"
+            aria-label="Chinaindiasourcing home"
           >
             <span className="flex size-8 items-center justify-center rounded-md border border-border/50 bg-white/70 shadow-xs dark:bg-black/20">
               <Globe2 className="size-4" aria-hidden="true" />
             </span>
-            <span>SellersLogin Market</span>
+            <span>Chinaindiasourcing</span>
           </Link>
           <div className="flex items-center gap-3">
             <Button
@@ -1610,9 +1610,6 @@ export default function SellersPage() {
                     <Button asChild>
                       <Link href="/">Back to Market</Link>
                     </Button>
-                    <Button variant="outline" asChild>
-                      <a href="mailto:tech@sellerslogin.com">Contact support</a>
-                    </Button>
                   </div>
                 </Card>
               ) : submitted ? (
@@ -1924,7 +1921,7 @@ export default function SellersPage() {
                               <input
                                 type="email"
                                 required
-                                placeholder="partner@company.com"
+                                placeholder="Enter your email address"
                                 value={email}
                                 onChange={(e) => {
                                   setEmail(e.target.value);
@@ -3255,7 +3252,7 @@ export default function SellersPage() {
                               className="mt-0.5 size-4 rounded border-amber-400 text-primary focus:ring-primary"
                             />
                             <span className="text-xs sm:text-sm font-medium leading-relaxed text-amber-950 dark:text-amber-100">
-                              <strong>Partner Compliance Undertaking:</strong> I agree that all transaction quotes, escrow milestones, and communication with buyers sourced through SellersLogin Market will remain documented on-platform to ensure legal protection.
+                              <strong>Partner Compliance Undertaking:</strong> I agree that all transaction quotes, escrow milestones, and communication with buyers sourced through Chinaindiasourcing will remain documented on-platform to ensure legal protection.
                             </span>
                           </label>
 

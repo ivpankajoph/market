@@ -1,4 +1,26 @@
-export type ServiceOrigin = "China" | "India";
+export const sourceCountries = [
+  { slug: "china", name: "China", adjective: "Chinese", flagCode: "cn", extras: ["Alibaba Sourcing Services", "1688 Sourcing Services"] },
+  { slug: "india", name: "India", adjective: "Indian", flagCode: "in", extras: ["Indiamart Sourcing Agent"] },
+  { slug: "vietnam", name: "Vietnam", adjective: "Vietnamese", flagCode: "vn", extras: [] },
+  { slug: "taiwan", name: "Taiwan", adjective: "Taiwanese", flagCode: "tw", extras: [] },
+  { slug: "south-korea", name: "South Korea", adjective: "South Korean", flagCode: "kr", extras: [] },
+  { slug: "mexico", name: "Mexico", adjective: "Mexican", flagCode: "mx", extras: [] },
+  { slug: "netherlands", name: "Netherlands", adjective: "Dutch", flagCode: "nl", extras: [] },
+  { slug: "uae", name: "UAE", adjective: "UAE", flagCode: "ae", extras: [] },
+  { slug: "south-africa", name: "South Africa", adjective: "South African", flagCode: "za", extras: [] },
+  { slug: "turkey", name: "Turkey", adjective: "Turkish", flagCode: "tr", extras: [] },
+  { slug: "bangladesh", name: "Bangladesh", adjective: "Bangladeshi", flagCode: "bd", extras: [] },
+  { slug: "malaysia", name: "Malaysia", adjective: "Malaysian", flagCode: "my", extras: [] },
+  { slug: "indonesia", name: "Indonesia", adjective: "Indonesian", flagCode: "id", extras: [] },
+  { slug: "spain", name: "Spain", adjective: "Spanish", flagCode: "es", extras: [] },
+  { slug: "thailand", name: "Thailand", adjective: "Thai", flagCode: "th", extras: [] },
+  { slug: "poland", name: "Poland", adjective: "Polish", flagCode: "pl", extras: [] },
+  { slug: "brazil", name: "Brazil", adjective: "Brazilian", flagCode: "br", extras: [] },
+  { slug: "philippines", name: "Philippines", adjective: "Filipino", flagCode: "ph", extras: [] },
+] as const;
+
+export type SourceCountry = (typeof sourceCountries)[number];
+export type ServiceOrigin = SourceCountry["name"];
 
 export type SourcingService = {
   name: string;
@@ -10,44 +32,37 @@ export type SourcingService = {
   process: { title: string; description: string }[];
 };
 
-export const chinaServiceNames = [
-  "Chinese Freight Forwarder",
-  "China Buying Agent",
-  "China Import Export Agent",
-  "China Sourcing Agent",
-  "China DDP Services",
-  "Trending Chinese Product Research",
-  "Chinese Product Inspection",
-  "China Factory Visit",
-  "China Door To Door Service",
-  "Alibaba Sourcing Services",
-  "1688 Sourcing Services",
-  "Chinese Factory Research",
-  "China Procurement Agent",
-  "China Import Services",
-  "Made in China Sourcing",
-  "Global Sourcing China",
-  "Swift China Sourcing",
-] as const;
+function createServiceNames(country: SourceCountry) {
+  const { name, adjective, extras } = country;
 
-export const indiaServiceNames = [
-  "Indian Freight Forwarder",
-  "Indian Logistics Companies",
-  "India Buying Agent",
-  "India Import Export Agent",
-  "India Sourcing Agent",
-  "Indian DDP Services",
-  "Trending India Product Research",
-  "India Product Inspection",
-  "India Factory Visit",
-  "Indian Factory Research",
-  "India Procurement Agent",
-  "India Import Services",
-  "Made in China Sourcing",
-  "Global Sourcing China",
-  "Swift China Sourcing",
-  "Indiamart Sourcing Agent",
-] as const;
+  return [
+    `${adjective} Freight Forwarder`,
+    `${adjective} Logistics Companies`,
+    `${name} Buying Agent`,
+    `${name} Import Export Agent`,
+    `${name} Sourcing Agent`,
+    `${name} DDP Services`,
+    `Trending ${adjective} Product Research`,
+    `${adjective} Product Inspection`,
+    `${name} Factory Visit`,
+    `${name} Door To Door Service`,
+    `${adjective} Factory Research`,
+    `${name} Procurement Agent`,
+    `${name} Import Services`,
+    `Made in ${name} Sourcing`,
+    `Global Sourcing ${name}`,
+    `Swift ${name} Sourcing`,
+    ...extras,
+  ];
+}
+
+export const servicesByCountry = sourceCountries.map((country) => ({
+  ...country,
+  serviceNames: createServiceNames(country),
+}));
+
+export const chinaServiceNames = servicesByCountry.find(({ slug }) => slug === "china")!.serviceNames;
+export const indiaServiceNames = servicesByCountry.find(({ slug }) => slug === "india")!.serviceNames;
 
 export function serviceSlug(name: string) {
   return name
@@ -59,11 +74,10 @@ export function serviceSlug(name: string) {
 
 function serviceFocus(name: string, origin: ServiceOrigin) {
   const lower = name.toLowerCase();
-  const country = origin;
 
   if (lower.includes("freight") || lower.includes("logistics")) {
     return {
-      action: `plan and coordinate freight from ${country} to the United States`,
+      action: `plan and coordinate freight from ${origin} to the United States`,
       includes: [
         "Air and ocean freight option comparison",
         "Origin pickup and cargo consolidation",
@@ -77,7 +91,7 @@ function serviceFocus(name: string, origin: ServiceOrigin) {
 
   if (lower.includes("ddp") || lower.includes("door to door")) {
     return {
-      action: `coordinate an end-to-end delivery route from ${country} to a US destination`,
+      action: `coordinate an end-to-end delivery route from ${origin} to a US destination`,
       includes: [
         "Supplier or factory pickup",
         "Export handling at origin",
@@ -91,7 +105,7 @@ function serviceFocus(name: string, origin: ServiceOrigin) {
 
   if (lower.includes("inspection") || lower.includes("factory visit") || lower.includes("factory research")) {
     return {
-      action: `verify suppliers, facilities, and product readiness in ${country}`,
+      action: `verify suppliers, facilities, and product readiness in ${origin}`,
       includes: [
         "Supplier identity and capability review",
         "Factory profile and production checks",
@@ -105,7 +119,7 @@ function serviceFocus(name: string, origin: ServiceOrigin) {
 
   if (lower.includes("trending") || lower.includes("product research")) {
     return {
-      action: `research promising products and supplier options across ${country}`,
+      action: `research promising products and supplier options across ${origin}`,
       includes: [
         "Product and demand-signal research",
         "Competitor and price-point review",
@@ -119,7 +133,7 @@ function serviceFocus(name: string, origin: ServiceOrigin) {
 
   if (lower.includes("import export") || lower.includes("import services")) {
     return {
-      action: `organize the commercial and shipping steps for imports from ${country}`,
+      action: `organize the commercial and shipping steps for imports from ${origin}`,
       includes: [
         "Supplier and product information review",
         "Commercial-document coordination",
@@ -132,7 +146,7 @@ function serviceFocus(name: string, origin: ServiceOrigin) {
   }
 
   return {
-    action: `find, compare, and coordinate suitable suppliers in ${country}`,
+    action: `find, compare, and coordinate suitable suppliers in ${origin}`,
     includes: [
       "Requirement and specification review",
       "Supplier discovery and shortlisting",
@@ -175,14 +189,14 @@ function buildService(name: string, origin: ServiceOrigin): SourcingService {
   };
 }
 
-const chinaServices = chinaServiceNames.map((name) => buildService(name, "China"));
-const indiaServices = indiaServiceNames.map((name) => buildService(name, "India"));
-
-export const services = Array.from(
-  new Map([...chinaServices, ...indiaServices].map((service) => [service.slug, service])).values(),
+export const services = servicesByCountry.flatMap((country) =>
+  country.serviceNames.map((name) => buildService(name, country.name)),
 );
 
 export function getService(slug: string) {
   return services.find((service) => service.slug === slug);
 }
 
+export function getSourceCountry(origin: ServiceOrigin) {
+  return sourceCountries.find((country) => country.name === origin)!;
+}

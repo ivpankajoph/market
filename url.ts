@@ -8,6 +8,7 @@ export const routePath = {
   home: "/",
   buyers: "/buyers",
   sellers: "/sellers",
+  services: "/services",
   terms: "/terms",
   market: (marketSlug: string) => `/${marketSlug}`,
   section: (section: "top" | "how" | "categories" | "support" | "services") =>
@@ -72,6 +73,7 @@ const canonicalWebsitePaths = Array.from(
   new Set([
     routePath.home,
     routePath.buyers,
+    routePath.services,
     routePath.terms,
     ...sectionPaths,
     ...marketPaths,

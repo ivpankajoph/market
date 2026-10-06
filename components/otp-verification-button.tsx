@@ -114,7 +114,7 @@ export function OtpVerificationButton({
     if (!isValidTarget(channel, target)) {
       alert(
         channel === "email"
-          ? "Please enter a valid email address (e.g. name@company.com) before requesting an OTP."
+          ? "Please enter a valid email address before requesting an OTP."
           : "Please enter a valid WhatsApp number with country code before requesting an OTP.",
       );
       return;

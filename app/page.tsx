@@ -6,7 +6,6 @@ import {
   ClipboardList,
   Factory,
   Handshake,
-  Headphones,
   PackageCheck,
   Search,
   ShieldCheck,
@@ -38,7 +37,7 @@ import { countryAlternates } from "@/lib/seo";
 import { routePath } from "@/url";
 
 export const metadata: Metadata = {
-  title: "SellersLogin Market - Global Sourcing & Buyer Sourcing Coordination",
+  title: "Chinaindiasourcing - Global Sourcing & Buyer Sourcing Coordination",
   description:
     "A simple global marketplace where buyers and sellers discover trusted business opportunities.",
   alternates: countryAlternates(
@@ -149,7 +148,7 @@ export default function Home() {
 
       <section className="bg-sky-50/20 py-10 dark:bg-sky-950/5 sm:py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl"><Badge variant="outline">Why SellersLogin Market</Badge><h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">A simpler way to coordinate international sourcing</h2></div>
+          <div className="max-w-2xl"><Badge variant="outline">Why Chinaindiasourcing</Badge><h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">A simpler way to coordinate international sourcing</h2></div>
           <div className="mt-7 grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">{platformBenefits.map((benefit) => (<div key={benefit.title} className="border-l pl-5"><h3 className="font-semibold">{benefit.title}</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">{benefit.description}</p></div>))}</div>
         </div>
       </section>
@@ -166,7 +165,7 @@ export default function Home() {
                 &ldquo;Never pay advance money to unverified parties. Inspect goods before shipment.&rdquo; Use trusted inspection agencies and secure payment methods for China and India sourcing.
               </p>
               <p>
-                SellersLogin Market introduces buyers and sourcing agents. Payment safeguards, price commitments, and package refunds apply only when transactions are coordinated through the verified platform flow. Payments conducted off-platform remain the buyer&apos;s sole responsibility.
+                Chinaindiasourcing introduces buyers and sourcing agents. Payment safeguards, price commitments, and package refunds apply only when transactions are coordinated through the verified platform flow. Payments conducted off-platform remain the buyer&apos;s sole responsibility.
               </p>
               <p className="pt-1">
                 Read our full{" "}
@@ -182,7 +181,7 @@ export default function Home() {
 
       <section id="support" className="scroll-mt-20 border-t border-border/50 bg-blue-50/35 py-10 dark:bg-blue-950/10 sm:py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Card id="start" className="scroll-mt-24 overflow-hidden border-border/40 bg-blue-100/60 shadow-none dark:bg-blue-950/25"><CardContent className="grid gap-8 py-2 sm:p-10 lg:grid-cols-[1fr_auto] lg:items-center"><div><Badge variant="secondary"><Sparkles aria-hidden="true" />Buyers and sourcing agents welcome</Badge><h2 className="mt-4 max-w-2xl text-3xl font-semibold tracking-tight sm:text-4xl">Ready to begin your next sourcing request?</h2><p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">Post your requirement as a buyer, or join the network as a sourcing agent.</p></div><div className="flex flex-col gap-3 sm:flex-row lg:flex-col"><Button size="lg" asChild><Link href={routePath.buyers}><Search aria-hidden="true" />Post a requirement</Link></Button><Button size="lg" variant="outline" asChild><Link href={routePath.sellers}><Store aria-hidden="true" />Join as an agent</Link></Button><Button size="lg" variant="ghost" asChild><a href="mailto:info@onlinepromotionhouse.com"><Headphones aria-hidden="true" />Contact support</a></Button></div></CardContent></Card>
+          <Card id="start" className="scroll-mt-24 overflow-hidden border-border/40 bg-blue-100/60 shadow-none dark:bg-blue-950/25"><CardContent className="grid gap-8 py-2 sm:p-10 lg:grid-cols-[1fr_auto] lg:items-center"><div><Badge variant="secondary"><Sparkles aria-hidden="true" />Buyers and sourcing agents welcome</Badge><h2 className="mt-4 max-w-2xl text-3xl font-semibold tracking-tight sm:text-4xl">Ready to begin your next sourcing request?</h2><p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">Post your requirement as a buyer, or join the network as a sourcing agent.</p></div><div className="flex flex-col gap-3 sm:flex-row lg:flex-col"><Button size="lg" asChild><Link href={routePath.buyers}><Search aria-hidden="true" />Post a requirement</Link></Button><Button size="lg" variant="outline" asChild><Link href={routePath.sellers}><Store aria-hidden="true" />Join as an agent</Link></Button></div></CardContent></Card>
         </div>
       </section>
 

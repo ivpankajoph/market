@@ -28,9 +28,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { siteOrigin } from "@/url";
 
 export const metadata: Metadata = {
-  title: "ChinaIndiaSourcing: Terms & Conditions - SellersLogin Market",
+  title: "Chinaindiasourcing: Terms & Conditions",
   description:
-    "Terms and Conditions for ChinaIndiaSourcing operated by Life Changing Networks Pvt. Ltd., an authorised partner of SellersLogin.com.",
+    "Terms and Conditions for Chinaindiasourcing operated by Life Changing Networks Pvt. Ltd., an authorised partner of SellersLogin.com.",
   alternates: {
     canonical: `${siteOrigin}/terms`,
   },
@@ -66,11 +66,11 @@ export default function TermsPage() {
       {/* Top Header */}
       <header className="sticky top-0 z-50 transition-colors duration-200 border-b border-transparent bg-transparent backdrop-blur-md">
         <div className="relative z-10 mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight" aria-label="SellersLogin Market home">
+          <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight" aria-label="Chinaindiasourcing home">
             <span className="flex size-8 items-center justify-center rounded-md border border-border/50 bg-white/70 shadow-xs dark:bg-black/20">
               <Globe2 className="size-4" aria-hidden="true" />
             </span>
-            <span>SellersLogin Market</span>
+            <span>Chinaindiasourcing</span>
           </Link>
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex gap-2">
@@ -97,7 +97,7 @@ export default function TermsPage() {
           </div>
 
           <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-            ChinaIndiaSourcing: Terms &amp; Conditions
+            Chinaindiasourcing: Terms &amp; Conditions
           </h1>
 
           <p className="mt-4 text-base leading-7 text-muted-foreground sm:text-lg">
@@ -139,12 +139,7 @@ export default function TermsPage() {
               <p>
                 Always engage certified third-party inspection agencies and utilize protected payment channels for all China and India sourcing transactions. Any direct payments made outside verified platform escrow or authorized mechanisms are conducted at your sole risk.
               </p>
-              <div className="pt-1 flex flex-wrap items-center gap-4 text-xs font-semibold">
-                <span>Suspected Fraud Reporting:</span>
-                <a href="mailto:info@onlinepromotionhouse.com" className="underline hover:text-amber-950 dark:hover:text-amber-100">
-                  info@onlinepromotionhouse.com
-                </a>
-              </div>
+              <p className="pt-1 text-xs font-semibold">Suspected fraud should be reported through the platform support channel.</p>
             </AlertDescription>
           </Alert>
         </div>
@@ -171,7 +166,7 @@ export default function TermsPage() {
                   &ldquo;I agree that my inquiries and business details may be shared with verified Agents for sourcing and lead-generation purposes.&rdquo;
                 </blockquote>
                 <p className="mt-2 text-xs text-muted-foreground">
-                  Can be withdrawn at any time by emailing info@onlinepromotionhouse.com.
+                  Can be withdrawn at any time through the platform support channel.
                 </p>
               </div>
 
@@ -180,7 +175,7 @@ export default function TermsPage() {
                   Consent Box 2 — SellersLogin Data Access
                 </span>
                 <blockquote className="mt-2 text-sm italic text-foreground font-medium border-l-2 border-primary pl-3">
-                  &ldquo;I understand that ChinaIndiaSourcing is operated by Life Changing Networks Pvt. Ltd., an authorized partner of SellersLogin.com, and I consent to SellersLogin accessing my Platform data for the purposes described in the Terms and Privacy Policy.&rdquo;
+                  &ldquo;I understand that Chinaindiasourcing is operated by Life Changing Networks Pvt. Ltd., an authorized partner of SellersLogin.com, and I consent to SellersLogin accessing my Platform data for the purposes described in the Terms and Privacy Policy.&rdquo;
                 </blockquote>
                 <p className="mt-2 text-xs text-muted-foreground">
                   Access granted for service operation, lead generation, verification, and compliance.
@@ -219,7 +214,7 @@ export default function TermsPage() {
                 </div>
                 <div className="mt-4 space-y-3 text-muted-foreground leading-7">
                   <p>
-                    The Platform (known as <strong>ChinaIndiaSourcing</strong> / <strong>SellersLogin Market</strong>) is owned, managed, and operated by <strong className="text-foreground">Life Changing Networks Pvt. Ltd.</strong> (hereinafter referred to as the &ldquo;Company&rdquo;, &ldquo;we&rdquo;, &ldquo;our&rdquo;, or &ldquo;us&rdquo;).
+                    The Platform (known as <strong>Chinaindiasourcing</strong>) is owned, managed, and operated by <strong className="text-foreground">Life Changing Networks Pvt. Ltd.</strong> (hereinafter referred to as the &ldquo;Company&rdquo;, &ldquo;we&rdquo;, &ldquo;our&rdquo;, or &ldquo;us&rdquo;).
                   </p>
                   <p>
                     The Company is an authorized partner of <strong className="text-foreground">SellersLogin.com</strong>, an established e-commerce enablement company that helps businesses sell products online worldwide.
@@ -257,7 +252,7 @@ export default function TermsPage() {
                 </div>
                 <div className="mt-4 space-y-3 text-muted-foreground leading-7">
                   <p>
-                    ChinaIndiaSourcing operates strictly as an <strong>introduction, directory, and lead-generation platform</strong> for international trade.
+                    Chinaindiasourcing operates strictly as an <strong>introduction, directory, and lead-generation platform</strong> for international trade.
                   </p>
                   <p>
                     The Platform is <strong>not a party to any contract, negotiation, agreement, purchase order, or arrangement</strong> executed between a Buyer and an Agent, Sourcing Partner, Manufacturer, or Seller.
@@ -339,7 +334,7 @@ export default function TermsPage() {
                     <strong>Explicit Consent:</strong> Buyers consent to lead sharing through an explicit, separate, unticked checkbox at the time of registration or inquiry submission.
                   </p>
                   <p>
-                    Consent may be revoked at any time by sending written notice to <a href="mailto:info@onlinepromotionhouse.com" className="text-primary underline">info@onlinepromotionhouse.com</a>. Any revocation takes effect prospectively for future lead sharing and does not affect data already transmitted in good faith.
+                    Consent may be revoked at any time by submitting written notice through the platform support channel. Any revocation takes effect prospectively for future lead sharing and does not affect data already transmitted in good faith.
                   </p>
                   <p>
                     Sharing is strictly restricted to legitimate sourcing, procurement, and international trade purposes.
@@ -422,16 +417,13 @@ export default function TermsPage() {
                     Any communication, negotiation, agreement, wire transfer, or cash payment conducted outside the Platform takes place entirely at the users&apos; own risk.
                   </p>
                   <p>
-                    The Company, its partners, and directors <strong>bear no liability whatsoever for fraud, misrepresentation, non-delivery of merchandise, transit defects, customs seizure, or payment defaults</strong> resulting from off-platform dealings, regardless of whether the counterparties originally met through ChinaIndiaSourcing.
+                    The Company, its partners, and directors <strong>bear no liability whatsoever for fraud, misrepresentation, non-delivery of merchandise, transit defects, customs seizure, or payment defaults</strong> resulting from off-platform dealings, regardless of whether the counterparties originally met through Chinaindiasourcing.
                   </p>
                   <p>
                     Users must thoroughly verify counterparty credentials, utilize independent pre-shipment inspection agencies, and rely on secure, documented escrow or letter of credit mechanisms.
                   </p>
                   <p>
-                    Suspected fraud, unethical behavior, or impersonation should be reported immediately to:{" "}
-                    <a href="mailto:info@onlinepromotionhouse.com" className="text-primary font-medium underline">
-                      info@onlinepromotionhouse.com
-                    </a>.
+                    Suspected fraud, unethical behavior, or impersonation should be reported immediately through the platform support channel.
                     The Platform reserves the right to suspend offending accounts and cooperate fully with law enforcement authorities, but holds no obligation to recover private financial losses.
                   </p>
                 </div>
@@ -585,7 +577,7 @@ export default function TermsPage() {
                     <strong>Arbitration:</strong> In the event the parties refer a dispute to arbitration, the seat and venue of arbitration shall be <strong className="text-foreground">Ghaziabad, Uttar Pradesh, India</strong>. The arbitration proceedings shall be conducted in the English language pursuant to the <strong>Arbitration and Conciliation Act, 1996</strong>.
                   </p>
                   <p>
-                    Users are strongly encouraged to first attempt resolving any concerns or disputes amicably and in good faith by writing to <a href="mailto:info@onlinepromotionhouse.com" className="text-primary underline">info@onlinepromotionhouse.com</a>.
+                    Users are strongly encouraged to first attempt resolving any concerns or disputes amicably and in good faith through the platform support channel.
                   </p>
                 </div>
               </article>
@@ -601,15 +593,10 @@ export default function TermsPage() {
                     In accordance with the Information Technology Act, 2000 and the Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021, the designated Grievance Officer details are published below:
                   </p>
                   <div className="rounded-lg border border-border/60 bg-muted/40 p-4 text-sm space-y-1.5 text-foreground">
-                    <p><strong>Designation:</strong> Grievance Officer, ChinaIndiaSourcing</p>
+                    <p><strong>Designation:</strong> Grievance Officer, Chinaindiasourcing</p>
                     <p><strong>Operating Entity:</strong> Life Changing Networks Pvt. Ltd.</p>
                     <p><strong>Jurisdiction / Office:</strong> Ghaziabad, Uttar Pradesh, India</p>
-                    <p>
-                      <strong>Email:</strong>{" "}
-                      <a href="mailto:info@onlinepromotionhouse.com" className="text-primary underline">
-                        info@onlinepromotionhouse.com
-                      </a>
-                    </p>
+                    <p><strong>Contact:</strong> Platform support channel</p>
                     <p><strong>Response Timeline:</strong> Acknowledgment within 24 to 48 hours; full resolution within 15 business days.</p>
                   </div>
                 </div>
@@ -666,7 +653,7 @@ export default function TermsPage() {
                   <h3>Questions, Consent Changes, or Legal Notices?</h3>
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground leading-6">
-                  For formal legal communications, data consent withdrawal, or inquiries regarding ChinaIndiaSourcing on SellersLogin Market, reach out to:
+                  For formal legal communications, data consent withdrawal, or inquiries regarding Chinaindiasourcing, reach out to:
                 </p>
                 <div className="mt-4 grid gap-4 sm:grid-cols-2 text-sm">
                   <div className="rounded-lg bg-card p-4 border border-border/60">
@@ -677,9 +664,7 @@ export default function TermsPage() {
                   </div>
                   <div className="rounded-lg bg-card p-4 border border-border/60 space-y-1">
                     <p className="font-semibold text-foreground">Direct Inquiries</p>
-                    <p className="text-muted-foreground">Support: <a href="mailto:info@onlinepromotionhouse.com" className="text-primary underline">info@onlinepromotionhouse.com</a></p>
-                    <p className="text-muted-foreground">Fraud &amp; Legal: <a href="mailto:info@onlinepromotionhouse.com" className="text-primary underline">info@onlinepromotionhouse.com</a></p>
-                    <p className="text-muted-foreground">Grievance: <a href="mailto:info@onlinepromotionhouse.com" className="text-primary underline">info@onlinepromotionhouse.com</a></p>
+                    <p className="text-muted-foreground">Use the platform support channel for support, fraud, legal, or grievance inquiries.</p>
                   </div>
                 </div>
               </div>

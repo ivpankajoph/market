@@ -911,12 +911,12 @@ export default function BuyersPage() {
           <Link
             href="/"
             className="flex items-center gap-2 font-semibold tracking-tight"
-            aria-label="SellersLogin Market home"
+            aria-label="Chinaindiasourcing home"
           >
             <span className="flex size-8 items-center justify-center rounded-md border border-border/50 bg-white/70 shadow-xs dark:bg-black/20">
               <Globe2 className="size-4" aria-hidden="true" />
             </span>
-            <span>SellersLogin Market</span>
+            <span>Chinaindiasourcing</span>
           </Link>
           <div className="flex items-center gap-3">
             <Button
@@ -1045,7 +1045,7 @@ export default function BuyersPage() {
                             <input
                               type="email"
                               required
-                              placeholder="buyer@company.com"
+                              placeholder="Enter your email address"
                               value={email}
                               onChange={(e) => {
                                 setEmail(e.target.value);
@@ -1776,7 +1776,7 @@ export default function BuyersPage() {
                           className="mt-0.5 size-4 rounded border-input text-primary focus:ring-primary"
                         />
                         <span className="text-xs leading-relaxed text-muted-foreground">
-                          I understand that ChinaIndiaSourcing is operated by Life Changing Networks Pvt. Ltd., an authorized partner of SellersLogin.com, and I consent to SellersLogin accessing my Platform data for service operations.
+                          I understand that Chinaindiasourcing is operated by Life Changing Networks Pvt. Ltd., an authorized partner of SellersLogin.com, and I consent to SellersLogin accessing my Platform data for service operations.
                         </span>
                       </label>
                     </CardContent>

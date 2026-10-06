@@ -27,11 +27,11 @@ export async function generateMetadata({ params }: CountryServicePageProps): Pro
   const service = getService(slug);
   const state = getLocationState(country, slug);
 
-  if (!market || (!service && !state)) return { title: "Page not found | SellersLogin Market" };
+  if (!market || (!service && !state)) return { title: "Page not found | Chinaindiasourcing" };
 
   if (state) {
     return {
-      title: `Sourcing Services in ${state.name}, ${market.name} | SellersLogin Market`,
+      title: `Sourcing Services in ${state.name}, ${market.name} | Chinaindiasourcing`,
       description: `China and India sourcing support for buyers in ${state.name}, ${market.locationName}, including supplier research, verification, procurement, and logistics coordination.`,
       alternates: countryAlternates(
         routePath.state(market.slug, state.slug),
@@ -41,8 +41,8 @@ export async function generateMetadata({ params }: CountryServicePageProps): Pro
   }
 
   return {
-    title: `${service!.name} for ${market.name} Buyers | SellersLogin Market`,
-    description: `${service!.name} support for buyers in ${market.locationName} who need a clearer, more coordinated way to source internationally.`,
+    title: `${service!.name} for ${market.name} Buyers | Chinaindiasourcing`,
+    description: `${service!.name} connecting ${service!.origin} suppliers with buyers in ${market.locationName}. Explore partner screening, quotations, quality checkpoints, documentation, and delivery coordination.`,
     alternates: countryAlternates(
       routePath.marketService(market.slug, service!.slug),
       (alternateMarket) =>
