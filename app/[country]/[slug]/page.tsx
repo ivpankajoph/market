@@ -6,7 +6,13 @@ import { ServiceDetailPage } from "@/components/service-detail-page";
 import { getLocationState, stateRouteParams } from "@/data";
 import { buyerMarkets, getBuyerMarket } from "@/lib/markets";
 import { countryAlternates } from "@/lib/seo";
-import { getService, services } from "@/lib/services";
+import {
+  customClearancePageTitle,
+  getService,
+  isCustomClearanceService,
+  serviceDisplayName,
+  services,
+} from "@/lib/services";
 import { routePath } from "@/url";
 
 type CountryServicePageProps = {
@@ -40,9 +46,14 @@ export async function generateMetadata({ params }: CountryServicePageProps): Pro
     };
   }
 
+  const marketTitle = market.slug === "us" ? "USA" : market.name;
+  const displayServiceName = serviceDisplayName(service!.name);
+
   return {
-    title: `${service!.name} for ${market.name} Buyers | Chinaindiasourcing`,
-    description: `${service!.name} connecting ${service!.origin} suppliers with buyers in ${market.locationName}. Explore partner screening, quotations, quality checkpoints, documentation, and delivery coordination.`,
+    title: isCustomClearanceService(service!.name)
+      ? customClearancePageTitle(service!.origin, marketTitle)
+      : `${service!.name} for ${market.name} Buyers | Chinaindiasourcing`,
+    description: `${displayServiceName} connecting ${service!.origin} with buyers in ${market.locationName}. Explore documentation, customs-clearance checkpoints, quotations, quality controls, and delivery coordination.`,
     alternates: countryAlternates(
       routePath.marketService(market.slug, service!.slug),
       (alternateMarket) =>

@@ -28,7 +28,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { BuyerMarket } from "@/lib/markets";
-import { getSourceCountry, services, type SourcingService } from "@/lib/services";
+import {
+  customClearancePageTitle,
+  getSourceCountry,
+  isCustomClearanceService,
+  serviceDisplayName,
+  services,
+  type SourcingService,
+} from "@/lib/services";
 import { routePath } from "@/url";
 
 type ServiceDetailPageProps = {
@@ -57,6 +64,7 @@ function localizeServiceText(text: string, market: BuyerMarket) {
 
 function getServiceKind(name: string) {
   const value = name.toLowerCase();
+  if (value.includes("custom clearance")) return "customs";
   if (value.includes("ddp") || value.includes("door to door")) return "ddp";
   if (value.includes("freight") || value.includes("logistics")) return "freight";
   if (value.includes("inspection") || value.includes("factory visit") || value.includes("factory research")) return "inspection";
@@ -70,6 +78,29 @@ function buildContent(service: SourcingService, market: BuyerMarket): ContentPro
   const origin = service.origin;
   const destination = market.locationName;
   const kind = getServiceKind(service.name);
+
+  if (kind === "customs") {
+    return {
+      label: "Customs-clearance coordination",
+      intro: `Prepare the information and handoffs needed to clear goods moving from ${origin} into ${destination}, with the importer, customs broker, logistics partner, and supplier working from a consistent shipment file.`,
+      outcomes: [
+        { title: "Shipment-file readiness", description: "Bring product descriptions, values, quantities, origin, consignee, and transport details into one reviewable file." },
+        { title: "Classification inputs", description: "Organize material, use, and technical information that supports broker-led HS classification and duty review." },
+        { title: "Document consistency", description: "Check that invoices, packing lists, shipment records, and party details do not conflict." },
+        { title: "Release coordination", description: `Track customs queries, document updates, cargo release, and onward delivery in ${destination}.` },
+      ],
+      checkpoints: [
+        { title: "Importer and product details", description: "Importer-of-record, consignee, commodity, composition, use, origin, value, and available compliance records." },
+        { title: "Broker-ready documents", description: "Commercial invoice, packing list, transport document, purchase details, and supporting certificates where relevant." },
+        { title: "Clearance and delivery", description: "Duty and tax inputs, customs queries, release status, storage exposure, and final handoff." },
+      ],
+      idealFor: [
+        { title: "First-time importers", description: "Buyers who need a clearer view of the parties, documents, and decisions involved in clearance." },
+        { title: "Repeat commercial shipments", description: "Teams that want consistent shipment files and broker handoffs across regular imports." },
+        { title: "Complex product categories", description: "Goods that require precise descriptions, supporting records, or early compliance questions." },
+      ],
+    };
+  }
 
   if (kind === "freight") {
     return {
@@ -238,8 +269,13 @@ export function ServiceDetailPage({ market, service, regionName }: ServiceDetail
   const sourceCountry = getSourceCountry(service.origin);
   const overview = localizeServiceText(service.overview, displayMarket);
   const content = buildContent(service, displayMarket);
+  const displayServiceName = serviceDisplayName(service.name);
   const relatedServices = services.filter((item) => item.origin === service.origin && item.slug !== service.slug).slice(0, 6);
-  const pageTitle = regionName ? `${service.name} in ${regionName}` : service.name;
+  const marketTitle = market.slug === "us" ? "USA" : market.name;
+  const clearanceDestination = regionName ? `${regionName}, ${marketTitle}` : marketTitle;
+  const pageTitle = isCustomClearanceService(service.name)
+    ? customClearancePageTitle(service.origin, clearanceDestination)
+    : regionName ? `${service.name} in ${regionName}` : service.name;
   const briefDetails = [
     { icon: FileCheck2, title: "Product specification", description: "Materials, dimensions, packaging, certifications, and reference files." },
     { icon: PackageSearch, title: "Order target", description: "Expected quantity, preferred MOQ, sample needs, and reorder plans." },
@@ -248,8 +284,8 @@ export function ServiceDetailPage({ market, service, regionName }: ServiceDetail
   ];
   const faqs = [
     {
-      question: `What does ${service.name} include?`,
-      answer: `${service.name} can cover the relevant stages shown on this page, from requirement clarification and partner comparison to documentation, quality, and delivery coordination. The final scope depends on your product, order size, origin, destination, and selected partner.`,
+      question: `What does ${displayServiceName} include?`,
+      answer: `${displayServiceName} can cover the relevant stages shown on this page, from requirement clarification and partner comparison to documentation, quality, and delivery coordination. The final scope depends on your product, order size, origin, destination, and selected partner.`,
     },
     {
       question: `How are suppliers or service partners in ${service.origin} assessed?`,
@@ -273,7 +309,7 @@ export function ServiceDetailPage({ market, service, regionName }: ServiceDetail
       "@context": "https://schema.org",
       "@type": "Service",
       name: pageTitle,
-      serviceType: service.name,
+      serviceType: displayServiceName,
       description: `${content.intro} ${overview}`,
       areaServed: { "@type": "Place", name: displayMarket.locationName },
       provider: { "@type": "Organization", name: "Chinaindiasourcing" },
@@ -309,7 +345,7 @@ export function ServiceDetailPage({ market, service, regionName }: ServiceDetail
               </Badge>
             </div>
             <p className="mt-5 text-sm font-semibold uppercase tracking-[0.18em] text-blue-700 dark:text-blue-300">{content.label}</p>
-            <h2 className="mt-3 max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">A clearer way to manage {service.name.toLowerCase()}</h2>
+            <h2 className="mt-3 max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">A clearer way to manage {displayServiceName.toLowerCase()}</h2>
             <p className="mt-4 max-w-2xl text-lg leading-8 text-muted-foreground">{content.intro}</p>
             <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">{overview}</p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -382,7 +418,7 @@ export function ServiceDetailPage({ market, service, regionName }: ServiceDetail
 
       <section className="py-10 sm:py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl"><Badge variant="outline">Service scope</Badge><h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">What {service.name.toLowerCase()} can cover</h2></div>
+          <div className="max-w-2xl"><Badge variant="outline">Service scope</Badge><h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">What {displayServiceName.toLowerCase()} can cover</h2></div>
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {service.includes.map((item, index) => <Card key={item} className={`border-border/50 shadow-none ${index % 3 === 0 ? "bg-blue-50/70 dark:bg-blue-950/20" : index % 3 === 1 ? "bg-cyan-50/70 dark:bg-cyan-950/20" : "bg-indigo-50/70 dark:bg-indigo-950/20"}`}><CardContent className="flex items-start gap-3 px-5"><span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-background"><Check className="size-4" aria-hidden="true" /></span><p className="leading-6">{localizeServiceText(item, displayMarket)}</p></CardContent></Card>)}
           </div>
@@ -480,14 +516,14 @@ export function ServiceDetailPage({ market, service, regionName }: ServiceDetail
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><Badge variant="outline">Related {service.origin} services</Badge><h2 className="mt-3 text-3xl font-semibold tracking-tight">Continue building your sourcing plan</h2></div><Button variant="outline" asChild><Link href={routePath.services}>View all services<ArrowRight aria-hidden="true" /></Link></Button></div>
           <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {relatedServices.map((item) => <Link key={item.slug} href={routePath.marketService(market.slug, item.slug)} className="group flex items-center justify-between rounded-xl border border-border/60 bg-blue-50/40 p-4 transition-colors hover:border-blue-300 hover:bg-blue-50 dark:bg-blue-950/10 dark:hover:border-blue-800"><span className="font-medium">{item.name}</span><ArrowRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-1" aria-hidden="true" /></Link>)}
+            {relatedServices.map((item) => <Link key={item.slug} href={routePath.marketService(market.slug, item.slug)} className="group flex items-center justify-between rounded-xl border border-border/60 bg-blue-50/40 p-4 transition-colors hover:border-blue-300 hover:bg-blue-50 dark:bg-blue-950/10 dark:hover:border-blue-800"><span className="font-medium">{serviceDisplayName(item.name)}</span><ArrowRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-1" aria-hidden="true" /></Link>)}
           </div>
         </div>
       </section>}
 
       <section className="pb-10 sm:pb-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Card className="overflow-hidden border-border/50 bg-blue-100/70 shadow-none dark:bg-blue-950/30"><CardContent className="flex flex-col gap-5 px-6 sm:p-7 lg:flex-row lg:items-center lg:justify-between"><div><Badge variant="secondary"><Sparkles aria-hidden="true" />Start with your requirement</Badge><h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Need help with {service.name.toLowerCase()}?</h2><p className="mt-2 max-w-2xl text-muted-foreground">Share the product, order size, budget, and destination in {displayMarket.locationName} to begin.</p></div><Button size="lg" asChild><a href="https://web.sellerslogin.com/buyers" target="_blank" rel="noopener noreferrer">Post a requirement</a></Button></CardContent></Card>
+          <Card className="overflow-hidden border-border/50 bg-blue-100/70 shadow-none dark:bg-blue-950/30"><CardContent className="flex flex-col gap-5 px-6 sm:p-7 lg:flex-row lg:items-center lg:justify-between"><div><Badge variant="secondary"><Sparkles aria-hidden="true" />Start with your requirement</Badge><h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Need help with {displayServiceName.toLowerCase()}?</h2><p className="mt-2 max-w-2xl text-muted-foreground">Share the product, order size, budget, and destination in {displayMarket.locationName} to begin.</p></div><Button size="lg" asChild><a href="https://web.sellerslogin.com/buyers" target="_blank" rel="noopener noreferrer">Post a requirement</a></Button></CardContent></Card>
         </div>
       </section>
 

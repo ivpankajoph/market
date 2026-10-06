@@ -6,7 +6,12 @@ import { ServiceDetailPage } from "@/components/service-detail-page";
 import { cityRouteParams, getLocationCity, getLocationState } from "@/data";
 import { getBuyerMarket } from "@/lib/markets";
 import { countryAlternates } from "@/lib/seo";
-import { getService } from "@/lib/services";
+import {
+  customClearancePageTitle,
+  getService,
+  isCustomClearanceService,
+  serviceDisplayName,
+} from "@/lib/services";
 import { routePath } from "@/url";
 
 type CityPageProps = {
@@ -34,9 +39,14 @@ export async function generateMetadata({ params }: CityPageProps): Promise<Metad
   if (!market || !state || (!city && !service)) return { title: "Page not found | Chinaindiasourcing" };
 
   if (service) {
+    const marketTitle = market.slug === "us" ? "USA" : market.name;
+    const displayServiceName = serviceDisplayName(service.name);
+
     return {
-      title: `${service.name} in ${state.name}, ${market.name} | Chinaindiasourcing`,
-      description: `${service.name} connecting ${service.origin} suppliers with buyers in ${state.name}, ${market.locationName}. Explore quotations, quality checkpoints, documentation, and delivery coordination.`,
+      title: isCustomClearanceService(service.name)
+        ? customClearancePageTitle(service.origin, `${state.name}, ${marketTitle}`)
+        : `${service.name} in ${state.name}, ${market.name} | Chinaindiasourcing`,
+      description: `${displayServiceName} connecting ${service.origin} with buyers in ${state.name}, ${market.locationName}. Explore documentation, customs-clearance checkpoints, quotations, and delivery coordination.`,
       alternates: countryAlternates(
         routePath.regionalService(market.slug, state.slug, service.slug),
         (alternateMarket) =>

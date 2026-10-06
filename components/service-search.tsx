@@ -6,12 +6,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { unitedStatesMarket } from "@/lib/markets";
-import { servicesByCountry, serviceSlug } from "@/lib/services";
+import { serviceDisplayName, servicesByCountry, serviceSlug } from "@/lib/services";
 import { routePath } from "@/url";
 
 const searchableServices = servicesByCountry.flatMap((country) =>
   country.serviceNames.map((name) => ({
-    name,
+    name: serviceDisplayName(name),
     country: country.name,
     flagCode: country.flagCode,
     href: routePath.marketService(unitedStatesMarket.slug, serviceSlug(name)),

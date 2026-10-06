@@ -52,6 +52,7 @@ function createServiceNames(country: SourceCountry) {
     `Made in ${name} Sourcing`,
     `Global Sourcing ${name}`,
     `Swift ${name} Sourcing`,
+    `${name} Custom Clearance Services`,
     ...extras,
   ];
 }
@@ -72,8 +73,36 @@ export function serviceSlug(name: string) {
     .replace(/^-|-$/g, "");
 }
 
+export function serviceDisplayName(name: string) {
+  return name.endsWith(" Custom Clearance Services")
+    ? "Custom Clearance Services"
+    : name;
+}
+
+export function isCustomClearanceService(name: string) {
+  return name.endsWith(" Custom Clearance Services");
+}
+
+export function customClearancePageTitle(origin: ServiceOrigin, destination: string) {
+  return `Custom Clearance Services from ${origin} to ${destination} | Custom Clearance Agent in ${destination}`;
+}
+
 function serviceFocus(name: string, origin: ServiceOrigin) {
   const lower = name.toLowerCase();
+
+  if (lower.includes("custom clearance")) {
+    return {
+      action: `coordinate customs-clearance preparation for goods moving from ${origin} to the United States`,
+      includes: [
+        "Importer, consignee, and shipment detail review",
+        "Product description and HS-classification inputs",
+        "Commercial invoice and packing-list checks",
+        "Duty, tax, and landed-cost input coordination",
+        "Customs broker document and query handoffs",
+        "Cargo release and final-delivery coordination",
+      ],
+    };
+  }
 
   if (lower.includes("freight") || lower.includes("logistics")) {
     return {
@@ -160,13 +189,14 @@ function serviceFocus(name: string, origin: ServiceOrigin) {
 
 function buildService(name: string, origin: ServiceOrigin): SourcingService {
   const focus = serviceFocus(name, origin);
+  const displayName = serviceDisplayName(name);
 
   return {
     name,
     slug: serviceSlug(name),
     origin,
-    description: `${name} support for US buyers who need a clearer, more coordinated way to source internationally.`,
-    overview: `Our ${name.toLowerCase()} workflow helps US businesses ${focus.action}. The service is shaped around your product, target cost, order size, quality expectations, and delivery destination.`,
+    description: `${displayName} support for US buyers who need a clearer, more coordinated way to source internationally.`,
+    overview: `Our ${displayName.toLowerCase()} workflow helps US businesses ${focus.action}. The service is shaped around your product, target cost, order size, documentation needs, and delivery destination.`,
     includes: focus.includes,
     process: [
       {

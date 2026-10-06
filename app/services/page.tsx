@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { unitedStatesMarket } from "@/lib/markets";
-import { servicesByCountry, serviceSlug } from "@/lib/services";
+import { serviceDisplayName, servicesByCountry, serviceSlug } from "@/lib/services";
 import { routePath } from "@/url";
 
 export const metadata: Metadata = {
@@ -74,7 +74,7 @@ export default function ServicesPage() {
                     href={routePath.marketService(unitedStatesMarket.slug, serviceSlug(serviceName))}
                     className="group flex items-start justify-between gap-3 border-b border-border/40 py-3 text-sm font-medium leading-5 transition-colors hover:text-blue-700 dark:hover:text-cyan-300"
                   >
-                    <span>{serviceName}</span>
+                    <span>{serviceDisplayName(serviceName)}</span>
                     <ArrowRight className="mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1" aria-hidden="true" />
                   </Link>
                 ))}
