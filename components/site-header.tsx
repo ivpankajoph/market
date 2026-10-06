@@ -23,7 +23,7 @@ export function SiteHeader() {
       className={`sticky top-0 z-50 transition-colors duration-200 ${
         isScrolled
           ? "border-b border-border/40 bg-background/85 shadow-xs backdrop-blur-md"
-          : "border-b border-transparent bg-background/75 backdrop-blur-sm"
+          : "border-b border-transparent bg-transparent"
       }`}
     >
       <div className="relative z-10 mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
