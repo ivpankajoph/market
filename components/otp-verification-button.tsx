@@ -23,6 +23,7 @@ type OtpVerificationButtonProps = {
   target: string;
   verified: boolean;
   onVerified: (verificationToken: string) => void;
+  onAvailabilityChange?: (available: boolean, message?: string) => void;
   className?: string;
   label?: string;
   verifiedVariant?: "outline" | "secondary";
@@ -46,6 +47,7 @@ export function OtpVerificationButton({
   target,
   verified,
   onVerified,
+  onAvailabilityChange,
   className,
   label = "Verify",
   verifiedVariant = "outline",
@@ -82,12 +84,18 @@ export function OtpVerificationButton({
     try {
       setIsSending(true);
       const result = await sendVerificationOtp(channel, target);
+      onAvailabilityChange?.(true);
       setOtpTarget(target);
       setOtpSent(true);
       setOtp("");
       setResendTimer(result.resendAfter || 30);
     } catch (caughtError) {
-      setError(caughtError instanceof Error ? caughtError.message : "Unable to send OTP.");
+      const requestError = caughtError as Error & { code?: string };
+      const message = requestError instanceof Error ? requestError.message : "Unable to send OTP.";
+      if (requestError?.code === "MEMBER_EXISTS") {
+        onAvailabilityChange?.(false, message);
+      }
+      setError(message);
     } finally {
       setIsSending(false);
     }

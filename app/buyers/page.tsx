@@ -681,11 +681,13 @@ export default function BuyersPage() {
   const [email, setEmail] = useState("");
   const [emailVerified, setEmailVerified] = useState(false);
   const [emailVerificationToken, setEmailVerificationToken] = useState("");
+  const [emailRegistrationWarning, setEmailRegistrationWarning] = useState("");
 
   const [countryCode, setCountryCode] = useState("+91");
   const [whatsapp, setWhatsapp] = useState("");
   const [whatsappVerified, setWhatsappVerified] = useState(false);
   const [whatsappVerificationToken, setWhatsappVerificationToken] = useState("");
+  const [whatsappRegistrationWarning, setWhatsappRegistrationWarning] = useState("");
 
   const [companyName, setCompanyName] = useState("");
   const [website, setWebsite] = useState("");
@@ -867,6 +869,10 @@ export default function BuyersPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (emailRegistrationWarning || whatsappRegistrationWarning) {
+      alert("Please use an email address and WhatsApp number that are not already registered.");
+      return;
+    }
     if (!agreedOffPlatform) {
       alert("Please acknowledge the Platform Payment & Fraud Disclaimer checkbox before submitting.");
       return;
@@ -1045,6 +1051,7 @@ export default function BuyersPage() {
                                 setEmail(e.target.value);
                                 setEmailVerified(false);
                                 setEmailVerificationToken("");
+                                setEmailRegistrationWarning("");
                               }}
                               className="w-full rounded-md border border-input bg-background pl-9 pr-3 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                             />
@@ -1057,11 +1064,19 @@ export default function BuyersPage() {
                               setEmailVerificationToken(token);
                               setEmailVerified(true);
                             }}
+                            onAvailabilityChange={(available, message) => {
+                              setEmailRegistrationWarning(available ? "" : message || "This email address is already registered.");
+                            }}
                             label="Verify Email"
                             verifiedVariant="secondary"
                             className="shrink-0"
                           />
                         </div>
+                        {emailRegistrationWarning && (
+                          <p role="alert" className="mt-1.5 text-xs font-medium text-rose-600 dark:text-rose-400">
+                            {emailRegistrationWarning}
+                          </p>
+                        )}
                       </div>
 
                       {/* WhatsApp with Country Code + Verification */}
@@ -1095,6 +1110,7 @@ export default function BuyersPage() {
                                 setCountryCode(e.target.value);
                                 setWhatsappVerified(false);
                                 setWhatsappVerificationToken("");
+                                setWhatsappRegistrationWarning("");
                               }}
                               className="bg-transparent text-xs font-semibold text-foreground focus:outline-none cursor-pointer"
                             >
@@ -1115,6 +1131,7 @@ export default function BuyersPage() {
                                 setCustomCountryCode(e.target.value.replace(/[^\d+]/g, "").slice(0, 5));
                                 setWhatsappVerified(false);
                                 setWhatsappVerificationToken("");
+                                setWhatsappRegistrationWarning("");
                               }}
                               className="w-20 rounded-md border border-input bg-background px-2 py-1.5 text-xs font-semibold text-foreground shadow-xs placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 shrink-0"
                             />
@@ -1130,6 +1147,7 @@ export default function BuyersPage() {
                                 setWhatsapp(e.target.value);
                                 setWhatsappVerified(false);
                                 setWhatsappVerificationToken("");
+                                setWhatsappRegistrationWarning("");
                               }}
                               className="w-full rounded-md border border-input bg-background pl-9 pr-3 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                             />
@@ -1142,10 +1160,18 @@ export default function BuyersPage() {
                               setWhatsappVerificationToken(token);
                               setWhatsappVerified(true);
                             }}
+                            onAvailabilityChange={(available, message) => {
+                              setWhatsappRegistrationWarning(available ? "" : message || "This WhatsApp number is already registered.");
+                            }}
                             verifiedVariant="secondary"
                             className="shrink-0"
                           />
                         </div>
+                        {whatsappRegistrationWarning && (
+                          <p role="alert" className="mt-1.5 text-xs font-medium text-rose-600 dark:text-rose-400">
+                            {whatsappRegistrationWarning}
+                          </p>
+                        )}
                       </div>
 
                       {/* Company Name */}
@@ -1761,7 +1787,7 @@ export default function BuyersPage() {
                     <p className="mb-3 text-sm font-semibold text-foreground">
                       One-time verification fee due at checkout: US${country.trim().toLowerCase() === "india" ? "15" : "20"}. No recurring charge.
                     </p>
-                    <Button size="lg" type="submit" disabled={isSubmitting} className="w-full sm:w-auto px-10 py-6 text-base font-semibold shadow-md">
+                    <Button size="lg" type="submit" disabled={isSubmitting || Boolean(emailRegistrationWarning || whatsappRegistrationWarning)} className="w-full sm:w-auto px-10 py-6 text-base font-semibold shadow-md">
                       <Search className="size-5 mr-1" /> {isSubmitting ? "Saving..." : "Continue to Verification Payment"}
                     </Button>
                     <p className="mt-3 text-xs text-muted-foreground">

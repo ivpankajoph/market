@@ -624,11 +624,13 @@ export default function SellersPage() {
   const [email, setEmail] = useState("");
   const [emailVerified, setEmailVerified] = useState(false);
   const [emailVerificationToken, setEmailVerificationToken] = useState("");
+  const [emailRegistrationWarning, setEmailRegistrationWarning] = useState("");
   const [countryCode, setCountryCode] = useState("+91");
   const [customCountryCode, setCustomCountryCode] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [whatsappVerified, setWhatsappVerified] = useState(false);
   const [whatsappVerificationToken, setWhatsappVerificationToken] = useState("");
+  const [whatsappRegistrationWarning, setWhatsappRegistrationWarning] = useState("");
   const [website, setWebsite] = useState("");
   const [streetAddress, setStreetAddress] = useState("");
   const [locationLandmark, setLocationLandmark] = useState("");
@@ -1102,6 +1104,10 @@ export default function SellersPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (emailRegistrationWarning || whatsappRegistrationWarning) {
+      alert("Please use an email address and WhatsApp number that are not already registered.");
+      return;
+    }
     if (!agreedTerms) {
       alert("Please accept the Platform Compliance Agreement to complete seller registration.");
       return;
@@ -1924,6 +1930,7 @@ export default function SellersPage() {
                                   setEmail(e.target.value);
                                   setEmailVerified(false);
                                   setEmailVerificationToken("");
+                                  setEmailRegistrationWarning("");
                                 }}
                                 className="w-full rounded-md border border-input bg-background pl-9 pr-3 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                               />
@@ -1936,9 +1943,17 @@ export default function SellersPage() {
                                 setEmailVerificationToken(token);
                                 setEmailVerified(true);
                               }}
+                              onAvailabilityChange={(available, message) => {
+                                setEmailRegistrationWarning(available ? "" : message || "This email address is already registered.");
+                              }}
                               className="px-3"
                             />
                           </div>
+                          {emailRegistrationWarning && (
+                            <p role="alert" className="mt-1.5 text-xs font-medium text-rose-600 dark:text-rose-400">
+                              {emailRegistrationWarning}
+                            </p>
+                          )}
                         </div>
 
                         {/* WhatsApp Phone Number with Country Code Dropdown */}
@@ -1958,6 +1973,7 @@ export default function SellersPage() {
                                 setCountryCode(value);
                                 setWhatsappVerified(false);
                                 setWhatsappVerificationToken("");
+                                setWhatsappRegistrationWarning("");
                               }}
                             />
                             {countryCode === "custom" && (
@@ -1969,6 +1985,7 @@ export default function SellersPage() {
                                   setCustomCountryCode(e.target.value);
                                   setWhatsappVerified(false);
                                   setWhatsappVerificationToken("");
+                                  setWhatsappRegistrationWarning("");
                                 }}
                                 className="w-16 rounded-md border border-input bg-background px-2.5 py-2 text-xs text-foreground shadow-xs focus:border-primary focus:outline-none"
                               />
@@ -1984,6 +2001,7 @@ export default function SellersPage() {
                                   setWhatsapp(e.target.value);
                                   setWhatsappVerified(false);
                                   setWhatsappVerificationToken("");
+                                  setWhatsappRegistrationWarning("");
                                 }}
                                 className="w-full rounded-md border border-input bg-background pl-9 pr-3 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                               />
@@ -1996,9 +2014,17 @@ export default function SellersPage() {
                                 setWhatsappVerificationToken(token);
                                 setWhatsappVerified(true);
                               }}
+                              onAvailabilityChange={(available, message) => {
+                                setWhatsappRegistrationWarning(available ? "" : message || "This WhatsApp number is already registered.");
+                              }}
                               className="px-3"
                             />
                           </div>
+                          {whatsappRegistrationWarning && (
+                            <p role="alert" className="mt-1.5 text-xs font-medium text-rose-600 dark:text-rose-400">
+                              {whatsappRegistrationWarning}
+                            </p>
+                          )}
                         </div>
 
                         {/* Official Website */}
@@ -3283,7 +3309,7 @@ export default function SellersPage() {
                       <Button
                         type="submit"
                         size="lg"
-                        disabled={isSubmitting || isSavingDraft}
+                        disabled={isSubmitting || isSavingDraft || Boolean(emailRegistrationWarning || whatsappRegistrationWarning)}
                         className="px-8 py-5 text-sm sm:text-base font-semibold shadow-md gap-2"
                       >
                         <CheckCircle2 className="size-5" /> {isSubmitting ? "Saving..." : "Continue to Verification Payment"}

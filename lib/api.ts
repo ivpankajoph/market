@@ -44,7 +44,9 @@ export function buildWhatsappNumber(
 
 export async function sendVerificationOtp(channel: OtpChannel, target: string) {
   const path = channel === "email" ? "email" : "whatsapp";
-  const body = channel === "email" ? { email: target } : { whatsappNumber: target };
+  const body = channel === "email"
+    ? { email: target, verificationContext: "market" }
+    : { whatsappNumber: target, verificationContext: "market" };
   const response = await fetch(`${apiBaseUrl}/live-chat/${path}/send-otp`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
