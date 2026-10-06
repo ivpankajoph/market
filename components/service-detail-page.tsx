@@ -29,9 +29,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { BuyerMarket } from "@/lib/markets";
 import {
-  customClearancePageTitle,
   getSourceCountry,
-  isCustomClearanceService,
   serviceDisplayName,
   services,
   type SourcingService,
@@ -271,11 +269,9 @@ export function ServiceDetailPage({ market, service, regionName }: ServiceDetail
   const content = buildContent(service, displayMarket);
   const displayServiceName = serviceDisplayName(service.name);
   const relatedServices = services.filter((item) => item.origin === service.origin && item.slug !== service.slug).slice(0, 6);
-  const marketTitle = market.slug === "us" ? "USA" : market.name;
-  const clearanceDestination = regionName ? `${regionName}, ${marketTitle}` : marketTitle;
-  const pageTitle = isCustomClearanceService(service.name)
-    ? customClearancePageTitle(service.origin, clearanceDestination)
-    : regionName ? `${service.name} in ${regionName}` : service.name;
+  const pageTitle = regionName
+    ? `${displayServiceName} in ${regionName}`
+    : displayServiceName;
   const briefDetails = [
     { icon: FileCheck2, title: "Product specification", description: "Materials, dimensions, packaging, certifications, and reference files." },
     { icon: PackageSearch, title: "Order target", description: "Expected quantity, preferred MOQ, sample needs, and reorder plans." },
