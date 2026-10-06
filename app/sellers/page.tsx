@@ -599,7 +599,6 @@ export default function SellersPage() {
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [paymentDetails, setPaymentDetails] = useState<MarketPaymentDetails | null>(null);
   const [draftMessage, setDraftMessage] = useState("");
-  const [registrationBlockedMessage, setRegistrationBlockedMessage] = useState("");
   const [isDraftHydrated, setIsDraftHydrated] = useState(false);
   const draftCredentials = useRef<MarketDraftCredentials | null>(null);
   const draftQueue = useRef<Promise<void>>(Promise.resolve());
@@ -791,7 +790,7 @@ export default function SellersPage() {
       await Promise.resolve();
 
       try {
-        const saved = JSON.parse(localStorage.getItem("market-sellers-draft") || "null") as MarketDraftCredentials | null;
+        const saved = JSON.parse(sessionStorage.getItem("market-sellers-draft") || "null") as MarketDraftCredentials | null;
         draftCredentials.current = saved;
 
         const sessionDraft = JSON.parse(
@@ -822,12 +821,12 @@ export default function SellersPage() {
               }
             }
           } catch {
-            localStorage.removeItem("market-sellers-draft");
+            sessionStorage.removeItem("market-sellers-draft");
             draftCredentials.current = null;
           }
         }
       } catch {
-        localStorage.removeItem("market-sellers-draft");
+        sessionStorage.removeItem("market-sellers-draft");
         sessionStorage.removeItem(SELLER_SESSION_DRAFT_KEY);
       } finally {
         if (isMounted) setIsDraftHydrated(true);
@@ -1031,15 +1030,25 @@ export default function SellersPage() {
           const result = await saveMarketDraft("sellers", payload, step, draftCredentials.current);
           if (result.data) {
             draftCredentials.current = { draftId: result.data.draftId, draftToken: result.data.draftToken };
-            localStorage.setItem("market-sellers-draft", JSON.stringify(draftCredentials.current));
+            sessionStorage.setItem("market-sellers-draft", JSON.stringify(draftCredentials.current));
             setDraftMessage("Draft saved");
           }
         } catch (error) {
           const message = error instanceof Error ? error.message : "Unable to save draft.";
-          if ((error as Error & { code?: string })?.code === "MEMBER_EXISTS") {
-            setRegistrationBlockedMessage(message);
+          const requestError = error as Error & {
+            code?: string;
+            field?: "email" | "whatsapp";
+          };
+          if (requestError?.code === "MEMBER_EXISTS") {
+            if (requestError.field === "whatsapp") {
+              setWhatsappRegistrationWarning("This WhatsApp number is already registered. Please use a different number.");
+            } else {
+              setEmailRegistrationWarning("This email address is already registered. Please use a different email address.");
+            }
+            setDraftMessage("");
+          } else {
+            setDraftMessage(message);
           }
-          setDraftMessage(message);
         } finally {
           if (showLoader) {
             pendingDraftSaves.current = Math.max(0, pendingDraftSaves.current - 1);
@@ -1057,6 +1066,7 @@ export default function SellersPage() {
   };
 
   const handleNextStep = async () => {
+    if (emailRegistrationWarning || whatsappRegistrationWarning) return;
     if (currentStep === 1) {
       if (!titleOfServices.trim()) {
         alert("Please enter a Title of Services (up to 70 characters).");
@@ -1104,10 +1114,7 @@ export default function SellersPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (emailRegistrationWarning || whatsappRegistrationWarning) {
-      alert("Please use an email address and WhatsApp number that are not already registered.");
-      return;
-    }
+    if (emailRegistrationWarning || whatsappRegistrationWarning) return;
     if (!agreedTerms) {
       alert("Please accept the Platform Compliance Agreement to complete seller registration.");
       return;
@@ -1128,8 +1135,17 @@ export default function SellersPage() {
       window.scrollTo({ top: 120, behavior: "smooth" });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unable to submit the form. Please try again.";
-      if ((error as Error & { code?: string })?.code === "MEMBER_EXISTS") {
-        setRegistrationBlockedMessage(message);
+      const requestError = error as Error & {
+        code?: string;
+        field?: "email" | "whatsapp";
+      };
+      if (requestError?.code === "MEMBER_EXISTS") {
+        if (requestError.field === "whatsapp") {
+          setWhatsappRegistrationWarning("This WhatsApp number is already registered. Please use a different number.");
+        } else {
+          setEmailRegistrationWarning("This email address is already registered. Please use a different email address.");
+        }
+        setCurrentStep(1);
       } else {
         alert(message);
       }
@@ -1146,15 +1162,13 @@ export default function SellersPage() {
     <main className="min-h-screen flex flex-col justify-between bg-background text-foreground">
       {isSavingDraft && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-background/65 px-4 backdrop-blur-sm"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-background/35 backdrop-blur-[2px]"
           role="status"
           aria-live="polite"
           aria-busy="true"
+          aria-label="Saving your progress"
         >
-          <div className="flex items-center gap-3 rounded-xl border border-border/70 bg-card px-5 py-4 text-sm font-semibold shadow-xl">
-            <Loader2 className="size-5 animate-spin text-primary" />
-            <span>Saving your progress...</span>
-          </div>
+          <Loader2 className="size-9 animate-spin text-primary drop-shadow-sm" />
         </div>
       )}
       {/* Sticky Top Navbar - Exactly Matching /buyers */}
@@ -1528,7 +1542,7 @@ export default function SellersPage() {
             /* ============================================================ */
             <div>
               {/* Horizontal Stepper - Exactly matching user reference */}
-              {!registrationBlockedMessage && <div className="mb-10 w-full overflow-x-auto pb-4 pt-2 -mx-4 px-4 sm:mx-0 sm:px-2 scrollbar-none">
+              <div className="mb-10 w-full overflow-x-auto pb-4 pt-2 -mx-4 px-4 sm:mx-0 sm:px-2 scrollbar-none">
                 <div className="flex items-start min-w-[620px] sm:min-w-full">
                   {formSteps.map((step, idx) => {
                     const isCurrent = step.id === currentStep;
@@ -1591,28 +1605,10 @@ export default function SellersPage() {
                     );
                   })}
                 </div>
-              </div>}
+              </div>
 
               {/* Form Content or Success Card */}
-              {registrationBlockedMessage ? (
-                <Card className="mx-auto max-w-2xl border-rose-200 bg-rose-50/80 p-8 text-center shadow-lg dark:border-rose-900/60 dark:bg-rose-950/25 sm:p-10">
-                  <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-300">
-                    <ShieldAlert className="size-7" />
-                  </div>
-                  <h2 className="mt-5 text-2xl font-bold">Registration unavailable</h2>
-                  <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-rose-800 dark:text-rose-200">
-                    {registrationBlockedMessage}
-                  </p>
-                  <p className="mx-auto mt-2 max-w-lg text-sm text-muted-foreground">
-                    Existing members do not need to complete this registration form again.
-                  </p>
-                  <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
-                    <Button asChild>
-                      <Link href="/">Back to Market</Link>
-                    </Button>
-                  </div>
-                </Card>
-              ) : submitted ? (
+              {submitted ? (
                 <Card className="border-emerald-200 bg-emerald-50/50 p-8 sm:p-10 text-center shadow-lg dark:border-emerald-900/50 dark:bg-emerald-950/20 backdrop-blur-sm">
                   <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/50">
                     <CheckCircle2 className="size-8 text-emerald-600 dark:text-emerald-400" />
@@ -1620,6 +1616,9 @@ export default function SellersPage() {
                   <h2 className="mt-5 text-2xl font-bold text-foreground">Registration Submitted Successfully!</h2>
                   <p className="mt-2 text-sm text-muted-foreground max-w-lg mx-auto">
                     Your Partner ID: <strong className="text-foreground">VSP-2026-9931</strong>. Your seller profile and KYC credentials are now under priority review by our compliance team.
+                  </p>
+                  <p className="mt-3 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
+                    Your Basic B2B premium plan is active for one month. Use the dashboard credentials sent to your email.
                   </p>
                   <div className="mt-6 flex justify-center gap-3">
                     <Button onClick={() => { setSubmitted(false); setCurrentStep(1); }}>
@@ -1635,7 +1634,7 @@ export default function SellersPage() {
                   form="sellers"
                   payment={paymentDetails}
                   onPaid={() => {
-                    localStorage.removeItem("market-sellers-draft");
+                    sessionStorage.removeItem("market-sellers-draft");
                     sessionStorage.removeItem(SELLER_SESSION_DRAFT_KEY);
                     setPaymentDetails(null);
                     setSubmitted(true);
@@ -3295,7 +3294,11 @@ export default function SellersPage() {
                         type="button"
                         size="default"
                         onClick={handleNextStep}
-                        disabled={isSavingDraft}
+                        disabled={
+                          isSavingDraft ||
+                          Boolean(emailRegistrationWarning || whatsappRegistrationWarning) ||
+                          (currentStep === 1 && (!emailVerified || !whatsappVerified))
+                        }
                         className="gap-2 text-xs sm:text-sm font-semibold shadow-xs"
                       >
                         {isSavingDraft ? <Loader2 className="size-4 animate-spin" /> : null}
@@ -3306,7 +3309,13 @@ export default function SellersPage() {
                       <Button
                         type="submit"
                         size="lg"
-                        disabled={isSubmitting || isSavingDraft || Boolean(emailRegistrationWarning || whatsappRegistrationWarning)}
+                        disabled={
+                          isSubmitting ||
+                          isSavingDraft ||
+                          !emailVerified ||
+                          !whatsappVerified ||
+                          Boolean(emailRegistrationWarning || whatsappRegistrationWarning)
+                        }
                         className="px-8 py-5 text-sm sm:text-base font-semibold shadow-md gap-2"
                       >
                         <CheckCircle2 className="size-5" /> {isSubmitting ? "Saving..." : "Continue to Verification Payment"}

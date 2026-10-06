@@ -12,6 +12,7 @@ type ApiResult<T = unknown> = {
   resendAfter?: number;
   verificationToken?: string;
   code?: string;
+  field?: "email" | "whatsapp";
   data?: T;
 };
 
@@ -21,8 +22,9 @@ async function readApiResult<T = unknown>(response: Response) {
   if (!response.ok || !result?.success) {
     const error = new Error(
       result?.message || "Something went wrong. Please try again.",
-    ) as Error & { code?: string };
+    ) as Error & { code?: string; field?: "email" | "whatsapp" };
     error.code = result?.code;
+    error.field = result?.field;
     throw error;
   }
 

@@ -12,11 +12,11 @@ export function ThemeToggle({ className }: { className?: string }) {
     if (nextTheme === "dark") {
       document.documentElement.classList.add("dark");
       document.documentElement.classList.remove("light");
-      localStorage.setItem("theme", "dark");
+      sessionStorage.setItem("theme", "dark");
     } else {
       document.documentElement.classList.remove("dark");
       document.documentElement.classList.add("light");
-      localStorage.setItem("theme", "light");
+      sessionStorage.setItem("theme", "light");
     }
   };
 

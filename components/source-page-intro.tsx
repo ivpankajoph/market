@@ -16,6 +16,7 @@ import {
 import Link from "next/link";
 
 import { InquiryCarousel } from "@/components/inquiry-carousel";
+import { ServiceSearch } from "@/components/service-search";
 import { SiteHeader } from "@/components/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -101,7 +102,7 @@ export function SourcePageIntro({ title, showHomepageSections }: SourcePageIntro
           <div className="animate-float-slow absolute right-1/4 bottom-16 h-64 w-64 rounded-full bg-rose-200/25 blur-3xl dark:bg-rose-600/10 sm:h-72 sm:w-72" />
         </div>
 
-        <div className="relative z-10 mx-auto flex max-w-5xl flex-col items-center px-4 pt-4 text-center sm:px-6">
+        <div className="relative z-20 mx-auto flex max-w-5xl flex-col items-center px-4 pt-4 text-center sm:px-6">
           <h1 className="mt-5 flex max-w-5xl flex-col items-center text-balance text-4xl font-semibold tracking-tight sm:block sm:text-6xl lg:text-7xl">
             {title ? (
               title
@@ -120,6 +121,10 @@ export function SourcePageIntro({ title, showHomepageSections }: SourcePageIntro
             <Button size="lg" variant="outline" asChild>
               <Link href={routePath.sellers}>I&apos;m a seller<Store aria-hidden="true" /></Link>
             </Button>
+          </div>
+
+          <div className="relative z-30 mt-4 w-full max-w-xl">
+            <ServiceSearch />
           </div>
         </div>
 

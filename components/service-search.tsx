@@ -64,7 +64,7 @@ export function ServiceSearch() {
       )}
 
       {normalizedQuery && (
-        <div className="absolute left-0 right-0 top-12 z-50 overflow-hidden rounded-xl border border-border/70 bg-background shadow-xl">
+        <div className="absolute left-0 right-0 top-12 z-[80] overflow-hidden rounded-xl border border-border/70 bg-background shadow-xl">
           {matches.length > 0 ? (
             <ul className="max-h-80 overflow-y-auto p-1.5">
               {matches.map((result) => (

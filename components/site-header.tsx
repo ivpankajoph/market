@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Globe2 } from "lucide-react";
 import Link from "next/link";
 
-import { ServiceSearch } from "@/components/service-search";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { routePath } from "@/url";
@@ -34,9 +33,6 @@ export function SiteHeader() {
           </span>
           <span>Chinaindiasourcing</span>
         </Link>
-        <div className="mx-5 hidden min-w-0 max-w-md flex-1 md:block lg:mx-8">
-          <ServiceSearch />
-        </div>
         <div className="flex shrink-0 items-center gap-2">
           <nav className="flex items-center gap-1" aria-label="Main navigation">
             <Button variant="ghost" size="sm" className="hidden sm:inline-flex hover:bg-white/50 dark:hover:bg-white/10" asChild>

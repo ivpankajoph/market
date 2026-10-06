@@ -126,13 +126,17 @@ export function MarketVerificationPayment({
         </span>
         <CardTitle className="mt-3 text-2xl">Complete your verification</CardTitle>
         <p className="text-sm text-muted-foreground">
-          Your form has been saved. Pay the one-time verification fee to submit it for review.
+          Your form has been saved and your dashboard credentials were emailed to you.
+          Your account is on the Free plan until this payment is completed.
         </p>
       </CardHeader>
       <CardContent className="space-y-5">
         <div className="rounded-xl border bg-muted/30 p-5 text-center">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Amount due</p>
           <p className="mt-1 text-3xl font-bold">US${payment.feeUsd}</p>
+          <p className="mt-3 text-xs font-medium text-emerald-700 dark:text-emerald-300">
+            Payment activates the Basic B2B premium plan for one month.
+          </p>
           <p className="mt-1 text-xs text-muted-foreground">One-time verification fee · No recurring charge</p>
         </div>
         <Button type="button" size="lg" className="w-full gap-2" onClick={openPayment} disabled={isPaying}>

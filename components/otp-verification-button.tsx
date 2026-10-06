@@ -94,8 +94,11 @@ export function OtpVerificationButton({
       const message = requestError instanceof Error ? requestError.message : "Unable to send OTP.";
       if (requestError?.code === "MEMBER_EXISTS") {
         onAvailabilityChange?.(false, message);
+        setOtpSent(false);
+        setOpen(false);
+      } else {
+        setError(message);
       }
-      setError(message);
     } finally {
       setIsSending(false);
     }
@@ -149,7 +152,15 @@ export function OtpVerificationButton({
       onVerified(result.verificationToken as string);
       setOpen(false);
     } catch (caughtError) {
-      setError(caughtError instanceof Error ? caughtError.message : "OTP verification failed.");
+      const requestError = caughtError as Error & { code?: string };
+      const message = requestError instanceof Error ? requestError.message : "OTP verification failed.";
+      if (requestError?.code === "MEMBER_EXISTS") {
+        onAvailabilityChange?.(false, message);
+        setOtpSent(false);
+        setOpen(false);
+      } else {
+        setError(message);
+      }
     } finally {
       setIsVerifying(false);
     }

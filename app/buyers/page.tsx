@@ -764,7 +764,7 @@ export default function BuyersPage() {
 
   useEffect(() => {
     try {
-      const saved = JSON.parse(localStorage.getItem("market-buyers-draft") || "null") as MarketDraftCredentials | null;
+      const saved = JSON.parse(sessionStorage.getItem("market-buyers-draft") || "null") as MarketDraftCredentials | null;
       draftCredentials.current = saved;
       if (saved?.draftId && saved?.draftToken) {
         void getMarketDraft("buyers", saved).then((result) => {
@@ -790,12 +790,12 @@ export default function BuyersPage() {
           setAgreedPartnerAccess(Boolean(data.agreedPartnerAccess));
           setDraftMessage("Saved draft restored. Please verify your email and WhatsApp again before payment.");
         }).catch(() => {
-          localStorage.removeItem("market-buyers-draft");
+          sessionStorage.removeItem("market-buyers-draft");
           draftCredentials.current = null;
         });
       }
     } catch {
-      localStorage.removeItem("market-buyers-draft");
+      sessionStorage.removeItem("market-buyers-draft");
     }
   }, []);
 
@@ -857,11 +857,24 @@ export default function BuyersPage() {
           const result = await saveMarketDraft("buyers", payload, 1, draftCredentials.current);
           if (result.data) {
             draftCredentials.current = { draftId: result.data.draftId, draftToken: result.data.draftToken };
-            localStorage.setItem("market-buyers-draft", JSON.stringify(draftCredentials.current));
+            sessionStorage.setItem("market-buyers-draft", JSON.stringify(draftCredentials.current));
             setDraftMessage("Draft saved");
           }
         } catch (error) {
-          setDraftMessage(error instanceof Error ? error.message : "Unable to save draft.");
+          const requestError = error as Error & {
+            code?: string;
+            field?: "email" | "whatsapp";
+          };
+          if (requestError?.code === "MEMBER_EXISTS") {
+            if (requestError.field === "whatsapp") {
+              setWhatsappRegistrationWarning("This WhatsApp number is already registered. Please use a different number.");
+            } else {
+              setEmailRegistrationWarning("This email address is already registered. Please use a different email address.");
+            }
+            setDraftMessage("");
+          } else {
+            setDraftMessage(error instanceof Error ? error.message : "Unable to save draft.");
+          }
         }
       });
     return draftQueue.current;
@@ -869,10 +882,7 @@ export default function BuyersPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (emailRegistrationWarning || whatsappRegistrationWarning) {
-      alert("Please use an email address and WhatsApp number that are not already registered.");
-      return;
-    }
+    if (emailRegistrationWarning || whatsappRegistrationWarning) return;
     if (!agreedOffPlatform) {
       alert("Please acknowledge the Platform Payment & Fraud Disclaimer checkbox before submitting.");
       return;
@@ -892,7 +902,19 @@ export default function BuyersPage() {
       setPaymentDetails(result.data);
       window.scrollTo({ top: 300, behavior: "smooth" });
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Unable to submit the form. Please try again.");
+      const requestError = error as Error & {
+        code?: string;
+        field?: "email" | "whatsapp";
+      };
+      if (requestError?.code === "MEMBER_EXISTS") {
+        if (requestError.field === "whatsapp") {
+          setWhatsappRegistrationWarning("This WhatsApp number is already registered. Please use a different number.");
+        } else {
+          setEmailRegistrationWarning("This email address is already registered. Please use a different email address.");
+        }
+      } else {
+        alert(error instanceof Error ? error.message : "Unable to submit the form. Please try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -975,6 +997,9 @@ export default function BuyersPage() {
                   <p className="mt-2 text-sm text-muted-foreground">
                     Your RFQ ID: <strong className="text-foreground">RFQ-2026-8842</strong>. Verified sourcing agents matching your exact category will reach out within 24 business hours.
                   </p>
+                  <p className="mt-3 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
+                    Your Basic B2B premium plan is active for one month. Use the dashboard credentials sent to your email.
+                  </p>
                   <div className="mt-6 flex justify-center gap-3">
                     <Button onClick={() => setSubmitted(false)}>Submit Another Requirement</Button>
                     <Button variant="outline" asChild>
@@ -987,7 +1012,7 @@ export default function BuyersPage() {
                   form="buyers"
                   payment={paymentDetails}
                   onPaid={() => {
-                    localStorage.removeItem("market-buyers-draft");
+                    sessionStorage.removeItem("market-buyers-draft");
                     setPaymentDetails(null);
                     setSubmitted(true);
                     window.scrollTo({ top: 300, behavior: "smooth" });
@@ -1787,7 +1812,17 @@ export default function BuyersPage() {
                     <p className="mb-3 text-sm font-semibold text-foreground">
                       One-time verification fee due at checkout: US${country.trim().toLowerCase() === "india" ? "15" : "20"}. No recurring charge.
                     </p>
-                    <Button size="lg" type="submit" disabled={isSubmitting || Boolean(emailRegistrationWarning || whatsappRegistrationWarning)} className="w-full sm:w-auto px-10 py-6 text-base font-semibold shadow-md">
+                    <Button
+                      size="lg"
+                      type="submit"
+                      disabled={
+                        isSubmitting ||
+                        !emailVerified ||
+                        !whatsappVerified ||
+                        Boolean(emailRegistrationWarning || whatsappRegistrationWarning)
+                      }
+                      className="w-full sm:w-auto px-10 py-6 text-base font-semibold shadow-md"
+                    >
                       <Search className="size-5 mr-1" /> {isSubmitting ? "Saving..." : "Continue to Verification Payment"}
                     </Button>
                     <p className="mt-3 text-xs text-muted-foreground">
