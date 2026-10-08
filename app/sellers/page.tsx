@@ -1229,8 +1229,9 @@ export default function SellersPage() {
           {/* Header Title */}
           <div className="mb-8 text-center space-y-2">
             <h1 className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-              Register as a Verified Partner
+              List Your Services for U.S. and Global Buyers
             </h1>
+
             {hasChosenRoles && selectedRoles.length > 0 && (
               <div className="flex items-center justify-center flex-wrap gap-2 pt-1 text-xs sm:text-sm text-muted-foreground">
                 <span>Selected Roles:</span>
@@ -1265,7 +1266,7 @@ export default function SellersPage() {
               <Card className="border-border/60 bg-card/95 shadow-lg backdrop-blur-md p-6 sm:p-8 space-y-6">
                 <div>
                   <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
-                    What Type of Seller You Want To Be?
+                    What Type of Sourcing Partner Are You?
                   </h2>
 
                 </div>

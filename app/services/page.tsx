@@ -13,9 +13,9 @@ import { serviceDisplayName, servicesByCountry, serviceSlug } from "@/lib/servic
 import { routePath } from "@/url";
 
 export const metadata: Metadata = {
-  title: "Global Sourcing Services by Country | Chinaindiasourcing",
+  title: "Find Sourcing Agents by Country for U.S. Buyers | ChinaIndiaSourcing",
   description:
-    "Explore sourcing agents, supplier research, factory inspection, procurement, freight, DDP, and import services across 18 sourcing countries.",
+    "Browse independent sourcing agents and trade-service providers in China, India, and 16 other origin countries for products imported to the United States.",
 };
 
 export default function ServicesPage() {
@@ -31,8 +31,11 @@ export default function ServicesPage() {
         <div className="relative mx-auto grid max-w-7xl gap-4 px-4 sm:px-6 lg:grid-cols-[0.76fr_1.24fr] lg:items-center lg:gap-0 lg:px-8">
           <div>
             <h1 className="max-w-4xl text-balance text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
-              Sourcing services across 18 countries
+              Find sourcing partners in 18 countries
             </h1>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
+              Built for U.S. buyers: choose where you want to source, then compare independent agents and providers for supplier research, inspection, procurement, freight, and delivery support.
+            </p>
           </div>
           <ServicesWorldMap />
         </div>
@@ -62,7 +65,7 @@ export default function ServicesPage() {
                       height={27}
                       className="h-[27px] w-10 shrink-0 rounded-[3px] border border-black/10 object-cover shadow-sm"
                     />
-                    {country.name} sourcing services
+                    Source products from {country.name}
                   </CardTitle>
                   <Badge variant="outline" className="shrink-0 bg-background/60">{country.serviceNames.length}</Badge>
                 </div>
@@ -87,8 +90,8 @@ export default function ServicesPage() {
       <section className="border-t border-border/50 py-10 sm:py-12">
         <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Need help choosing the right service?</h2>
-            <p className="mt-2 text-muted-foreground">Share your product, quantity, budget, and destination to start a focused sourcing request.</p>
+            <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Not sure which partner your U.S. business needs?</h2>
+            <p className="mt-2 text-muted-foreground">Share the product, origin country, quantity, target budget, and U.S. delivery destination so relevant independent providers can respond.</p>
           </div>
           <Button size="lg" asChild>
             <Link href={routePath.buyers}><Search aria-hidden="true" />Post a requirement</Link>

@@ -195,8 +195,8 @@ function buildService(name: string, origin: ServiceOrigin): SourcingService {
     name,
     slug: serviceSlug(name),
     origin,
-    description: `${displayName} support for US buyers who need a clearer, more coordinated way to source internationally.`,
-    overview: `Our ${displayName.toLowerCase()} workflow helps US businesses ${focus.action}. The service is shaped around your product, target cost, order size, documentation needs, and delivery destination.`,
+    description: `Find independent providers offering ${displayName} in ${origin} for US buyers importing products to the United States.`,
+    overview: `Chinaindiasourcing is a directory and connection platform where US businesses can find and compare independent partners who ${focus.action}. The selected provider's scope is shaped around your product, target cost, order size, documentation needs, and US delivery destination.`,
     includes: focus.includes,
     process: [
       {
@@ -205,7 +205,7 @@ function buildService(name: string, origin: ServiceOrigin): SourcingService {
       },
       {
         title: "Review the route",
-        description: `We assess suitable ${origin} partners, commercial considerations, and the practical sourcing path.`,
+        description: `Review suitable independent ${origin} partners, commercial considerations, and the practical sourcing path through the platform.`,
       },
       {
         title: "Compare the options",
@@ -213,7 +213,7 @@ function buildService(name: string, origin: ServiceOrigin): SourcingService {
       },
       {
         title: "Coordinate execution",
-        description: "Move forward with supplier communication, checkpoints, and shipment handoffs in one clear workflow.",
+        description: "Choose a partner, agree the scope directly, and keep supplier communication, checkpoints, and shipment handoffs organized.",
       },
     ],
   };

@@ -59,7 +59,10 @@ export function SiteFooter({
               Chinaindiasourcing
             </Link>
             <p className="mt-4 max-w-md text-base leading-7 text-slate-300">
-              Practical sourcing, verification, procurement, and logistics coordination for buyers in {marketName} working with suppliers worldwide.
+              A directory and connection platform helping buyers in {marketName} discover independent sourcing agents, suppliers, inspectors, and logistics providers worldwide.
+            </p>
+            <p className="mt-3 max-w-md text-xs leading-5 text-slate-400">
+              We facilitate introductions and platform coordination. Listed partners are independent businesses responsible for their own quotations, contracts, products, and services.
             </p>
             <p className="mt-3 text-xs leading-5 text-slate-400">
               Chinaindiasourcing is operated by <span className="text-slate-200 font-medium">Life Changing Networks Pvt. Ltd.</span>, an authorised partner of <a href="https://www.sellerslogin.com" target="_blank" rel="noopener noreferrer" className="text-cyan-300 hover:underline">SellersLogin.com</a>.
@@ -97,7 +100,7 @@ export function SiteFooter({
         <div className="flex flex-col gap-4 pt-6 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
             <PackageCheck className="size-4" aria-hidden="true" />
-            <span>Buy, verify, and ship with one coordinated network.</span>
+            <span>Discover, compare, and connect with sourcing partners by country.</span>
           </div>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs">
             <Link href={routePath.terms} className="text-slate-300 hover:text-white transition-colors underline-offset-4 hover:underline">

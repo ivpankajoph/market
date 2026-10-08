@@ -36,7 +36,7 @@ export function SiteHeader() {
         <div className="flex shrink-0 items-center gap-2">
           <nav className="flex items-center gap-1" aria-label="Main navigation">
             <Button variant="ghost" size="sm" className="hidden sm:inline-flex hover:bg-white/50 dark:hover:bg-white/10" asChild>
-              <Link href="/#how">How it works</Link>
+              <Link href="/#how">How the platform works</Link>
             </Button>
             <Button variant="ghost" size="sm" className="hidden md:inline-flex hover:bg-white/50 dark:hover:bg-white/10" asChild>
               <Link href={routePath.services}>Services</Link>

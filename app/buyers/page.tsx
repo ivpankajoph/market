@@ -45,12 +45,14 @@ import {
   saveMarketDraft,
   submitMarketForm,
 } from "@/lib/api";
+import { sourceCountries } from "@/lib/services";
 
 const sourceCountryOptions = [
-  { id: "china", label: "China", flagImg: "/flags/china.svg" },
-  { id: "india", label: "India", flagImg: "/flags/india.svg" },
-  { id: "vietnam", label: "Vietnam", flagImg: "/flags/vietnam.svg" },
-  { id: "taiwan", label: "Taiwan", flagImg: "/flags/taiwan.svg" },
+  ...sourceCountries.map((country) => ({
+    id: country.slug,
+    label: country.name,
+    flagImg: `https://flagcdn.com/w40/${country.flagCode}.png`,
+  })),
   { id: "other", label: "Other", flagImg: null },
 ];
 
@@ -108,8 +110,8 @@ const quantityUnits = [
 ];
 
 const countryCodes = [
-  { code: "+91", country: "India", flag: "/flags/india.svg" },
   { code: "+1", country: "USA", flag: "/flags/united-states.svg" },
+  { code: "+91", country: "India", flag: "/flags/india.svg" },
   { code: "+86", country: "China", flag: "/flags/china.svg" },
   { code: "+84", country: "Vietnam", flag: "/flags/vietnam.svg" },
   { code: "+886", country: "Taiwan", flag: "/flags/taiwan.svg" },
@@ -122,8 +124,8 @@ const countryCodes = [
 ];
 
 const destinationCountries = [
-  { name: "India", flag: "/flags/india.svg" },
   { name: "United States", flag: "/flags/united-states.svg" },
+  { name: "India", flag: "/flags/india.svg" },
   { name: "China", flag: "/flags/china.svg" },
   { name: "United Kingdom", flag: "/flags/uk.svg" },
   { name: "Canada", flag: "/flags/canada.svg" },
@@ -683,7 +685,7 @@ export default function BuyersPage() {
   const [emailVerificationToken, setEmailVerificationToken] = useState("");
   const [emailRegistrationWarning, setEmailRegistrationWarning] = useState("");
 
-  const [countryCode, setCountryCode] = useState("+91");
+  const [countryCode, setCountryCode] = useState("+1");
   const [whatsapp, setWhatsapp] = useState("");
   const [whatsappVerified, setWhatsappVerified] = useState(false);
   const [whatsappVerificationToken, setWhatsappVerificationToken] = useState("");
@@ -697,7 +699,7 @@ export default function BuyersPage() {
   const [landmark, setLandmark] = useState("");
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
-  const [country, setCountry] = useState("India");
+  const [country, setCountry] = useState("United States");
   const [pincode, setPincode] = useState("");
 
   // Sourcing Specs
@@ -774,7 +776,7 @@ export default function BuyersPage() {
           setFullName(text("fullName")); setEmail(text("email")); setCountryCode(text("countryCode") || "+91");
           setWhatsapp(text("whatsapp")); setCompanyName(text("companyName")); setWebsite(text("website"));
           setStreetAddress(text("streetAddress")); setLandmark(text("landmark")); setCity(text("city"));
-          setState(text("state")); setCountry(text("country") || "India"); setPincode(text("pincode"));
+          setState(text("state")); setCountry(text("country") || "United States"); setPincode(text("pincode"));
           setOrderPlaceTime(text("orderPlaceTime") || orderPlaceTimes[0]);
           setSelectedSources(Array.isArray(data.selectedSources) ? data.selectedSources as string[] : []);
           setOrderVolume(text("orderVolume") || orderVolumes[2]); setLookingFor(text("lookingFor"));
@@ -980,9 +982,8 @@ export default function BuyersPage() {
        
 
             <h1 className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-              Post Your Sourcing Requirement
+              Find a Sourcing Partner for Your U.S. Business
             </h1>
-
 
           </div>
 
@@ -1776,7 +1777,7 @@ export default function BuyersPage() {
                           className="mt-0.5 size-4 rounded border-amber-400 text-primary focus:ring-primary"
                         />
                         <span className="text-xs sm:text-sm font-medium leading-relaxed text-amber-950 dark:text-amber-100">
-                          <strong>You agree that</strong>, If you deal with any Sourcing Seller out of our Platform and make payment out of our platform then we are not responsible for this.
+                          <strong>You acknowledge that</strong> ChinaIndiaSourcing is a connection platform, not the sourcing agent or seller. If you contract or pay a provider outside the platform, the platform cannot protect or assume responsibility for that transaction.
                         </span>
                       </label>
 

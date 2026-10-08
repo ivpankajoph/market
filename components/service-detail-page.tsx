@@ -56,6 +56,7 @@ function localizeServiceText(text: string, market: BuyerMarket) {
     .replaceAll("US businesses", `businesses in ${market.locationName}`)
     .replaceAll("the United States", market.locationName)
     .replaceAll("US delivery location", `delivery location in ${market.locationName}`)
+    .replaceAll("US delivery destination", `delivery destination in ${market.locationName}`)
     .replaceAll("US delivery handoff", `${market.name} delivery handoff`)
     .replaceAll("US destination", `destination in ${market.locationName}`);
 }
@@ -270,8 +271,8 @@ export function ServiceDetailPage({ market, service, regionName }: ServiceDetail
   const displayServiceName = serviceDisplayName(service.name);
   const relatedServices = services.filter((item) => item.origin === service.origin && item.slug !== service.slug).slice(0, 6);
   const pageTitle = regionName
-    ? `${displayServiceName} in ${regionName}`
-    : displayServiceName;
+    ? `${displayServiceName} for Buyers in ${regionName}`
+    : `${displayServiceName} for ${displayMarket.name} Buyers`;
   const briefDetails = [
     { icon: FileCheck2, title: "Product specification", description: "Materials, dimensions, packaging, certifications, and reference files." },
     { icon: PackageSearch, title: "Order target", description: "Expected quantity, preferred MOQ, sample needs, and reorder plans." },
@@ -288,8 +289,8 @@ export function ServiceDetailPage({ market, service, regionName }: ServiceDetail
       answer: "Assessment can review identity, product relevance, capability, quotation detail, communication, sample performance, available documents, and on-site evidence where appropriate. The checks should be agreed before an order is placed.",
     },
     {
-      question: "Can you help with samples, MOQ, and price negotiation?",
-      answer: "Yes. A sourcing brief can include sample requirements, target quantity, preferred MOQ, customization, packaging, target cost, and payment terms so offers can be compared on a consistent basis.",
+      question: "Can the platform connect me with help for samples, MOQ, and price negotiation?",
+      answer: "Yes. ChinaIndiaSourcing can introduce independent providers whose scope may include sample coordination, MOQ discussions, customization, packaging, target cost, and payment terms. Confirm the exact deliverables with the provider you select.",
     },
     {
       question: `How long does sourcing from ${service.origin} take?`,
@@ -303,12 +304,12 @@ export function ServiceDetailPage({ market, service, regionName }: ServiceDetail
   const schema = [
     {
       "@context": "https://schema.org",
-      "@type": "Service",
+      "@type": "WebPage",
       name: pageTitle,
-      serviceType: displayServiceName,
       description: `${content.intro} ${overview}`,
-      areaServed: { "@type": "Place", name: displayMarket.locationName },
-      provider: { "@type": "Organization", name: "Chinaindiasourcing" },
+      about: { "@type": "Service", name: displayServiceName, areaServed: { "@type": "Place", name: displayMarket.locationName } },
+      audience: { "@type": "BusinessAudience", audienceType: `${displayMarket.name} buyers and importers` },
+      publisher: { "@type": "Organization", name: "ChinaIndiaSourcing" },
     },
     {
       "@context": "https://schema.org",
@@ -334,18 +335,19 @@ export function ServiceDetailPage({ market, service, regionName }: ServiceDetail
         <div className="relative mx-auto grid max-w-7xl gap-7 px-4 py-8 sm:px-6 sm:py-10 lg:grid-cols-[1.02fr_0.98fr] lg:items-start lg:px-8">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="secondary">{displayMarket.name} sourcing support</Badge>
+              <Badge variant="secondary">For buyers in {displayMarket.name}</Badge>
               <Badge variant="outline" className="bg-background/70">
                 <img src={`https://flagcdn.com/w40/${sourceCountry.flagCode}.png`} alt={`${sourceCountry.name} flag`} width={24} height={16} className="h-4 w-6 rounded-[2px] border border-black/10 object-cover" />
                 {service.origin}
               </Badge>
             </div>
             <p className="mt-5 text-sm font-semibold uppercase tracking-[0.18em] text-blue-700 dark:text-blue-300">{content.label}</p>
-            <h2 className="mt-3 max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">A clearer way to manage {displayServiceName.toLowerCase()}</h2>
+            <h2 className="mt-3 max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">Find the right {service.origin} partner for your buying requirement</h2>
             <p className="mt-4 max-w-2xl text-lg leading-8 text-muted-foreground">{content.intro}</p>
             <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">{overview}</p>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground"><strong className="text-foreground">Platform role:</strong> ChinaIndiaSourcing does not manufacture, sell, inspect, ship, or act as the sourcing agent. We connect buyers with independent businesses that provide those services.</p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Button size="lg" asChild><a href="https://web.sellerslogin.com/buyers" target="_blank" rel="noopener noreferrer"><Search aria-hidden="true" />Post a requirement</a></Button>
+              <Button size="lg" asChild><Link href={routePath.buyers}><Search aria-hidden="true" />Post a requirement</Link></Button>
               <Button size="lg" variant="outline" asChild><a href="#process"><ClipboardCheck aria-hidden="true" />See the process</a></Button>
             </div>
           </div>
@@ -382,7 +384,7 @@ export function ServiceDetailPage({ market, service, regionName }: ServiceDetail
 
       <section className="border-b border-border/50 bg-slate-50/60 py-10 dark:bg-slate-950/20 sm:py-12">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[0.82fr_1.18fr] lg:items-center lg:px-8">
-          <div><Badge variant="secondary">Sourcing control centre</Badge><h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">One connected workflow from brief to delivery</h2><p className="mt-3 leading-7 text-muted-foreground">The visual workflow keeps ownership and approval points visible as the requirement moves across borders.</p></div>
+          <div><Badge variant="secondary">Platform-assisted workflow</Badge><h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">One visible path from brief to provider handoff</h2><p className="mt-3 leading-7 text-muted-foreground">Use the platform to compare options and organize decisions while each independent provider remains accountable for the scope you agree with them.</p></div>
           <Card className="overflow-hidden border-blue-200/70 bg-background/85 shadow-xl shadow-blue-950/5 dark:border-blue-900/60">
             <CardContent className="p-5 sm:p-7">
               <div className="grid gap-3 sm:grid-cols-4">
@@ -414,7 +416,7 @@ export function ServiceDetailPage({ market, service, regionName }: ServiceDetail
 
       <section className="py-10 sm:py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl"><Badge variant="outline">Service scope</Badge><h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">What {displayServiceName.toLowerCase()} can cover</h2></div>
+          <div className="max-w-2xl"><Badge variant="outline">Service scope</Badge><h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">What listed {service.origin} providers can cover</h2></div>
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {service.includes.map((item, index) => <Card key={item} className={`border-border/50 shadow-none ${index % 3 === 0 ? "bg-blue-50/70 dark:bg-blue-950/20" : index % 3 === 1 ? "bg-cyan-50/70 dark:bg-cyan-950/20" : "bg-indigo-50/70 dark:bg-indigo-950/20"}`}><CardContent className="flex items-start gap-3 px-5"><span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-background"><Check className="size-4" aria-hidden="true" /></span><p className="leading-6">{localizeServiceText(item, displayMarket)}</p></CardContent></Card>)}
           </div>
@@ -519,7 +521,7 @@ export function ServiceDetailPage({ market, service, regionName }: ServiceDetail
 
       <section className="pb-10 sm:pb-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Card className="overflow-hidden border-border/50 bg-blue-100/70 shadow-none dark:bg-blue-950/30"><CardContent className="flex flex-col gap-5 px-6 sm:p-7 lg:flex-row lg:items-center lg:justify-between"><div><Badge variant="secondary"><Sparkles aria-hidden="true" />Start with your requirement</Badge><h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Need help with {displayServiceName.toLowerCase()}?</h2><p className="mt-2 max-w-2xl text-muted-foreground">Share the product, order size, budget, and destination in {displayMarket.locationName} to begin.</p></div><Button size="lg" asChild><a href="https://web.sellerslogin.com/buyers" target="_blank" rel="noopener noreferrer">Post a requirement</a></Button></CardContent></Card>
+          <Card className="overflow-hidden border-border/50 bg-blue-100/70 shadow-none dark:bg-blue-950/30"><CardContent className="flex flex-col gap-5 px-6 sm:p-7 lg:flex-row lg:items-center lg:justify-between"><div><Badge variant="secondary"><Sparkles aria-hidden="true" />Start with your requirement</Badge><h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Find providers offering {displayServiceName} in {service.origin}</h2><p className="mt-2 max-w-2xl text-muted-foreground">Tell independent partners what you need to source, your order size, target budget, and delivery destination in {displayMarket.locationName}.</p></div><Button size="lg" asChild><Link href={routePath.buyers}>Post a requirement</Link></Button></CardContent></Card>
         </div>
       </section>
 

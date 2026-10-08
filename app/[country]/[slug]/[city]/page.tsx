@@ -45,8 +45,8 @@ export async function generateMetadata({ params }: CityPageProps): Promise<Metad
     return {
       title: isCustomClearanceService(service.name)
         ? customClearancePageTitle(service.origin, `${state.name}, ${marketTitle}`)
-        : `${service.name} in ${state.name}, ${market.name} | Chinaindiasourcing`,
-      description: `${displayServiceName} connecting ${service.origin} with buyers in ${state.name}, ${market.locationName}. Explore documentation, customs-clearance checkpoints, quotations, and delivery coordination.`,
+        : `${service.name} for Buyers in ${state.name}, ${market.name} | ChinaIndiaSourcing`,
+      description: `Find independent providers offering ${displayServiceName} in ${service.origin} for buyers in ${state.name}, ${market.locationName}. Compare partners and coordinate the sourcing journey through the platform.`,
       alternates: countryAlternates(
         routePath.regionalService(market.slug, state.slug, service.slug),
         (alternateMarket) =>
@@ -56,8 +56,8 @@ export async function generateMetadata({ params }: CityPageProps): Promise<Metad
   }
 
   return {
-    title: `Sourcing Services in ${city!.name}, ${state.name} | Chinaindiasourcing`,
-    description: `China and India sourcing support for buyers in ${city!.name}, ${state.name}, ${market.locationName}, from supplier research to logistics coordination.`,
+    title: `Find Sourcing Agents in ${city!.name}, ${state.name} | ChinaIndiaSourcing`,
+    description: `Connect buyers in ${city!.name}, ${state.name} with independent sourcing agents and providers in China, India, and other origin countries.`,
     alternates: countryAlternates(
       routePath.city(market.slug, state.slug, city!.slug),
       (alternateMarket) => routePath.market(alternateMarket.slug),

@@ -5,9 +5,9 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteOrigin),
-  title: "Chinaindiasourcing",
+  title: "ChinaIndiaSourcing | Find Global Sourcing Agents for U.S. Buyers",
   description:
-    "A simple global marketplace where buyers and sellers discover trusted business opportunities.",
+    "A U.S.-focused directory and marketplace that connects buyers with independent sourcing agents, suppliers, inspectors, and logistics providers in China, India, and other sourcing countries.",
   alternates: countryAlternates(
     routePath.home,
     (market) => routePath.market(market.slug),

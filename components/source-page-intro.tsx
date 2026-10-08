@@ -33,21 +33,18 @@ import { Separator } from "@/components/ui/separator";
 import inquiryData from "@/data/inquiries.json";
 import { routePath } from "@/url";
 
-const buyerPortalUrl = "https://web.sellerslogin.com/buyers";
-const sellerPortalUrl = "https://web.sellerslogin.com/sellers";
-
 const trustPoints = [
-  { icon: BadgeCheck, title: "Relevant agent matching", description: "Meet agents experienced in your product category.", tone: "bg-blue-100/70 dark:bg-blue-950/30" },
-  { icon: ShieldCheck, title: "Protected platform payments", description: "Payment safeguards apply to transactions made here.", tone: "bg-cyan-100/70 dark:bg-cyan-950/30" },
-  { icon: HandCoins, title: "Competitive quotations", description: "Compare offers before choosing your sourcing partner.", tone: "bg-indigo-100/70 dark:bg-indigo-950/30" },
-  { icon: Undo2, title: "Refund support", description: "Buyer-package terms include a refund commitment.", tone: "bg-sky-100/70 dark:bg-sky-950/30" },
+  { icon: BadgeCheck, title: "Country-specific discovery", description: "Find independent agents and providers based in the country you want to source from.", tone: "bg-blue-100/70 dark:bg-blue-950/30" },
+  { icon: ShieldCheck, title: "Safer introductions", description: "Review profiles, define checkpoints, and keep eligible payments in the platform flow.", tone: "bg-cyan-100/70 dark:bg-cyan-950/30" },
+  { icon: HandCoins, title: "Comparable quotations", description: "Request offers against the same product brief before selecting a partner.", tone: "bg-indigo-100/70 dark:bg-indigo-950/30" },
+  { icon: Undo2, title: "Buyer support", description: "Use one platform to organize introductions, discussions, and sourcing milestones.", tone: "bg-sky-100/70 dark:bg-sky-950/30" },
 ];
 
 const steps = [
   { number: "01", icon: ClipboardList, title: "Post your requirement", description: "Add the product, quantity, specifications, target price, and delivery destination.", tone: "bg-blue-100/60 dark:bg-blue-950/30" },
-  { number: "02", icon: PackageSearch, title: "Receive relevant matches", description: "Your request reaches sourcing agents who already work in that category.", tone: "bg-sky-100/60 dark:bg-sky-950/30" },
-  { number: "03", icon: MessageSquareText, title: "Compare agents and offers", description: "Discuss samples, quotations, production terms, and timelines with interested agents.", tone: "bg-cyan-100/60 dark:bg-cyan-950/30" },
-  { number: "04", icon: CreditCard, title: "Choose and pay securely", description: "Select the right partner and use the platform payment flow for protection.", tone: "bg-indigo-100/60 dark:bg-indigo-950/30" },
+  { number: "02", icon: PackageSearch, title: "Meet relevant partners", description: "The platform connects you with independent agents and providers in your chosen sourcing country.", tone: "bg-sky-100/60 dark:bg-sky-950/30" },
+  { number: "03", icon: MessageSquareText, title: "Compare agents and offers", description: "Review experience, scope, samples, quotations, production terms, and timelines.", tone: "bg-cyan-100/60 dark:bg-cyan-950/30" },
+  { number: "04", icon: CreditCard, title: "Select your partner", description: "Agree the scope with your chosen provider and use the platform flow for eligible safeguards.", tone: "bg-indigo-100/60 dark:bg-indigo-950/30" },
 ];
 
 const countries = [
@@ -55,17 +52,17 @@ const countries = [
   { text: "India", className: "text-[#FF9933]" },
   { text: "Vietnam", className: "text-[#DA251D]" },
   { text: "Taiwan", className: "text-[#0055B9] dark:text-[#38BDF8]" },
-  { text: "Africa", className: "text-[#059669] dark:text-[#34D399]" },
-  { text: "Global", className: "text-foreground" },
+  { text: "Mexico", className: "text-[#059669] dark:text-[#34D399]" },
+  { text: "18 Countries", className: "text-foreground" },
 ];
 
 const globeData: GlobePosition[] = [
-  { order: 1, startLat: 28.6139, startLng: 77.209, endLat: 31.2304, endLng: 121.4737, arcAlt: 0.18, color: "#bfdbfe" },
-  { order: 2, startLat: 21.0285, startLng: 105.8542, endLat: 28.6139, endLng: 77.209, arcAlt: 0.16, color: "#dbeafe" },
-  { order: 3, startLat: 25.033, startLng: 121.5654, endLat: 19.076, endLng: 72.8777, arcAlt: 0.2, color: "#bfdbfe" },
-  { order: 4, startLat: -1.2921, startLng: 36.8219, endLat: 28.6139, endLng: 77.209, arcAlt: 0.25, color: "#dbeafe" },
-  { order: 5, startLat: 31.2304, startLng: 121.4737, endLat: 51.5072, endLng: -0.1276, arcAlt: 0.28, color: "#bfdbfe" },
-  { order: 6, startLat: 19.076, startLng: 72.8777, endLat: 40.7128, endLng: -74.006, arcAlt: 0.3, color: "#dbeafe" },
+  { order: 1, startLat: 31.2304, startLng: 121.4737, endLat: 40.7128, endLng: -74.006, arcAlt: 0.3, color: "#bfdbfe" },
+  { order: 2, startLat: 19.076, startLng: 72.8777, endLat: 34.0522, endLng: -118.2437, arcAlt: 0.32, color: "#dbeafe" },
+  { order: 3, startLat: 21.0285, startLng: 105.8542, endLat: 41.8781, endLng: -87.6298, arcAlt: 0.3, color: "#bfdbfe" },
+  { order: 4, startLat: 25.033, startLng: 121.5654, endLat: 29.7604, endLng: -95.3698, arcAlt: 0.34, color: "#dbeafe" },
+  { order: 5, startLat: 19.4326, startLng: -99.1332, endLat: 32.7767, endLng: -96.797, arcAlt: 0.16, color: "#bfdbfe" },
+  { order: 6, startLat: 23.8103, startLng: 90.4125, endLat: 47.6062, endLng: -122.3321, arcAlt: 0.36, color: "#dbeafe" },
 ];
 
 const globeConfig = {
@@ -103,6 +100,7 @@ export function SourcePageIntro({ title, showHomepageSections }: SourcePageIntro
         </div>
 
         <div className="relative z-20 mx-auto flex max-w-5xl flex-col items-center px-4 pt-4 text-center sm:px-6">
+
           <h1 className="mt-5 flex max-w-5xl flex-col items-center text-balance text-4xl font-semibold tracking-tight sm:block sm:text-6xl lg:text-7xl">
             {title ? (
               title
@@ -114,12 +112,18 @@ export function SourcePageIntro({ title, showHomepageSections }: SourcePageIntro
             )}
           </h1>
 
+          {!title && (
+            <p className="mt-5 max-w-3xl text-balance text-base leading-7 text-muted-foreground sm:text-lg">
+              ChinaIndiaSourcing is a directory and connection platform for U.S. businesses. Discover and compare independent sourcing agents, suppliers, inspectors, and logistics providers in China, India, and other sourcing markets.
+            </p>
+          )}
+
           <div className="mt-6 flex w-full flex-col justify-center gap-3 sm:w-auto sm:flex-row">
             <Button size="lg" asChild>
-              <Link href={routePath.buyers}>I&apos;m a buyer<Search aria-hidden="true" /></Link>
+              <Link href={routePath.buyers}>I'm a Buyer<Search aria-hidden="true" /></Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
-              <Link href={routePath.sellers}>I&apos;m a seller<Store aria-hidden="true" /></Link>
+              <Link href={routePath.sellers}>I'm a Seller<Store aria-hidden="true" /></Link>
             </Button>
           </div>
 
@@ -156,7 +160,7 @@ export function SourcePageIntro({ title, showHomepageSections }: SourcePageIntro
 
       <section id="how" className="scroll-mt-20 border-y border-border/50 bg-blue-50/35 py-10 dark:bg-blue-950/10 sm:py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl"><Badge variant="outline">How it works</Badge><h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">From requirement to sourcing partner</h2><p className="mt-4 text-base leading-7 text-muted-foreground">A focused four-step path keeps each sourcing decision clear.</p></div>
+          <div className="max-w-2xl"><Badge variant="outline">How the platform works</Badge><h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">From U.S. buying requirement to sourcing partner</h2><p className="mt-4 text-base leading-7 text-muted-foreground">We facilitate discovery and introductions; the buyer chooses and contracts with the independent provider.</p></div>
           <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {steps.map((step) => (
               <Card key={step.number} className={`h-full border-border/40 shadow-none ${step.tone}`}><CardHeader><div className="flex items-center justify-between"><span className="flex size-10 items-center justify-center rounded-md bg-white/60 dark:bg-black/10"><step.icon className="size-5" aria-hidden="true" /></span><Badge variant="secondary">{step.number}</Badge></div><CardTitle className="mt-3">{step.title}</CardTitle><CardDescription className="leading-6">{step.description}</CardDescription></CardHeader></Card>

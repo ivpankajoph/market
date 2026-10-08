@@ -48,8 +48,8 @@ export function ServiceSearch() {
         type="search"
         value={query}
         onChange={(event) => setQuery(event.target.value)}
-        placeholder="Search sourcing services..."
-        aria-label="Search sourcing services"
+        placeholder="Search agents by country or service..."
+        aria-label="Search sourcing agents by country or service"
         className="h-10 w-full rounded-full border border-border/70 bg-background/90 pl-9 pr-9 text-sm shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-500/15"
       />
       {query && (

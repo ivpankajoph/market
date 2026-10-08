@@ -26,10 +26,10 @@ type LocationPageProps = {
 };
 
 const highlights = [
-  "Supplier discovery and quotation comparison",
-  "Product, factory, and quality coordination",
-  "Freight and delivery planning",
-  "One clear workflow from brief to shipment",
+  "Compare independent agents by sourcing country",
+  "Request supplier, factory, and quality support",
+  "Find freight and delivery service providers",
+  "Organize introductions and decisions in one workflow",
 ];
 
 export function LocationPage({ market, state, city }: LocationPageProps) {
@@ -74,14 +74,14 @@ export function LocationPage({ market, state, city }: LocationPageProps) {
               Sourcing Services in {placeName}
             </h2>
             <p className="mt-4 max-w-2xl text-lg leading-8 text-muted-foreground">
-              Find and coordinate China and India sourcing support for buyers in {placeName}, {market.locationName}.
+              Find independent sourcing agents and service providers for buyers in {placeName}, {market.locationName}, with country-specific options for China, India, and other origins.
             </p>
             <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
-              Share your product, quantity, target cost, quality expectations, and delivery destination. The workflow connects supplier research, verification, procurement, and logistics in one place.
+              Share your product, quantity, target cost, quality expectations, origin country, and delivery destination. ChinaIndiaSourcing facilitates the introduction; the provider you choose is responsible for the agreed service.
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Button size="lg" asChild>
-                <a href="https://web.sellerslogin.com/buyers" target="_blank" rel="noopener noreferrer"><Search aria-hidden="true" />Post a requirement</a>
+                <Link href={routePath.buyers}><Search aria-hidden="true" />Post a requirement</Link>
               </Button>
               {!city && state.cities.length > 0 && (
                 <Button size="lg" variant="outline" asChild>
@@ -124,9 +124,9 @@ export function LocationPage({ market, state, city }: LocationPageProps) {
       <section className="border-b border-border/50 py-10 sm:py-12">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
           <div>
-            <Badge variant="outline">What we coordinate</Badge>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight">A practical sourcing route for {placeName}</h2>
-            <p className="mt-3 leading-7 text-muted-foreground">Use the service that matches your current sourcing stage, from early supplier research to final delivery planning.</p>
+            <Badge variant="outline">What listed partners can cover</Badge>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight">A practical partner network for buyers in {placeName}</h2>
+            <p className="mt-3 leading-7 text-muted-foreground">Choose an independent service provider for your current sourcing stage, from early supplier research to final delivery planning.</p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             {highlights.map((highlight) => (
@@ -181,7 +181,7 @@ export function LocationPage({ market, state, city }: LocationPageProps) {
       <section className="py-10 sm:py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <Badge variant="outline">Available services</Badge>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight">Choose a sourcing service</h2>
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight">Choose an origin country and service</h2>
           <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {services.map((service) => (
               <Link

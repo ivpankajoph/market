@@ -37,8 +37,8 @@ export async function generateMetadata({ params }: CountryServicePageProps): Pro
 
   if (state) {
     return {
-      title: `Sourcing Services in ${state.name}, ${market.name} | Chinaindiasourcing`,
-      description: `China and India sourcing support for buyers in ${state.name}, ${market.locationName}, including supplier research, verification, procurement, and logistics coordination.`,
+      title: `Find Sourcing Agents in ${state.name}, ${market.name} | ChinaIndiaSourcing`,
+      description: `A directory connecting buyers in ${state.name}, ${market.locationName} with independent sourcing agents and providers in China, India, and other origin countries.`,
       alternates: countryAlternates(
         routePath.state(market.slug, state.slug),
         (alternateMarket) => routePath.market(alternateMarket.slug),
@@ -52,8 +52,8 @@ export async function generateMetadata({ params }: CountryServicePageProps): Pro
   return {
     title: isCustomClearanceService(service!.name)
       ? customClearancePageTitle(service!.origin, marketTitle)
-      : `${service!.name} for ${market.name} Buyers | Chinaindiasourcing`,
-    description: `${displayServiceName} connecting ${service!.origin} with buyers in ${market.locationName}. Explore documentation, customs-clearance checkpoints, quotations, quality controls, and delivery coordination.`,
+      : `${service!.name} for ${market.name} Buyers | ChinaIndiaSourcing`,
+    description: `Find independent providers offering ${displayServiceName} in ${service!.origin} for buyers importing to ${market.locationName}. Compare partners, quotations, quality checkpoints, and delivery options through ChinaIndiaSourcing.`,
     alternates: countryAlternates(
       routePath.marketService(market.slug, service!.slug),
       (alternateMarket) =>
