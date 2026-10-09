@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 
 import { SiteFooter } from "@/components/site-footer";
+import { ChineseFreightForwarderPage } from "@/components/chinese-freight-forwarder-page";
 import { SourcePageIntro } from "@/components/source-page-intro";
 import { ServicesWorldMap } from "@/components/services-world-map";
 import { Badge } from "@/components/ui/badge";
@@ -262,6 +263,14 @@ function buildContent(service: SourcingService, market: BuyerMarket): ContentPro
 }
 
 export function ServiceDetailPage({ market, service, regionName }: ServiceDetailPageProps) {
+  if (
+    !regionName &&
+    market.slug === "us" &&
+    service.slug === "chinese-freight-forwarder"
+  ) {
+    return <ChineseFreightForwarderPage market={market} service={service} />;
+  }
+
   const displayMarket = regionName
     ? { ...market, name: regionName, locationName: `${regionName}, ${market.locationName}` }
     : market;

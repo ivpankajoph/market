@@ -7,7 +7,6 @@ import {
   Eye,
   Globe2,
   Mail,
-  MapPin,
   PackageSearch,
   Phone,
   UserRound,
@@ -72,14 +71,76 @@ function maskPhone(value: string) {
   return `${clean.slice(0, Math.min(visible, clean.length))}xxxxxx`;
 }
 
-function maskEmail(value: string) {
+function maskEmail(value: string, name: string) {
   const clean = value.trim();
-  if (!clean) return "Not provided";
+  if (!clean) {
+    const nameLetters = name
+      .normalize("NFKD")
+      .replace(/[^a-zA-Z0-9]/g, "")
+      .toLowerCase()
+      .slice(0, 3) || "buy";
+    return `${nameLetters}xxxx@gmail.com`;
+  }
   const atIndex = clean.indexOf("@");
   if (atIndex > 1) {
     return `${clean.slice(0, 2)}xxxxxx${clean.slice(atIndex)}`;
   }
-  return `${clean.slice(0, Math.min(3, clean.length))}xxxxxx`;
+  const nameLetters = name.replace(/[^a-zA-Z0-9]/g, "").toLowerCase().slice(0, 3) || "buy";
+  return `${nameLetters}xxxx@gmail.com`;
+}
+
+function hasUsefulValue(value: string) {
+  const normalized = value.trim().toLowerCase();
+  return Boolean(normalized) && !["na", "n/a", "none", "not provided", "-"].includes(normalized);
+}
+
+function companyName(inquiry: Inquiry) {
+  return hasUsefulValue(inquiry.company) ? inquiry.company.trim() : "Company profile";
+}
+
+function companyWebsiteHost(value: string) {
+  if (!hasUsefulValue(value)) return null;
+
+  try {
+    const url = new URL(/^https?:\/\//i.test(value.trim()) ? value.trim() : `https://${value.trim()}`);
+    return url.hostname.replace(/^www\./i, "") || null;
+  } catch {
+    return null;
+  }
+}
+
+const companyFallbackImages = [
+  "/images/sourcing/import-agent.svg",
+  "/images/sourcing/product-sourcing-agent.svg",
+  "/images/sourcing/dropshipping-agent.svg",
+  "/images/sourcing/dropshipping-sourcing-agent.svg",
+  "/images/sourcing/india-sourcing-agent.svg",
+];
+
+function CompanyMark({ inquiry }: { inquiry: Inquiry }) {
+  const name = companyName(inquiry);
+  const hostname = companyWebsiteHost(inquiry.website);
+  const fallbackSrc = companyFallbackImages[(inquiry.id - 1) % companyFallbackImages.length];
+  const logoSrc = hostname
+    ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(hostname)}&sz=128`
+    : fallbackSrc;
+
+  return (
+    <span className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/70 bg-white shadow-sm dark:border-white/10 dark:bg-white/10">
+      <img
+        src={logoSrc}
+        alt={hostname ? `${name} logo` : `${name} business illustration`}
+        width={48}
+        height={48}
+        className={`size-full bg-white ${hostname ? "object-contain p-1.5" : "object-cover"}`}
+        onError={(event) => {
+          event.currentTarget.onerror = null;
+          event.currentTarget.src = fallbackSrc;
+          event.currentTarget.className = "size-full bg-white object-cover";
+        }}
+      />
+    </span>
+  );
 }
 
 function maskAddress(value: string) {
@@ -258,7 +319,7 @@ export function InquiryCarousel({
                 className="basis-[88%] pl-3 sm:basis-1/2 md:pl-4 lg:basis-1/3 xl:basis-1/4"
               >
               <Card
-                className={`h-full min-h-72 border-white/60 shadow-none ${cardTones[index % cardTones.length]}`}
+                className={`h-full min-h-[23rem] border-white/60 shadow-none ${cardTones[index % cardTones.length]}`}
               >
                 <CardContent className="flex h-full flex-col px-5">
                   <div className="mb-4 flex items-start justify-between gap-2 border-b border-black/5 pb-3 dark:border-white/10">
@@ -283,7 +344,17 @@ export function InquiryCarousel({
                     </span>
                   </div>
 
-                  <dl className="space-y-4">
+                  <div className="mb-4 flex min-w-0 items-center gap-3">
+                    <CompanyMark inquiry={inquiry} />
+                    <div className="min-w-0">
+                      <p className="text-xs text-muted-foreground">Company</p>
+                      <p className="truncate font-semibold" title={companyName(inquiry)}>
+                        {companyName(inquiry)}
+                      </p>
+                    </div>
+                  </div>
+
+                  <dl className="space-y-3">
                     <div className="flex items-start gap-3">
                       <UserRound className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
                       <div className="min-w-0">
@@ -295,9 +366,7 @@ export function InquiryCarousel({
                       <Mail className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
                       <div className="min-w-0">
                         <dt className="text-sm text-muted-foreground">Email</dt>
-                        <dd className="mt-0.5 truncate font-medium">
-                          {inquiry.email ? `${inquiry.email.slice(0, 3)}xxx` : "Not provided"}
-                        </dd>
+                        <dd className="mt-0.5 truncate font-medium">{maskEmail(inquiry.email, inquiry.name)}</dd>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
@@ -365,7 +434,7 @@ export function InquiryCarousel({
                 </h3>
                 <dl className="mt-3 grid gap-3 sm:grid-cols-2">
                   <Field label="Full name" value={maskName(selected.name)} />
-                  <Field label="Email" value={maskEmail(selected.email)} />
+                  <Field label="Email" value={maskEmail(selected.email, selected.name)} />
                   <Field label="Mobile number with country code" value={maskPhone(selected.mobile)} />
                   <Field label="WhatsApp number with country code" value={maskPhone(selected.whatsapp)} />
                   <div className="sm:col-span-2">
