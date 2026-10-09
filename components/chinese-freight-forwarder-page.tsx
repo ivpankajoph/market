@@ -12,6 +12,7 @@ import {
 import { InquiryCarousel } from "@/components/inquiry-carousel";
 import { SiteFooter } from "@/components/site-footer";
 import { SourcePageIntro } from "@/components/source-page-intro";
+import { TopSellersListing } from "@/components/top-sellers-listing";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -132,6 +133,7 @@ export function ChineseFreightForwarderPage({
         }}
       />
       <SourcePageIntro title={pageTitle} />
+      <TopSellersListing countryName={service.origin} />
 
       <section
         id="requests"
@@ -153,6 +155,13 @@ export function ChineseFreightForwarderPage({
             </Badge>
           </div>
           <InquiryCarousel />
+          <div className="mt-8 flex justify-center">
+            <Button size="lg" asChild>
+              <Link href={routePath.buyers}>
+                View more <ArrowRight aria-hidden="true" />
+              </Link>
+            </Button>
+          </div>
         </div>
       </section>
 

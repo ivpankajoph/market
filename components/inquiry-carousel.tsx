@@ -101,12 +101,16 @@ function companyName(inquiry: Inquiry) {
 function companyWebsiteHost(value: string) {
   if (!hasUsefulValue(value)) return null;
 
-  try {
-    const url = new URL(/^https?:\/\//i.test(value.trim()) ? value.trim() : `https://${value.trim()}`);
-    return url.hostname.replace(/^www\./i, "") || null;
-  } catch {
-    return null;
-  }
+  const hostname = value
+    .trim()
+    .replace(/^https?:\/\//i, "")
+    .replace(/^www\./i, "")
+    .split(/[/?#\s(]/, 1)[0]
+    .toLowerCase();
+
+  return /^(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$/i.test(hostname)
+    ? hostname
+    : null;
 }
 
 const companyFallbackImages = [
@@ -316,7 +320,7 @@ export function InquiryCarousel({
             return (
               <CarouselItem
                 key={inquiry.id}
-                className="basis-[88%] pl-3 sm:basis-1/2 md:pl-4 lg:basis-1/3 xl:basis-1/4"
+                className="basis-[88%] pl-3 sm:basis-1/2 md:pl-4 lg:basis-1/3 xl:basis-1/5"
               >
               <Card
                 className={`h-full min-h-[23rem] border-white/60 shadow-none ${cardTones[index % cardTones.length]}`}
