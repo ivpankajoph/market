@@ -276,14 +276,6 @@ body {
   animation: float-drift 22s ease-in-out infinite;
 }
 
-.top-sellers-viewport {
-  scrollbar-width: none;
-  scroll-snap-type: x mandatory;
-}
-
-.top-sellers-viewport::-webkit-scrollbar {
-  display: none;
-}
 
 /* Ensure pointer cursor for all buttons, dropdowns, selects, and interactive controls across the entire site */
 button,

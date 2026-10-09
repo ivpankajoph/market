@@ -254,15 +254,86 @@ function Field({ label, value }: { label: string; value: string }) {
   );
 }
 
+function InquirySummaryCard({
+  inquiry,
+  index,
+  onSelect,
+}: {
+  inquiry: Inquiry;
+  index: number;
+  onSelect: (inquiry: Inquiry) => void;
+}) {
+  const buyerFrom = buyerCountry(inquiry);
+  const sourceFrom = sourceCountry(inquiry.importFrom);
+
+  return (
+    <Card className={`h-full min-h-[23rem] border-white/60 shadow-none ${cardTones[index % cardTones.length]}`}>
+      <CardContent className="flex h-full flex-col px-5">
+        <div className="mb-4 flex items-start justify-between gap-2 border-b border-black/5 pb-3 dark:border-white/10">
+          <div className="flex min-w-0 flex-col gap-1.5">
+            <div className="flex items-center gap-1.5 text-xs leading-tight text-muted-foreground">
+              <span>Buyers From :</span>
+              <span className="flex items-center gap-1 font-semibold text-foreground">
+                <CountryFlagMark countryName={buyerFrom} />
+                <span className="truncate">{buyerFrom}</span>
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5 text-xs leading-tight text-muted-foreground">
+              <span>Source From :</span>
+              <span className="flex items-center gap-1 font-semibold text-foreground">
+                <CountryFlagMark countryName={sourceFrom} />
+                <span className="truncate">{sourceFrom}</span>
+              </span>
+            </div>
+          </div>
+          <span className="shrink-0 text-sm font-medium text-muted-foreground">#{String(inquiry.id).padStart(3, "0")}</span>
+        </div>
+
+        <div className="mb-4 flex min-w-0 items-center gap-3">
+          <CompanyMark inquiry={inquiry} />
+          <div className="min-w-0">
+            <p className="text-xs text-muted-foreground">Company</p>
+            <p className="truncate font-semibold" title={companyName(inquiry)}>{companyName(inquiry)}</p>
+          </div>
+        </div>
+
+        <dl className="space-y-3">
+          <div className="flex items-start gap-3">
+            <UserRound className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+            <div className="min-w-0"><dt className="text-sm text-muted-foreground">Name</dt><dd className="mt-0.5 truncate font-medium">{maskName(inquiry.name)}</dd></div>
+          </div>
+          <div className="flex items-start gap-3">
+            <Mail className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+            <div className="min-w-0"><dt className="text-sm text-muted-foreground">Email</dt><dd className="mt-0.5 truncate font-medium">{maskEmail(inquiry.email, inquiry.name)}</dd></div>
+          </div>
+          <div className="flex items-start gap-3">
+            <Phone className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+            <div className="min-w-0"><dt className="text-sm text-muted-foreground">Phone</dt><dd className="mt-0.5 truncate font-medium">{maskPhone(inquiry.mobile)}</dd></div>
+          </div>
+        </dl>
+
+        <Button variant="outline" className="mt-auto w-full bg-white/70 hover:bg-white dark:bg-black/15 dark:hover:bg-black/25" onClick={() => onSelect(inquiry)} aria-label={`View complete details for ${inquiry.name}`}>
+          <Eye aria-hidden="true" /> View details
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
 export function InquiryCarousel({
   inquiries = inquiryData as Inquiry[],
+  layout = "carousel",
+  limit,
 }: {
   inquiries?: Inquiry[];
+  layout?: "carousel" | "grid";
+  limit?: number;
 }) {
   const [selected, setSelected] = React.useState<Inquiry | null>(null);
   const [carouselApi, setCarouselApi] = React.useState<CarouselApi>();
   const carouselRoot = React.useRef<HTMLDivElement>(null);
   const wheelLocked = React.useRef(false);
+  const visibleInquiries = typeof limit === "number" ? inquiries.slice(0, limit) : inquiries;
 
   React.useEffect(() => {
     const viewport = carouselRoot.current?.querySelector<HTMLElement>(
@@ -297,107 +368,27 @@ export function InquiryCarousel({
 
   return (
     <>
-      <Carousel
-        ref={carouselRoot}
-        setApi={setCarouselApi}
-        opts={{ align: "start", loop: true }}
-        className="mt-7"
-        aria-label="Buyer requirements"
-      >
-        <div className="mb-5 flex items-center justify-between gap-4">
-        
-          <div className="flex shrink-0 gap-2">
-            <CarouselPrevious className="static size-10 translate-y-0 bg-background/90 shadow-sm" />
-            <CarouselNext className="static size-10 translate-y-0 bg-background/90 shadow-sm" />
-          </div>
+      {layout === "grid" ? (
+        <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4" aria-label="Buyer requirements">
+          {visibleInquiries.map((inquiry, index) => <InquirySummaryCard key={inquiry.id} inquiry={inquiry} index={index} onSelect={setSelected} />)}
         </div>
-
-        <CarouselContent className="-ml-3 md:-ml-4">
-          {inquiries.map((inquiry, index) => {
-            const buyerFrom = buyerCountry(inquiry);
-            const sourceFrom = sourceCountry(inquiry.importFrom);
-
-            return (
-              <CarouselItem
-                key={inquiry.id}
-                className="basis-[88%] pl-3 sm:basis-1/2 md:pl-4 lg:basis-1/3 xl:basis-1/5"
-              >
-              <Card
-                className={`h-full min-h-[23rem] border-white/60 shadow-none ${cardTones[index % cardTones.length]}`}
-              >
-                <CardContent className="flex h-full flex-col px-5">
-                  <div className="mb-4 flex items-start justify-between gap-2 border-b border-black/5 pb-3 dark:border-white/10">
-                    <div className="flex min-w-0 flex-col gap-1.5">
-                      <div className="flex items-center gap-1.5 text-xs leading-tight text-muted-foreground">
-                        <span>Buyers From :</span>
-                        <span className="flex items-center gap-1 font-semibold text-foreground">
-                          <CountryFlagMark countryName={buyerFrom} />
-                          <span className="truncate">{buyerFrom}</span>
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1.5 text-xs leading-tight text-muted-foreground">
-                        <span>Source From :</span>
-                        <span className="flex items-center gap-1 font-semibold text-foreground">
-                          <CountryFlagMark countryName={sourceFrom} />
-                          <span className="truncate">{sourceFrom}</span>
-                        </span>
-                      </div>
-                    </div>
-                    <span className="shrink-0 text-sm font-medium text-muted-foreground">
-                      #{String(inquiry.id).padStart(3, "0")}
-                    </span>
-                  </div>
-
-                  <div className="mb-4 flex min-w-0 items-center gap-3">
-                    <CompanyMark inquiry={inquiry} />
-                    <div className="min-w-0">
-                      <p className="text-xs text-muted-foreground">Company</p>
-                      <p className="truncate font-semibold" title={companyName(inquiry)}>
-                        {companyName(inquiry)}
-                      </p>
-                    </div>
-                  </div>
-
-                  <dl className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <UserRound className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-                      <div className="min-w-0">
-                        <dt className="text-sm text-muted-foreground">Name</dt>
-                        <dd className="mt-0.5 truncate font-medium">{maskName(inquiry.name)}</dd>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Mail className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-                      <div className="min-w-0">
-                        <dt className="text-sm text-muted-foreground">Email</dt>
-                        <dd className="mt-0.5 truncate font-medium">{maskEmail(inquiry.email, inquiry.name)}</dd>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Phone className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-                      <div className="min-w-0">
-                        <dt className="text-sm text-muted-foreground">Phone</dt>
-                        <dd className="mt-0.5 truncate font-medium">{maskPhone(inquiry.mobile)}</dd>
-                      </div>
-                    </div>
-                  </dl>
-
-                  <Button
-                    variant="outline"
-                    className="mt-auto w-full bg-white/70 hover:bg-white dark:bg-black/15 dark:hover:bg-black/25"
-                    onClick={() => setSelected(inquiry)}
-                    aria-label={`View complete details for ${inquiry.name}`}
-                  >
-                    <Eye aria-hidden="true" />
-                    View details
-                  </Button>
-                </CardContent>
-              </Card>
+      ) : (
+        <Carousel ref={carouselRoot} setApi={setCarouselApi} opts={{ align: "start", loop: true }} className="mt-7" aria-label="Buyer requirements">
+          <div className="mb-5 flex items-center justify-between gap-4">
+            <div className="flex shrink-0 gap-2">
+              <CarouselPrevious className="static size-10 translate-y-0 bg-background/90 shadow-sm" />
+              <CarouselNext className="static size-10 translate-y-0 bg-background/90 shadow-sm" />
+            </div>
+          </div>
+          <CarouselContent className="-ml-3 md:-ml-4">
+            {visibleInquiries.map((inquiry, index) => (
+              <CarouselItem key={inquiry.id} className="basis-[88%] pl-3 sm:basis-1/2 md:pl-4 lg:basis-1/3 xl:basis-1/5">
+                <InquirySummaryCard inquiry={inquiry} index={index} onSelect={setSelected} />
               </CarouselItem>
-            );
-          })}
-        </CarouselContent>
-      </Carousel>
+            ))}
+          </CarouselContent>
+        </Carousel>
+      )}
 
       <Dialog open={selected !== null} onOpenChange={(open) => !open && setSelected(null)}>
         {selected && (

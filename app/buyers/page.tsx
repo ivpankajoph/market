@@ -795,6 +795,19 @@ export default function BuyersPage() {
           sessionStorage.removeItem("market-buyers-draft");
           draftCredentials.current = null;
         });
+      } else {
+        const enquiry = JSON.parse(sessionStorage.getItem("market-seller-enquiry-prefill") || "null") as Record<string, unknown> | null;
+        if (enquiry) {
+          const text = (key: string) => typeof enquiry[key] === "string" ? enquiry[key] as string : "";
+          window.setTimeout(() => {
+            setFullName(text("fullName"));
+            setEmail(text("email"));
+            setLookingFor(text("lookingFor"));
+            setDetailedRequirement(text("detailedRequirement"));
+            setDraftMessage(text("provider") ? `Enquiry started for ${text("provider")}. Complete the details below.` : "Enquiry details added. Complete the form below.");
+          }, 0);
+          sessionStorage.removeItem("market-seller-enquiry-prefill");
+        }
       }
     } catch {
       sessionStorage.removeItem("market-buyers-draft");

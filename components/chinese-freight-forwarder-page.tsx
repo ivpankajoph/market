@@ -6,7 +6,6 @@ import {
   FileCheck2,
   MessagesSquare,
   Search,
-  Ship,
 } from "lucide-react";
 
 import { InquiryCarousel } from "@/components/inquiry-carousel";
@@ -26,32 +25,30 @@ type ChineseFreightForwarderPageProps = {
   service: SourcingService;
 };
 
-const steps = [
-  {
-    icon: ClipboardList,
-    title: "Share your shipment details",
-    description:
-      "Tell us what you are shipping, the carton size and weight, pickup city in China, delivery address in the United States, and your preferred date.",
-  },
-  {
-    icon: MessagesSquare,
-    title: "Meet relevant forwarders",
-    description:
-      "Your requirement can be seen by independent freight providers that handle China-to-U.S. shipments and match the service you need.",
-  },
-  {
-    icon: FileCheck2,
-    title: "Compare quotes and scope",
-    description:
-      "Review the route, transit time, included charges, customs support, insurance options, and final delivery terms before you choose.",
-  },
-  {
-    icon: Ship,
-    title: "Choose and coordinate",
-    description:
-      "Select a provider, agree the final scope directly, and stay in contact about pickup, documents, departure, arrival, and delivery.",
-  },
-];
+function platformSteps(serviceName: string, marketName: string) {
+  return [
+    {
+      icon: ClipboardList,
+      title: "Post one clear requirement",
+      description: `Tell us what you need from a ${serviceName}: shipment details, pickup point, destination in ${marketName}, budget, and preferred timeline.`,
+    },
+    {
+      icon: Search,
+      title: "We review and find the right match",
+      description: "Our team reviews your brief and connects it with relevant independent sellers, sourcing agents, or logistics providers in our network.",
+    },
+    {
+      icon: MessagesSquare,
+      title: "Compare and speak directly",
+      description: "Review provider profiles, ask questions, compare the proposed scope, and choose the business that fits your requirement.",
+    },
+    {
+      icon: FileCheck2,
+      title: "Track everything in your dashboard",
+      description: "Log in to see enquiries, responses, contact details, and progress in one place while you coordinate the next steps with your chosen provider.",
+    },
+  ];
+}
 
 const faqs = [
   {
@@ -91,6 +88,7 @@ export function ChineseFreightForwarderPage({
   service,
 }: ChineseFreightForwarderPageProps) {
   const displayServiceName = serviceDisplayName(service.name);
+  const steps = platformSteps(displayServiceName, market.name);
   const pageTitle = `${displayServiceName} for ${market.name} Buyers`;
   const relatedServices = services
     .filter((item) => item.origin === service.origin && item.slug !== service.slug)
@@ -151,10 +149,10 @@ export function ChineseFreightForwarderPage({
               </p>
             </div>
             <Badge variant="secondary" className="w-fit px-3 py-1.5 text-sm">
-              {inquiryData.length} requests
+              {Math.min(12, inquiryData.length)} requests shown
             </Badge>
           </div>
-          <InquiryCarousel />
+          <InquiryCarousel layout="grid" limit={12} />
           <div className="mt-8 flex justify-center">
             <Button size="lg" asChild>
               <Link href={routePath.buyers}>
@@ -282,10 +280,10 @@ export function ChineseFreightForwarderPage({
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-4xl font-semibold tracking-tight sm:text-5xl">
-              How it works
+              How ChinaIndiaSourcing works
             </h2>
-            <p className="mt-3 text-base font-medium text-foreground/80 sm:text-lg">
-              From shipment details to a chosen provider
+            <p className="mt-4 text-base leading-7 text-muted-foreground sm:text-lg">
+              We run this platform to bring buyers and independent sourcing partners together. If you need a {displayServiceName}, start with one requirement and our team will help connect you with suitable providers.
             </p>
           </div>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
